@@ -15,7 +15,7 @@ import urllib.error
 from datetime import date
 from pathlib import Path
 
-from meal_price_tool import choose_deals_file, load_json, money
+from meal_price_tool import choose_deals_file, load_json, money, promotion_from_condition
 from safeway_api_search import (
     DEFAULT_BANNER,
     DEFAULT_CHANNEL,
@@ -339,6 +339,126 @@ def enrich_deal(name, deal, args):
     }
 
 
+_PROMO_STOPWORDS = {
+    "buy", "more", "participating", "items", "when", "save", "free", "pick",
+    "any", "off", "ea", "ct", "lb", "oz", "pkg", "pack", "bag", "box", "can",
+    "with", "your", "next", "shopping", "order", "purchase", "and", "the",
+    "from", "for", "ge", "select",  # 'select' alone (without 'signature') over-matches
+}
+
+
+def _label_product_part(label):
+    """Return the product-name portion of an ad_items.label, dropping the
+    promo boilerplate. Labels typically look like:
+
+        "Coca-Cola, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+
+    so we take everything up to the first 'BUY', '$', or 'WHEN'.
+    """
+    text = str(label or "")
+    cuts = []
+    for marker in (r"\bBUY\b", r"\$", r"\bWHEN\b", r"\bSAVE\b"):
+        m = re.search(marker, text, re.I)
+        if m:
+            cuts.append(m.start())
+    if cuts:
+        text = text[: min(cuts)]
+    return text.strip(" ,")
+
+
+def _meaningful_tokens(text):
+    return {
+        tok
+        for tok in re.findall(r"[a-z0-9]+", str(text or "").lower())
+        if len(tok) > 2 and tok not in _PROMO_STOPWORDS
+    }
+
+
+def backfill_promotions(args):
+    """Parse promotion language out of normalized_deals.source_label and
+    flyer ad_items.label, then write structured `promotion` fields back
+    into the deals JSON in place.
+
+    The promo metadata is consumed at runtime by meal_price_tool's cart
+    and estimate-plan flows for multi-buy threshold enforcement, but
+    consumers reading the JSON directly (LLMs, prompt context emission,
+    manual inspection) only see the structured field if it's persisted.
+    """
+    deals_path = choose_deals_file(args.deals_file)
+    raw = load_json(deals_path)
+    deals = raw.get("normalized_deals") or {}
+    ad_items = raw.get("ad_items") or []
+
+    # Build a tokenized index of ad_item labels (product-name portion only)
+    # so we can backfill deals whose source_label lacks the trigger phrase.
+    flyer_promos = []
+    for ad in ad_items:
+        label = ad.get("label") or ""
+        promo = promotion_from_condition(label)
+        if not promo:
+            continue
+        product_part = _label_product_part(label)
+        tokens = _meaningful_tokens(product_part)
+        if not tokens:
+            continue
+        flyer_promos.append({
+            "tokens": tokens,
+            "promo": promo,
+            "label": label,
+            "product_part": product_part,
+        })
+
+    updated = []
+    for name, deal in deals.items():
+        if deal.get("promotion"):
+            continue
+        # First try the deal's own source_label / condition.
+        promo = promotion_from_condition(deal.get("source_label") or deal.get("condition"))
+        match_via = "source_label"
+        match_label = deal.get("source_label") or deal.get("condition") or ""
+
+        # Otherwise, try matching against ad_items by product-name token overlap.
+        if not promo and flyer_promos:
+            deal_tokens = _meaningful_tokens(name) | _meaningful_tokens(deal.get("source_label"))
+            best_overlap = 0
+            best_entry = None
+            for entry in flyer_promos:
+                overlap = len(deal_tokens & entry["tokens"])
+                if overlap > best_overlap:
+                    best_overlap = overlap
+                    best_entry = entry
+            # Require >=2 product-name tokens overlap AND that overlap covers
+            # at least half the deal's own tokens — guards against a single
+            # generic word matching a totally different product.
+            if (
+                best_entry
+                and best_overlap >= 2
+                and best_overlap >= max(2, len(deal_tokens) // 2)
+            ):
+                promo = best_entry["promo"]
+                match_via = "ad_items"
+                match_label = best_entry["product_part"]
+
+        if promo:
+            deal["promotion"] = promo
+            updated.append((name, promo["group_id"], match_via, match_label))
+
+    print(f"Backfilled promo metadata onto {len(updated)} deal(s)")
+    if updated:
+        print(f"{'Deal':<32} {'Group':<32} Match via   Source label")
+        print("-" * 130)
+        for name, group_id, via, label in updated:
+            print(f"{name[:32]:<32} {group_id:<32} {via:<11} {label[:55]}")
+
+    if args.write:
+        # Preserve original key order
+        deals_path.write_text(json.dumps(raw, indent=2) + "\n")
+        print(f"\nWrote {deals_path}")
+    else:
+        print("\nMode: dry-run; pass --write to save")
+    return 0
+
+
 def output_path_for(metadata, explicit=None):
     if explicit:
         return Path(explicit)
@@ -418,7 +538,10 @@ def main():
     parser.add_argument("--keep-candidates", type=int, default=5, help="Candidate products to keep per deal")
     parser.add_argument("--write", action="store_true", help="Write observation JSON")
     parser.add_argument("--output", help="Output path when using --write")
+    parser.add_argument("--backfill-promos", action="store_true", help="Skip API enrichment and instead parse promotion language out of deal source_label and ad_items.label, writing structured `promotion` fields back into the deals JSON in place. Use with --write to persist.")
     args = parser.parse_args()
+    if args.backfill_promos:
+        return backfill_promotions(args)
     return enrich(args)
 
 

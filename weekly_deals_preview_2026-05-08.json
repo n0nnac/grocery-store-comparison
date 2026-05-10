@@ -161,14 +161,28 @@
       "unit": "package",
       "source_label": "Signature SELECT Pasta, $0.99 ea when you buy 5+ participating items",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "promotion": {
+        "type": "mix_and_match_min_count",
+        "group_id": "buy_5_participating_items",
+        "threshold_count": 5,
+        "count_unit": "item",
+        "text": "Signature SELECT Pasta, $0.99 ea when you buy 5+ participating items"
+      }
     },
     "tuttorosso tomatoes": {
       "sale_price": 1.29,
       "unit": "can/package",
       "source_label": "Tuttorosso Tomatoes, $1.29 ea when you buy 5+ participating items",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "promotion": {
+        "type": "mix_and_match_min_count",
+        "group_id": "buy_5_participating_items",
+        "threshold_count": 5,
+        "count_unit": "item",
+        "text": "Tuttorosso Tomatoes, $1.29 ea when you buy 5+ participating items"
+      }
     },
     "mission flour tortillas": {
       "sale_price": 2.99,
@@ -208,7 +222,7 @@
       "page": 1,
       "item_id": "1010039893",
       "global_id": "01KQF84BK53Y54APE25MDN82MZ",
-      "label": "Overjoyed™ One Dozen Rainbow Roses, , $15 ea",
+      "label": "Overjoyed\u2122 One Dozen Rainbow Roses, , $15 ea",
       "observed_price_text": "$15",
       "requires_clip": false,
       "deal_mechanics": null
@@ -244,7 +258,7 @@
       "page": 1,
       "item_id": "1010040074",
       "global_id": "01KQF84BM7CPYMT08SAV9BZ80W",
-      "label": "Overjoyed™ Moms Grand Bouquet, , $20 ea",
+      "label": "Overjoyed\u2122 Moms Grand Bouquet, , $20 ea",
       "observed_price_text": "$20",
       "requires_clip": false,
       "deal_mechanics": null
@@ -451,28 +465,28 @@
       "page": 1,
       "item_id": "1010050286",
       "global_id": "01KQF84BMBJA2DPGKQT7FN9P78",
-      "label": "Eggland's Best Large Grade A Eggs, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea",
-      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $2.99",
+      "label": "Eggland's Best Large Grade A Eggs, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $2.99",
       "requires_clip": false,
-      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea"
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea"
     },
     {
       "page": 1,
       "item_id": "1010050281",
       "global_id": "01KQF84BM5ENER5FNHKAMVFMX0",
-      "label": "Simply Orange or Light Orange Juice, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea",
-      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $3.99",
+      "label": "Simply Orange or Light Orange Juice, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $3.99",
       "requires_clip": false,
-      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea"
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea"
     },
     {
       "page": 1,
       "item_id": "1010050282",
       "global_id": "01KQF84BM6B0DRNCZC3Z21G4G5",
-      "label": "Lucerne® Shredded Cheese, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),",
-      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99",
+      "label": "Lucerne\u00ae Shredded Cheese, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE; $1.99",
       "requires_clip": false,
-      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),"
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne\u00ae Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),"
     },
     {
       "page": 1,
@@ -505,7 +519,7 @@
       "page": 2,
       "item_id": "1010022444",
       "global_id": "01KQF84BN49G32WM2P8E0AJBH5",
-      "label": "Primo Taglio® Ham off the Bone, , $9.99 lb",
+      "label": "Primo Taglio\u00ae Ham off the Bone, , $9.99 lb",
       "observed_price_text": "$9.99",
       "requires_clip": false,
       "deal_mechanics": ", $9.99 lb"
@@ -514,7 +528,7 @@
       "page": 2,
       "item_id": "1010022466",
       "global_id": "01KQF84BN4J2D1EA7BTP5WMMGG",
-      "label": "Primo Taglio® Classic Provolone Cheese, , $6.99 lb",
+      "label": "Primo Taglio\u00ae Classic Provolone Cheese, , $6.99 lb",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -523,7 +537,7 @@
       "page": 2,
       "item_id": "1010022445",
       "global_id": "01KQF84BN49SYB0N2F3P8344TY",
-      "label": "Signature SELECT® Packaged Salads, , $4.99 ea",
+      "label": "Signature SELECT\u00ae Packaged Salads, , $4.99 ea",
       "observed_price_text": "$4.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -541,7 +555,7 @@
       "page": 2,
       "item_id": "1010022450",
       "global_id": "01KQF84BN4N6DT0VSYAAS2YFDW",
-      "label": "Primo Taglio® Mozzarella, , $6.99 ea",
+      "label": "Primo Taglio\u00ae Mozzarella, , $6.99 ea",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -694,7 +708,7 @@
       "page": 2,
       "item_id": "1010022489",
       "global_id": "01KQF84BN5Z0X242YZJB88CXYR",
-      "label": "Stōk Cold Brew 48 fl. oz. btl. or O Organics® Large Brown Pasture-Raised Grade A Eggs 12 ct. ctn., , 2 for $10",
+      "label": "St\u014dk Cold Brew 48 fl. oz. btl. or O Organics\u00ae Large Brown Pasture-Raised Grade A Eggs 12 ct. ctn., , 2 for $10",
       "observed_price_text": "2 for $10",
       "requires_clip": false,
       "deal_mechanics": null
@@ -712,7 +726,7 @@
       "page": 2,
       "item_id": "1010022508",
       "global_id": "01KQF84BN5ZJ8FW4J3BYPQEPH7",
-      "label": "Lucerne® Real Milk & Cream Creamer or Coffee Creamers, , $3.99 ea",
+      "label": "Lucerne\u00ae Real Milk & Cream Creamer or Coffee Creamers, , $3.99 ea",
       "observed_price_text": "$3.99",
       "requires_clip": false,
       "deal_mechanics": ", $3.99 ea"
@@ -730,7 +744,7 @@
       "page": 2,
       "item_id": "1010022506",
       "global_id": "01KQF84BN5G8YDEG9JDMPPJWGZ",
-      "label": "Lucerne® Ultra-Pasteurized Half & Half, , $5.49 ea",
+      "label": "Lucerne\u00ae Ultra-Pasteurized Half & Half, , $5.49 ea",
       "observed_price_text": "$5.49",
       "requires_clip": false,
       "deal_mechanics": null
@@ -802,7 +816,7 @@
       "page": 2,
       "item_id": "1010022415",
       "global_id": "01KQF84BN3KHRZD6AZE9J3997G",
-      "label": "Signature SELECT® Designer Plates or Bowls 22-48 ct. pkg. Party Cups 20-25 ct. pkg. Plastic Premium Cutlery 72 ct. pkg., , 2 for $7",
+      "label": "Signature SELECT\u00ae Designer Plates or Bowls 22-48 ct. pkg. Party Cups 20-25 ct. pkg. Plastic Premium Cutlery 72 ct. pkg., , 2 for $7",
       "observed_price_text": "2 for $7",
       "requires_clip": false,
       "deal_mechanics": null
@@ -811,7 +825,7 @@
       "page": 2,
       "item_id": "1010022535",
       "global_id": "01KQF84BN6NDH23NHGMBMW3QEY",
-      "label": "Michael Angelo's Family Entrées, , $6.99 ea",
+      "label": "Michael Angelo's Family Entr\u00e9es, , $6.99 ea",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -820,7 +834,7 @@
       "page": 2,
       "item_id": "1010022526",
       "global_id": "01KQF84BN6BM484DZZBX0HPJYQ",
-      "label": "Rao's Entrées, , $3.99 ea",
+      "label": "Rao's Entr\u00e9es, , $3.99 ea",
       "observed_price_text": "$3.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -838,7 +852,7 @@
       "page": 2,
       "item_id": "1010022534",
       "global_id": "01KQF84BN6JCJKMK5SFEXQ3T58",
-      "label": "Open Nature® Cauliflower Crust Pizza, , $6.99 ea",
+      "label": "Open Nature\u00ae Cauliflower Crust Pizza, , $6.99 ea",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -856,7 +870,7 @@
       "page": 2,
       "item_id": "1010022555",
       "global_id": "01KQF84BN6W4KNBX1VW8CKGMDE",
-      "label": "Signature SELECT® Waffles, , $1.99 ea",
+      "label": "Signature SELECT\u00ae Waffles, , $1.99 ea",
       "observed_price_text": "$1.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -901,7 +915,7 @@
       "page": 2,
       "item_id": "1010022577",
       "global_id": "01KQF84BN7FBD8YQFZVFNH8GZH",
-      "label": "Signature SELECT® Sundae Crunch Bars, , $2.99 ea",
+      "label": "Signature SELECT\u00ae Sundae Crunch Bars, , $2.99 ea",
       "observed_price_text": "$2.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -946,7 +960,7 @@
       "page": 2,
       "item_id": "1010022570",
       "global_id": "01KQF84BN7R8HWCSYA1WAS7YJD",
-      "label": "Signature SELECT® Ice Cream Cones, , $6.99 ea",
+      "label": "Signature SELECT\u00ae Ice Cream Cones, , $6.99 ea",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -955,7 +969,7 @@
       "page": 2,
       "item_id": "1010022593",
       "global_id": "01KQF84BN7NHV5W5X5C0KYBVWZ",
-      "label": "Signature SELECT® Ice Cream Cups, , $4.99 ea",
+      "label": "Signature SELECT\u00ae Ice Cream Cups, , $4.99 ea",
       "observed_price_text": "$4.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1081,7 +1095,7 @@
       "page": 3,
       "item_id": "1010017533",
       "global_id": "01KQF84BMNWKB0BD5584CZNDAD",
-      "label": "Signature SELECT® 100% Orange Juice, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "label": "Signature SELECT\u00ae 100% Orange Juice, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
       "observed_price_text": "$4.99",
       "requires_clip": false,
       "deal_mechanics": "BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
@@ -1099,7 +1113,7 @@
       "page": 3,
       "item_id": "1010017523",
       "global_id": "01KQF84BMMCPCZ0YABZ28CFC59",
-      "label": "Signature SELECT® Oatmeal, Fab5!, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "label": "Signature SELECT\u00ae Oatmeal, Fab5!, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
       "observed_price_text": "$3.99",
       "requires_clip": false,
       "deal_mechanics": "Fab5!, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
@@ -1126,7 +1140,7 @@
       "page": 3,
       "item_id": "1010017580",
       "global_id": "01KQF84BMP8GSKM1SMG99SJM9Q",
-      "label": "Signature SELECT® Pasta, BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "label": "Signature SELECT\u00ae Pasta, BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
       "observed_price_text": "$0.99",
       "requires_clip": false,
       "deal_mechanics": "BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
@@ -1225,7 +1239,7 @@
       "page": 3,
       "item_id": "1010017274",
       "global_id": "01KQF84BMQP3G71Y2YY15D8MJ0",
-      "label": "Signature SELECT® Veggie Sticks or Chips, BUY 5 OR MORE, $2.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "label": "Signature SELECT\u00ae Veggie Sticks or Chips, BUY 5 OR MORE, $2.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
       "observed_price_text": "$2.79",
       "requires_clip": false,
       "deal_mechanics": "BUY 5 OR MORE, $2.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
@@ -1234,7 +1248,7 @@
       "page": 3,
       "item_id": "1010017317",
       "global_id": "01KQF84BMPCF6EER1J4J3AE4ZK",
-      "label": "Signature SELECT® Designer Coated Paper 44-50 ct., 10\" plates, 64-100 ct., 8.5\" plates or 56 ct., 20 oz. bowls, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "label": "Signature SELECT\u00ae Designer Coated Paper 44-50 ct., 10\" plates, 64-100 ct., 8.5\" plates or 56 ct., 20 oz. bowls, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
       "observed_price_text": "$4.99",
       "requires_clip": false,
       "deal_mechanics": "10\" plates, 64-100 ct., 8.5\" plates or 56 ct., 20 oz. bowls, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
@@ -1243,7 +1257,7 @@
       "page": 3,
       "item_id": "1010017292",
       "global_id": "01KQF84BMP4P5Q3HGE15TPY2FK",
-      "label": "Signature SELECT® Party Cups, BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "label": "Signature SELECT\u00ae Party Cups, BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
       "observed_price_text": "$5.99",
       "requires_clip": false,
       "deal_mechanics": "BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
@@ -1324,7 +1338,7 @@
       "page": 3,
       "item_id": "1010017362",
       "global_id": "01KQF84BMST0ACWSWVY172XR25",
-      "label": "Maxwell House Ground Coffee 9-11 oz. pkg. or Signature SELECT® Ground or Whole Bean Coffee 10-12 oz. pkg., , $6.99 ea",
+      "label": "Maxwell House Ground Coffee 9-11 oz. pkg. or Signature SELECT\u00ae Ground or Whole Bean Coffee 10-12 oz. pkg., , $6.99 ea",
       "observed_price_text": "$6.99",
       "requires_clip": false,
       "deal_mechanics": ", $6.99 ea"
@@ -1423,7 +1437,7 @@
       "page": 3,
       "item_id": "1010017563",
       "global_id": "01KQF84BMTGZQQ72FVBYEQV9HB",
-      "label": "Signature SELECT® Charcoal Briquets, Mesquite, Hickory or Instant Light Briquets, , $8.99 ea",
+      "label": "Signature SELECT\u00ae Charcoal Briquets, Mesquite, Hickory or Instant Light Briquets, , $8.99 ea",
       "observed_price_text": "$8.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1441,7 +1455,7 @@
       "page": 3,
       "item_id": "1010017478",
       "global_id": "01KQF84BMSQKX3TWQB73WHR4TW",
-      "label": "Signature SELECT® Aluminum Foil, , $5.49 ea",
+      "label": "Signature SELECT\u00ae Aluminum Foil, , $5.49 ea",
       "observed_price_text": "$5.49",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1477,7 +1491,7 @@
       "page": 4,
       "item_id": "1010018398",
       "global_id": "01KQF84BMDBG39BE0YYDZ10KFS",
-      "label": "Signature SELECT® Green Beans or Brussels Sprouts, , 2 for $5",
+      "label": "Signature SELECT\u00ae Green Beans or Brussels Sprouts, , 2 for $5",
       "observed_price_text": "2 for $5",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1486,7 +1500,7 @@
       "page": 4,
       "item_id": "1010018395",
       "global_id": "01KQF84BMB78FDGX8402E1KZ4Z",
-      "label": "Signature SELECT® Baby Cut Carrots, , $1.99 ea",
+      "label": "Signature SELECT\u00ae Baby Cut Carrots, , $1.99 ea",
       "observed_price_text": "$1.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1495,7 +1509,7 @@
       "page": 4,
       "item_id": "1010018393",
       "global_id": "01KQF84BMB30GG75FMGQWBEA61",
-      "label": "Signature SELECT® Snacking Tomatoes, , 2 for $5",
+      "label": "Signature SELECT\u00ae Snacking Tomatoes, , 2 for $5",
       "observed_price_text": "2 for $5",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1504,7 +1518,7 @@
       "page": 4,
       "item_id": "1010018401",
       "global_id": "01KQF84BMDTNW87A947XA0MJRC",
-      "label": "Fresh Express 9 oz. pkg., Premium Romaine, Green & Crisp 11 oz. pkg. or Signature SELECT® Spinach 8 oz. pkg., , 2 for $5",
+      "label": "Fresh Express 9 oz. pkg., Premium Romaine, Green & Crisp 11 oz. pkg. or Signature SELECT\u00ae Spinach 8 oz. pkg., , 2 for $5",
       "observed_price_text": "2 for $5",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1513,7 +1527,7 @@
       "page": 4,
       "item_id": "1010018407",
       "global_id": "01KQF84BMDBSF2VXD2PMGHJ50J",
-      "label": "Signature SELECT® Avocados, , $3.99 ea",
+      "label": "Signature SELECT\u00ae Avocados, , $3.99 ea",
       "observed_price_text": "$3.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1531,7 +1545,7 @@
       "page": 4,
       "item_id": "1010017845",
       "global_id": "01KQF84BMECWVKSWAG5002ZNTE",
-      "label": "Signature SELECT® Sweet Mandarins 3 lb. bag or Halos Clementines 2 lb. bag, , $4.99 ea",
+      "label": "Signature SELECT\u00ae Sweet Mandarins 3 lb. bag or Halos Clementines 2 lb. bag, , $4.99 ea",
       "observed_price_text": "$4.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1558,7 +1572,7 @@
       "page": 4,
       "item_id": "1010017903",
       "global_id": "01KQF84BME9SNPZV8B9KVWSHQ7",
-      "label": "Signature SELECT® Sweet Mini Peppers, , $2.99 ea",
+      "label": "Signature SELECT\u00ae Sweet Mini Peppers, , $2.99 ea",
       "observed_price_text": "$2.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1621,7 +1635,7 @@
       "page": 4,
       "item_id": "1010018410",
       "global_id": "01KQF84BMF3HHNJG880Q6M0Q4Y",
-      "label": "Overjoyed Boutique™ Sunflowers, , $7.99 ea",
+      "label": "Overjoyed Boutique\u2122 Sunflowers, , $7.99 ea",
       "observed_price_text": "$7.99",
       "requires_clip": false,
       "deal_mechanics": null
@@ -1792,10 +1806,10 @@
       "page": 4,
       "item_id": "1010018462",
       "global_id": "01KQF84BMK77R19ZC4J0R2FA52",
-      "label": "Apothic, André, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6",
+      "label": "Apothic, Andr\u00e9, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6",
       "observed_price_text": "$9.90",
       "requires_clip": false,
-      "deal_mechanics": "André, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6"
+      "deal_mechanics": "Andr\u00e9, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6"
     },
     {
       "page": 5,

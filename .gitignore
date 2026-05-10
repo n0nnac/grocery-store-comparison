@@ -33,6 +33,7 @@ giant_coupon_account_state.local.json
 meal_inspiration_*
 meal_use_up_prompt_*
 prompts/
+context_*.json
 
 # CDP probe captures (session-specific debug data)
 giant_coupon_detail_capture*.json

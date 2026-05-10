@@ -1633,6 +1633,30 @@ def estimate_plan(args):
             )
 
 
+def augment_lines_with_giant(lines, prices, flipp_matches):
+    """Annotate each cart line with Giant base / Flipp deal pricing."""
+    for line in lines:
+        item_name = line["item"]
+        item = prices.get("items", {}).get(item_name) or {}
+        gnt_price, gnt_label = best_giant_price(item_name, item, flipp_matches)
+        line["giant_unit_price"] = gnt_price
+        line["giant_label"] = gnt_label or ""
+        if gnt_price is None:
+            line["giant_line_total"] = None
+            line["cheaper_store"] = "n/a"
+            continue
+        line["giant_line_total"] = line["qty"] * gnt_price
+        sw_price = line.get("unit_price")
+        if sw_price is None:
+            line["cheaper_store"] = "Giant only"
+        elif abs(sw_price - gnt_price) < 0.005:
+            line["cheaper_store"] = "tie"
+        elif sw_price < gnt_price:
+            line["cheaper_store"] = "Safeway"
+        else:
+            line["cheaper_store"] = "Giant"
+
+
 def cart(args):
     prices = load_json(MEAL_PRICES_FILE)
     deals_path, deals = load_weekly_deals(args.deals_file)
@@ -1641,6 +1665,18 @@ def cart(args):
 
     keys = args.recipes or ["ground_beef_lunch_bowls"]
     recipe_refs, lines, servings = build_cart_lines(keys, prices, deals, coupons)
+
+    flipp_matches = {}
+    if getattr(args, "compare_stores", False):
+        _flipp_path, flipp_data = load_giant_flipp_deals(getattr(args, "giant_deals_file", None))
+        if flipp_data is not None:
+            flipp_matches = match_giant_flipp_to_meal_items(
+                prices.get("items", {}),
+                flipp_data,
+                min_score=getattr(args, "min_flipp_score", 0.5),
+            )
+        augment_lines_with_giant(lines, prices, flipp_matches)
+
     subtotal = sum(line["line_total"] or 0 for line in lines)
     coupon_rows = cart_level_coupon_rows(lines, coupons, show_ineligible=args.show_ineligible_coupons)
     coupon_total = sum(row["amount"] for row in coupon_rows if row["applied"])
@@ -1666,27 +1702,46 @@ def cart(args):
     for recipe in recipe_refs:
         print(f"- {recipe['display']} ({recipe['servings']} serving{'s' if recipe['servings'] != 1 else ''})")
 
-    print(f"\n{'Item':<34} {'Qty':>6} {'Unit':<14} {'Price':>8} {'Source':<12} {'Line':>8} Clip / Detail")
-    print("-" * 126)
-    for line in lines:
-        clip = "clip" if line["requires_clip"] else ""
-        detail = line["detail"]
-        clip_detail = detail if not clip else f"{clip}; {detail}"
-        print(
-            f"{line['item']:<34} {line['qty']:>6g} {line['unit']:<14} "
-            f"{money(line['unit_price']):>8} {line['source']:<12} {money(line['line_total']):>8} {clip_detail}"
-        )
-        if args.verbose:
-            blocked = [
-                candidate for candidate in line.get("price_candidates", [])
-                if candidate.get("type") == "coupon" and not candidate.get("can_apply")
-            ]
-            for candidate in blocked:
-                print(
-                    f"{'':<34} {'':>6} {'':<14} "
-                    f"{money(candidate['price']):>8} {candidate['label']:<12} {'':>8} "
-                    f"not applied; {candidate['blocked_reason']}; {candidate['detail']}"
-                )
+    if getattr(args, "compare_stores", False):
+        print(f"\n{'Item':<32} {'Qty':>5} {'Unit':<12} {'SW':>7} {'SW Line':>8} {'Giant':>7} {'Gnt Line':>9} {'Cheaper':<13} {'Source / Detail':<26}")
+        print("-" * 138)
+        for line in lines:
+            clip = "clip" if line["requires_clip"] else ""
+            detail = line["detail"][:24]
+            clip_detail = detail if not clip else f"{clip}; {detail}"[:26]
+            sw_price = money(line["unit_price"])
+            sw_line = money(line["line_total"])
+            gnt_price = money(line.get("giant_unit_price"))
+            gnt_line = money(line.get("giant_line_total"))
+            cheaper = line.get("cheaper_store") or "n/a"
+            print(
+                f"{line['item'][:32]:<32} {line['qty']:>5g} {line['unit'][:12]:<12} "
+                f"{sw_price:>7} {sw_line:>8} {gnt_price:>7} {gnt_line:>9} {cheaper:<13} {clip_detail:<26}"
+            )
+            if args.verbose and line.get("giant_label"):
+                print(f"{'':<32} {'':>5} {'':<12} {'Giant detail:':<25} {line['giant_label']}")
+    else:
+        print(f"\n{'Item':<34} {'Qty':>6} {'Unit':<14} {'Price':>8} {'Source':<12} {'Line':>8} Clip / Detail")
+        print("-" * 126)
+        for line in lines:
+            clip = "clip" if line["requires_clip"] else ""
+            detail = line["detail"]
+            clip_detail = detail if not clip else f"{clip}; {detail}"
+            print(
+                f"{line['item']:<34} {line['qty']:>6g} {line['unit']:<14} "
+                f"{money(line['unit_price']):>8} {line['source']:<12} {money(line['line_total']):>8} {clip_detail}"
+            )
+            if args.verbose:
+                blocked = [
+                    candidate for candidate in line.get("price_candidates", [])
+                    if candidate.get("type") == "coupon" and not candidate.get("can_apply")
+                ]
+                for candidate in blocked:
+                    print(
+                        f"{'':<34} {'':>6} {'':<14} "
+                        f"{money(candidate['price']):>8} {candidate['label']:<12} {'':>8} "
+                        f"not applied; {candidate['blocked_reason']}; {candidate['detail']}"
+                    )
 
     print(f"\nSubtotal before cart-level coupons: {money(subtotal)}")
 
@@ -1769,6 +1824,41 @@ def cart(args):
                     print(f"{'':<42} {'eligible items:':<18} {', '.join(row['eligible_lines'])}")
     if servings:
         print(f"Estimated per serving across selected recipes: {money(final_total / servings)}")
+
+    if getattr(args, "compare_stores", False):
+        priced_lines = [line for line in lines if line.get("line_total") is not None]
+        giant_priced_lines = [line for line in lines if line.get("giant_line_total") is not None]
+        safeway_subtotal = sum(line["line_total"] for line in priced_lines)
+        giant_subtotal = sum(line.get("giant_line_total") or 0 for line in giant_priced_lines)
+        best_subtotal = 0.0
+        best_known = True
+        unknown_giant = []
+        for line in lines:
+            sw_line = line.get("line_total")
+            gnt_line = line.get("giant_line_total")
+            if sw_line is None and gnt_line is None:
+                best_known = False
+                continue
+            if sw_line is None:
+                best_subtotal += gnt_line
+                continue
+            if gnt_line is None:
+                best_subtotal += sw_line
+                unknown_giant.append(line["item"])
+                continue
+            best_subtotal += min(sw_line, gnt_line)
+
+        print("\nCross-store comparison")
+        print(f"  Safeway pre-coupon subtotal: {money(safeway_subtotal)}")
+        print(f"  Safeway final (with coupons): {money(final_total)}")
+        print(f"  Giant subtotal: {money(giant_subtotal)} (Flipp deals + Giant base; coupons not modeled)")
+        print(f"  Best-of-both subtotal: {money(best_subtotal) if best_known else 'partial (some lines missing both stores)'}")
+        if best_known and final_total < best_subtotal:
+            print(f"  Safeway-only with coupons still beats best-of-both pre-coupon by {money(best_subtotal - final_total)}.")
+        elif best_known and best_subtotal < safeway_subtotal:
+            print(f"  Cherry-picking Giant for cheaper lines saves {money(safeway_subtotal - best_subtotal)} vs Safeway-only pre-coupon.")
+        if unknown_giant:
+            print(f"  No Giant price for: {', '.join(unknown_giant[:6])}{' ...' if len(unknown_giant) > 6 else ''}")
 
 
 def list_deals(args):
@@ -2373,6 +2463,9 @@ def main():
     cart_parser.add_argument("--show-ineligible-coupons", action="store_true", help="Show cart-level coupons with no eligible subtotal")
     cart_parser.add_argument("--show-ineligible-rewards", action="store_true", help="Show point offers that need matching tags/products")
     cart_parser.add_argument("--verbose", action="store_true", help="Show extra coupon eligibility detail")
+    cart_parser.add_argument("--compare-stores", action="store_true", help="Show Safeway and Giant price columns side by side and a cross-store summary")
+    cart_parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
+    cart_parser.add_argument("--min-flipp-score", type=float, default=0.5, help="Minimum Flipp match score to include a Giant deal")
     cart_parser.set_defaults(func=cart)
 
     args = parser.parse_args()

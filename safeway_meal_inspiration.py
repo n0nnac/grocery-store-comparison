@@ -17,7 +17,9 @@ from pathlib import Path
 from meal_price_tool import (
     MEAL_PRICES_FILE,
     choose_deals_file,
+    load_giant_flipp_deals,
     load_json,
+    match_giant_flipp_to_meal_items,
     money,
 )
 
@@ -626,7 +628,8 @@ def context_payload(args):
     )
     top_deals = rows[: args.limit]
     ideas = build_ideas(rows, prices, args.ideas)
-    return {
+    giant = giant_circular_context(args, prices)
+    payload = {
         "generated_on": date.today().isoformat(),
         "source_file": str(path),
         "metadata": metadata,
@@ -640,17 +643,22 @@ def context_payload(args):
                 "sale items that are freezer-friendly if not used immediately",
                 "recipes that use multiple current weekly ad components",
                 "Trader Joe's for support staples when saved prices show it is cheaper",
+                "Giant Flipp deals when giant_circular has a stronger match than the Safeway base or weekly price",
             ],
             "do_not_assume": [
                 "base savings when comparable base_price is null",
                 "low-confidence API matches are valid base comparisons",
                 "coupon discounts unless requires_clip/account state is separately confirmed",
                 "Trader Joe's prices beyond saved observations",
+                "Giant Flipp deals apply if multi_buy_qty thresholds are not met across the cart",
             ],
         },
         "ranked_deals": top_deals,
         "meal_idea_seeds": ideas,
     }
+    if giant is not None:
+        payload["giant_circular"] = giant
+    return payload
 
 
 def pricing_catalog(prices, rows, deal_limit):
@@ -723,6 +731,139 @@ def slim_deal_row(row):
     }
 
 
+def giant_circular_context(args, prices):
+    """Build Giant Flipp circular context for the inspiration prompt.
+
+    Loads the most recent active Flipp flyer file and matches against the
+    meal_prices items. When --expand-varieties is set, also calls Giant's
+    live V5 search API through the browser session to expand each matched
+    deal into the qualifying SKUs (specific flavors, sizes, prodIds).
+
+    Returns None when:
+    - --no-giant-deals is set
+    - no active Flipp flyer file is on disk
+    - the file exists but no deals match meal_prices items
+    """
+    if getattr(args, "no_giant_deals", False):
+        return None
+
+    deals_file = getattr(args, "giant_deals_file", None)
+    deals_path, deals = load_giant_flipp_deals(deals_file)
+    if deals is None:
+        return None
+
+    metadata = deals.get("metadata") or {}
+    matches = match_giant_flipp_to_meal_items(
+        prices.get("items", {}),
+        deals,
+        min_score=getattr(args, "giant_min_score", 0.5),
+    )
+    if not matches:
+        return None
+
+    expand = getattr(args, "expand_varieties", False)
+    variety_limit = getattr(args, "variety_limit", 8)
+    expansion_error = None
+    expansion_helpers = None
+    if expand:
+        try:
+            from giant_browser_api_probe import (
+                browser_fetch,
+                product_rows,
+                summarize_product,
+                wait_for_devtools,
+            )
+            from giant_flipp_deals import (
+                build_giant_search_url,
+                filter_qualifying_skus,
+                summarize_qualifying_product,
+                variety_query_for,
+            )
+            wait_for_devtools(getattr(args, "giant_port", 9227))
+            expansion_helpers = {
+                "browser_fetch": browser_fetch,
+                "product_rows": product_rows,
+                "summarize_product": summarize_product,
+                "build_giant_search_url": build_giant_search_url,
+                "filter_qualifying_skus": filter_qualifying_skus,
+                "summarize_qualifying_product": summarize_qualifying_product,
+                "variety_query_for": variety_query_for,
+            }
+        except Exception as exc:  # noqa: BLE001 - we want to skip gracefully
+            expansion_error = str(exc)
+
+    matched_deals = []
+    for meal_key, match in matches.items():
+        item = match["item"]
+        deal_entry = {
+            "meal_key": meal_key,
+            "deal_name": item.get("name"),
+            "brand": item.get("brand"),
+            "description": item.get("description"),
+            "price_display": item.get("price_display"),
+            "current_price": item.get("current_price"),
+            "unit_kind": item.get("unit_kind"),
+            "multi_buy_qty": item.get("multi_buy_qty"),
+            "valid_from": item.get("valid_from"),
+            "valid_to": item.get("valid_to"),
+            "match_score": match.get("score"),
+            "flipp_id": item.get("flipp_id"),
+        }
+
+        if expansion_helpers is not None:
+            try:
+                query = expansion_helpers["variety_query_for"](item)
+                url = expansion_helpers["build_giant_search_url"](
+                    query,
+                    getattr(args, "giant_service_location_id", "50000732"),
+                    getattr(args, "giant_user_id", "2"),
+                    getattr(args, "giant_search_rows", 24),
+                )
+                response = expansion_helpers["browser_fetch"](
+                    getattr(args, "giant_port", 9227), [url]
+                )
+                result = response["results"][0]
+                if result.get("ok"):
+                    raw_products = expansion_helpers["product_rows"](result.get("payload") or {})
+                    products = [expansion_helpers["summarize_product"](p) for p in raw_products]
+                    qualifying, _excluded = expansion_helpers["filter_qualifying_skus"](
+                        products,
+                        item,
+                        getattr(args, "giant_price_tolerance", 0.10),
+                    )
+                    deal_entry["qualifying_count"] = len(qualifying)
+                    deal_entry["qualifying_skus"] = [
+                        expansion_helpers["summarize_qualifying_product"](p)
+                        for p in qualifying[:variety_limit]
+                    ]
+                    deal_entry["search_query"] = query
+                else:
+                    deal_entry["expansion_error"] = (
+                        f"browser fetch failed: status={result.get('status')}"
+                    )
+            except Exception as exc:  # noqa: BLE001
+                deal_entry["expansion_error"] = str(exc)
+
+        matched_deals.append(deal_entry)
+
+    matched_deals.sort(key=lambda row: -(row.get("match_score") or 0))
+
+    context = {
+        "store": metadata.get("store_context") or {},
+        "flyer_id": metadata.get("flyer_id"),
+        "flyer_name": metadata.get("flyer_name"),
+        "valid_from": metadata.get("valid_from"),
+        "valid_to": metadata.get("valid_to"),
+        "source_file": str(deals_path),
+        "matched_deal_count": len(matched_deals),
+        "matched_deals": matched_deals,
+        "varieties_expanded": expand and expansion_helpers is not None,
+    }
+    if expansion_error:
+        context["expansion_error"] = expansion_error
+    return context
+
+
 def prompt_payload(args):
     path, metadata, rows, prices = ranked_deals(
         args.deals_file,
@@ -730,7 +871,8 @@ def prompt_payload(args):
         args.no_api_base,
     )
     top_deals = [slim_deal_row(row) for row in rows[: args.limit]]
-    return {
+    giant = giant_circular_context(args, prices)
+    payload = {
         "generated_on": date.today().isoformat(),
         "source_file": str(path),
         "metadata": metadata,
@@ -802,6 +944,18 @@ def prompt_payload(args):
             },
         },
     }
+    if giant is not None:
+        payload["giant_circular"] = giant
+        contract_rules = payload["pricing_return_contract"]["rules"]
+        contract_rules.append(
+            "When a Giant Flipp deal in giant_circular.matched_deals fits a recipe better "
+            "than the Safeway base/weekly price, you may use source Giant with price_key "
+            "set to the matched meal_key. Use the price from giant_circular.matched_deals "
+            "current_price; respect multi_buy_qty thresholds the same way as Safeway "
+            "weekly deals. Cite the qualifying SKU brand+size from qualifying_skus when "
+            "specifying which variety to buy."
+        )
+    return payload
 
 
 def slugify(value):
@@ -973,6 +1127,16 @@ def add_source_args(parser):
     parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")
     parser.add_argument("--enrichment-file", help="API base-distance observation JSON; defaults to matching safeway_weekly_deal_base_observations_YYYY-MM-DD.json")
     parser.add_argument("--no-api-base", action="store_true", help="Ignore API base-distance observations and use saved meal_prices.json bases only")
+    parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
+    parser.add_argument("--no-giant-deals", action="store_true", help="Skip Giant Flipp circular context")
+    parser.add_argument("--giant-min-score", type=float, default=0.5, help="Minimum token-overlap score for Giant deal matches")
+    parser.add_argument("--expand-varieties", action="store_true", help="Expand each matched Giant deal into qualifying SKUs (requires browser session)")
+    parser.add_argument("--variety-limit", type=int, default=8, help="Max qualifying SKUs to include per Giant deal when expanding")
+    parser.add_argument("--giant-port", type=int, default=9227, help="Chrome DevTools port for variety expansion")
+    parser.add_argument("--giant-service-location-id", default="50000732", help="Giant service location ID for variety expansion")
+    parser.add_argument("--giant-user-id", default="2", help="Giant API user ID for variety expansion")
+    parser.add_argument("--giant-search-rows", type=int, default=24, help="Giant API search rows for variety expansion")
+    parser.add_argument("--giant-price-tolerance", type=float, default=0.10, help="Price tolerance for matching SKUs to the Giant deal price")
 
 
 def main():

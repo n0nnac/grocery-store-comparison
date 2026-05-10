@@ -157,7 +157,22 @@ python3 giant_flipp_deals.py fetch --no-enrich  # quick preview without multi-bu
 python3 giant_flipp_deals.py search "ground beef"
 python3 giant_flipp_deals.py match --min-score 0.4
 python3 giant_flipp_deals.py match --only "eggs" --only "rice"
+python3 giant_flipp_deals.py varieties --meal-key "shredded cheese"
+python3 giant_flipp_deals.py varieties --name "Chobani Flip" --json
 ```
+
+## Expanding Selected Varieties Into Live SKUs
+
+Many flyer items advertise "Selected Varieties" without listing the qualifying SKUs. The `varieties` subcommand expands a single flyer item into the live Giant SKUs that currently qualify, by querying the browser-session V5 API and filtering on:
+
+- Brand match (with normalization for punctuation, and a special case for Giant store brand which the API tags as `"Our Brand"` while the product name begins with `"Giant"`)
+- Sale status (`flags.sale == true`)
+- Per-unit price within tolerance of the flyer's per-unit price (relaxed for multi-buy deals, since Giant's API exposes the at-pop price rather than the deal-threshold price)
+- Package size matches the flyer's `5-8 oz pkg`-style size range when one is parseable
+
+Output includes per-SKU `prodId`, name, brand, size, current sale price, regular price, unit price, and UPC. The `--json` flag emits a structured payload that the meal-inspiration prompt can consume directly so the AI knows which specific flavors and sizes are part of the deal.
+
+The `varieties` subcommand requires a Chrome session launched via `giant_browser_api_probe.py launch`. It is the only Flipp subcommand that needs a browser session; `fetch`, `search`, and `match` work from plain shell.
 
 ## Integration With Meal Planning
 

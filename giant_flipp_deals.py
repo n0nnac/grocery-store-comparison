@@ -8,9 +8,12 @@ browser-session `/api/v5.0` path used for live base/regular prices.
 
 Subcommands:
 
-    fetch    Download the current Giant flyer and write a normalized JSON file.
-    search   Search Flipp for a query and show only Giant Food results.
-    match    Match flyer items against keys in meal_prices.json.
+    fetch       Download the current Giant flyer and write a normalized JSON file.
+    search      Search Flipp for a query and show only Giant Food results.
+    match       Match flyer items against keys in meal_prices.json.
+    varieties   Expand "Selected Varieties" deals into the qualifying Giant SKUs
+                via the live browser session (requires `giant_browser_api_probe.py
+                launch`).
 
 This script does not log in, does not store cookies, and does not bypass
 any bot protection. Flipp's flyer endpoints are public.
@@ -469,6 +472,290 @@ def command_match(args):
     return 0
 
 
+def parse_size_range(description):
+    """Extract a (min_oz, max_oz) range from a flyer description.
+
+    Returns (None, None) if no oz-style size is present (e.g. counts,
+    pounds, "Selected Varieties and Sizes").
+    """
+    if not description:
+        return (None, None)
+    text = description.lower()
+    range_match = re.search(r"(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*oz", text)
+    if range_match:
+        return (float(range_match.group(1)), float(range_match.group(2)))
+    single_match = re.search(r"(\d+(?:\.\d+)?)\s*oz", text)
+    if single_match:
+        value = float(single_match.group(1))
+        return (value, value)
+    return (None, None)
+
+
+def product_size_oz(product):
+    size_text = (product.get("size") or "").lower()
+    match = re.search(r"(\d+(?:\.\d+)?)\s*oz", size_text)
+    if match:
+        return float(match.group(1))
+    return None
+
+
+GIANT_API_BASE = "/api/v5.0"
+
+
+def build_giant_search_url(query, service_location_id, user_id, rows):
+    params = {
+        "keywords": query,
+        "sort": "bestMatch asc, name asc",
+        "rows": str(rows),
+        "start": "0",
+        "flags": "true",
+        "facet": "nutrition",
+        "hkInclude": "true",
+        "facetExcludeFilter": "true",
+    }
+    return (
+        f"{GIANT_API_BASE}/products/{user_id}/{service_location_id}"
+        f"?{urllib.parse.urlencode(params)}"
+    )
+
+
+def find_flipp_item(deals, args):
+    items = deals.get("items", [])
+    if args.flipp_id:
+        for item in items:
+            if str(item.get("flipp_id")) == str(args.flipp_id):
+                return item
+        return None
+    if args.name:
+        target = args.name.lower()
+        for item in items:
+            if target in (item.get("name") or "").lower():
+                return item
+        return None
+    if args.meal_key:
+        try:
+            from meal_price_tool import match_giant_flipp_to_meal_items
+        except ImportError:
+            return None
+        meal_data = load_json(MEAL_PRICES_FILE)
+        matches = match_giant_flipp_to_meal_items(
+            {args.meal_key: meal_data.get("items", {}).get(args.meal_key, {})},
+            deals,
+            min_score=args.min_score,
+        )
+        match = matches.get(args.meal_key)
+        if match:
+            return match.get("item")
+        return None
+    return None
+
+
+def normalize_brand(text):
+    """Strip punctuation and whitespace so 'Land O'Lakes' and 'Land O Lakes' match."""
+    return re.sub(r"[^a-z0-9]+", "", (text or "").lower())
+
+
+def filter_qualifying_skus(products, flipp_item, price_tolerance):
+    target_brand = normalize_brand(flipp_item.get("brand"))
+    target_price = flipp_item.get("current_price")
+    min_oz, max_oz = parse_size_range(flipp_item.get("description"))
+
+    # Multi-buy deals advertise a per-unit price that only applies at the
+    # threshold (e.g. "4 for $4" means $1 each when you buy 4). Giant's API
+    # shows the at-pop price, not the deal-threshold price, so we cannot
+    # match on exact dollar value for these — we trust brand+size+sale.
+    is_multi_buy = flipp_item.get("unit_kind") == "multi_buy"
+    if is_multi_buy:
+        effective_tolerance = max(price_tolerance, 0.50)
+    else:
+        effective_tolerance = price_tolerance
+
+    qualifying = []
+    excluded = []
+
+    for product in products:
+        reasons = []
+        product_brand = normalize_brand(product.get("brand"))
+        product_name_normalized = normalize_brand((product.get("name") or "").split()[0] if product.get("name") else "")
+        # Giant tags store-brand SKUs with brand "Our Brand" but the product
+        # name begins with "Giant"; accept either the brand field or the
+        # leading word of the name as a brand signal.
+        brand_matches = (
+            target_brand
+            and (
+                target_brand in product_brand
+                or product_brand in target_brand
+                or target_brand == product_name_normalized
+            )
+        )
+        if target_brand and not brand_matches:
+            reasons.append(f"brand mismatch ({product.get('brand')})")
+
+        if not (product.get("sale") or product.get("flags", {}).get("sale")):
+            reasons.append("not on sale")
+
+        product_price = product.get("price")
+        if target_price is not None and product_price is not None:
+            distance = abs(float(product_price) - float(target_price))
+            if distance > effective_tolerance:
+                reasons.append(f"price ${product_price} not within ${effective_tolerance:.2f} of deal ${target_price}")
+
+        if min_oz is not None and max_oz is not None:
+            size_oz = product_size_oz(product)
+            if size_oz is not None and not (min_oz - 0.5 <= size_oz <= max_oz + 0.5):
+                reasons.append(f"size {size_oz}oz outside {min_oz}-{max_oz}oz")
+
+        if reasons:
+            excluded.append({"product": product, "reasons": reasons})
+        else:
+            qualifying.append(product)
+
+    return qualifying, excluded
+
+
+def variety_query_for(flipp_item):
+    brand = (flipp_item.get("brand") or "").strip()
+    name = (flipp_item.get("name") or "").strip()
+    brand_tokens_lower = {token.lower() for token in re.findall(r"[A-Za-z]+", brand)}
+    name_tokens = [
+        token for token in re.findall(r"[A-Za-z]+", name)
+        if token.lower() not in STOPWORDS
+        and token.lower() not in brand_tokens_lower
+        and len(token) > 2
+    ]
+    brand_clean = re.sub(r"[^A-Za-z0-9 ]+", "", brand).strip()
+    if brand_clean:
+        return f"{brand_clean} {' '.join(name_tokens[:3])}".strip()
+    return " ".join(name_tokens[:3])
+
+
+def summarize_qualifying_product(product):
+    return {
+        "prodId": product.get("prodId"),
+        "name": product.get("name"),
+        "brand": product.get("brand"),
+        "size": product.get("size"),
+        "price": product.get("price"),
+        "regularPrice": product.get("regularPrice"),
+        "unitPrice": product.get("unitPrice"),
+        "unitMeasure": product.get("unitMeasure"),
+        "upc": product.get("upc"),
+        "outOfStock": product.get("outOfStock"),
+        "hasCoupon": product.get("hasCoupon"),
+    }
+
+
+def command_varieties(args):
+    try:
+        from giant_browser_api_probe import (
+            DEFAULT_PORT,
+            DEFAULT_SERVICE_LOCATION_ID,
+            DEFAULT_USER_ID,
+            GiantBrowserError,
+            browser_fetch,
+            product_rows,
+            summarize_product,
+            wait_for_devtools,
+        )
+    except ImportError as exc:
+        print(json.dumps({"ok": False, "error": f"giant_browser_api_probe import failed: {exc}"}, indent=2), file=sys.stderr)
+        return 2
+
+    if args.deals_file:
+        deals = load_json(Path(args.deals_file))
+    else:
+        candidates = sorted(ROOT.glob(f"{DEALS_PREFIX}_*.json"), reverse=True)
+        if not candidates:
+            print(json.dumps({"ok": False, "error": f"no {DEALS_PREFIX}_*.json files found; run fetch --write first"}, indent=2), file=sys.stderr)
+            return 2
+        deals = load_json(candidates[0])
+
+    flipp_item = find_flipp_item(deals, args)
+    if not flipp_item:
+        target = args.flipp_id or args.name or args.meal_key
+        print(json.dumps({"ok": False, "error": f"no flyer item matched: {target}"}, indent=2), file=sys.stderr)
+        return 2
+
+    query = args.query or variety_query_for(flipp_item)
+
+    try:
+        wait_for_devtools(args.port)
+        url = build_giant_search_url(query, args.service_location_id, args.user_id, args.rows)
+        response = browser_fetch(args.port, [url])
+    except GiantBrowserError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, indent=2), file=sys.stderr)
+        print("\nHint: launch the browser session first:", file=sys.stderr)
+        print("  python3 giant_browser_api_probe.py launch", file=sys.stderr)
+        return 2
+
+    result = response["results"][0]
+    if not result.get("ok"):
+        print(json.dumps({"ok": False, "error": f"browser fetch failed: status={result.get('status')}"}, indent=2), file=sys.stderr)
+        return 2
+
+    raw_products = product_rows(result.get("payload") or {})
+    products = [summarize_product(product) for product in raw_products]
+    qualifying, excluded = filter_qualifying_skus(products, flipp_item, args.price_tolerance)
+
+    output = {
+        "deal": {
+            "name": flipp_item.get("name"),
+            "brand": flipp_item.get("brand"),
+            "description": flipp_item.get("description"),
+            "price_display": flipp_item.get("price_display"),
+            "current_price": flipp_item.get("current_price"),
+            "valid_from": flipp_item.get("valid_from"),
+            "valid_to": flipp_item.get("valid_to"),
+            "flipp_id": flipp_item.get("flipp_id"),
+            "flipp_flyer_id": flipp_item.get("flipp_flyer_id"),
+        },
+        "search_query": query,
+        "qualifying_count": len(qualifying),
+        "excluded_count": len(excluded),
+        "qualifying_skus": [summarize_qualifying_product(product) for product in qualifying],
+        "excluded_samples": [
+            {
+                "product": summarize_qualifying_product(item["product"]),
+                "reasons": item["reasons"],
+            }
+            for item in excluded[:5]
+        ],
+    }
+
+    if args.json:
+        print(json.dumps(output, indent=2))
+        return 0
+
+    deal = output["deal"]
+    print(f"Deal: {deal['name']}")
+    if deal.get("brand"):
+        print(f"  Brand: {deal['brand']}")
+    print(f"  Description: {deal.get('description') or '(none)'}")
+    print(f"  Price: {deal.get('price_display')}  | per-unit ${deal.get('current_price')}")
+    print(f"  Valid: {deal.get('valid_from')} to {deal.get('valid_to')}")
+    print(f"  Search: \"{query}\"")
+    print()
+    print(f"Qualifying SKUs ({len(qualifying)} of {len(products)} returned by Giant API):")
+    if not qualifying:
+        print("  (no products in the search results matched brand+size+sale)")
+    for product in qualifying:
+        size = product.get("size") or ""
+        upc = product.get("upc") or ""
+        print(
+            f"  prodId={product.get('prodId'):<8} ${product.get('price'):>5.2f} "
+            f"(reg ${product.get('regularPrice')}) {size:<14}  {product.get('name')}"
+        )
+
+    if excluded and args.show_excluded:
+        print(f"\nExcluded products and reasons:")
+        for entry in excluded:
+            product = entry["product"]
+            reasons = "; ".join(entry["reasons"])
+            print(f"  prodId={product.get('prodId'):<8} {product.get('name')[:60]} -- {reasons}")
+
+    return 0
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -498,6 +785,25 @@ def parse_args():
     match.add_argument("--keep", type=int, default=3, help="Top matches to keep per meal item")
     match.add_argument("--write", action="store_true", help="Write match summary to JSON")
 
+    varieties = subparsers.add_parser(
+        "varieties",
+        help="Expand a Selected-Varieties flyer item into the qualifying live Giant SKUs.",
+    )
+    varieties.add_argument("--deals-file", help="Specific giant_weekly_deals_*.json; default: most recent")
+    selector = varieties.add_mutually_exclusive_group(required=True)
+    selector.add_argument("--flipp-id", type=int, help="Match the flyer item by Flipp ID")
+    selector.add_argument("--name", help="Match the flyer item by name substring (case-insensitive)")
+    selector.add_argument("--meal-key", help="Match the flyer item by best score against this meal_prices.json key")
+    varieties.add_argument("--query", help="Override the Giant API search query (default: brand + first name tokens)")
+    varieties.add_argument("--port", type=int, default=9227, help="Chrome DevTools port")
+    varieties.add_argument("--service-location-id", default="50000732", help="Giant service location ID")
+    varieties.add_argument("--user-id", default="2", help="Giant API user ID")
+    varieties.add_argument("--rows", type=int, default=24, help="Giant API search rows")
+    varieties.add_argument("--price-tolerance", type=float, default=0.10, help="Price tolerance for matching the deal price ($)")
+    varieties.add_argument("--min-score", type=float, default=0.5, help="Minimum token-overlap score for --meal-key matching")
+    varieties.add_argument("--show-excluded", action="store_true", help="Print products that did not qualify and the reasons")
+    varieties.add_argument("--json", action="store_true", help="Emit JSON for the inspiration tool")
+
     return parser.parse_args()
 
 
@@ -510,6 +816,8 @@ def main():
             return command_search(args)
         if args.command == "match":
             return command_match(args)
+        if args.command == "varieties":
+            return command_varieties(args)
         raise AssertionError(args.command)
     except urllib.error.HTTPError as exc:
         print(json.dumps({"ok": False, "error": f"HTTP {exc.code}: {exc.reason}"}, indent=2), file=sys.stderr)

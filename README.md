@@ -103,6 +103,16 @@ python3 meal_price_tool.py giant-deals --matched-only --all
 python3 meal_price_tool.py giant-deals --min-score 0.4
 ```
 
+Expand a "Selected Varieties" Flipp deal into the live qualifying Giant SKUs (requires browser session):
+
+```bash
+python3 giant_flipp_deals.py varieties --meal-key "shredded cheese"
+python3 giant_flipp_deals.py varieties --name "Chobani Flip"
+python3 giant_flipp_deals.py varieties --flipp-id 1010724311 --json
+```
+
+The output lists each qualifying SKU with prodId, full product name, size, current sale price, and regular price. JSON mode is the canonical input format for the meal-inspiration tool.
+
 The match column shows the flyer item name, package description, and the deal expiration day. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities.
 
 Refresh saved Giant base/regular prices through the live browser session (requires `giant_browser_api_probe.py launch` to be running):

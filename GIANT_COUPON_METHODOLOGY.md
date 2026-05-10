@@ -63,6 +63,34 @@ Walking the Giant product IDs already saved in `meal_prices.json` adds the `matc
 
 Per-user `clipped`/`loaded`/`loadable` state is sanitized out of the tracked `giant_coupons.json` and written instead to `giant_coupon_account_state.local.json` (gitignored), mirroring the Safeway public/local split.
 
+## Cart Application
+
+`meal_price_tool.py cart --compare-stores` now subtracts item-scope coupon savings from the Giant subtotal. The matcher in `best_giant_coupon_for_item()`:
+
+1. Loads `giant_coupons.json` and merges per-user clip state from the gitignored `giant_coupon_account_state.local.json`.
+2. Filters to active, simple item coupons via `giant_coupon_is_simple_item()`:
+   - `coupon_reward_target == "ITEM"`
+   - `multi_qty != true`
+   - Name does not contain `"bundle"`
+   - Description does not contain bundle phrases (`"when you buy"`, `"with $X purchase"`, etc.)
+3. Scores each coupon against each meal item via `giant_coupon_meal_score()`:
+   - **1.5** if the coupon's `matched_meal_keys` back-reference (per-product harvest) includes this meal key.
+   - **1.4** if the coupon's `product_ids` includes the meal item's saved Giant `product_id`.
+   - **1.0** when every "anchor" token of the meal key (non-descriptor tokens like `beef`, `cheese`, `rice`) appears in the coupon's name+description. Descriptor tokens like `ground`, `fresh`, `boneless` are not required.
+   - **+0.20 store-brand boost** when both sides are Giant store brand (`Our Brand` / `Giant`-name match on the meal product, and `Our Brand` / `Giant ` in the coupon text).
+4. Default `--giant-coupon-min-score 1.2` requires the store-brand alignment boost or stronger. Drop to `1.0` to allow plain anchor-token matches (catches more, but also pulls in coupons for competing brands).
+5. Coupons that require clipping are blocked unless `--assume-giant-clipped` is passed or the local account-state file confirms the clipped status.
+
+The Giant final subtotal in the cross-store summary now reads:
+
+```
+Giant pre-coupon subtotal: $37.71  (Flipp deals + Giant base)
+Giant item-scope coupon savings: -$1.50  (2 lines applied)
+Giant final (with item coupons): $36.21
+```
+
+This matches Safeway's pre-coupon/with-coupon split, so the cross-store comparison is symmetric for item-level discounts. **Cart-level Safeway coupons** still apply only on the Safeway side, and **bundle-condition Giant deals** are surfaced informationally below the summary but not auto-applied (their conditions on cart contents are not modeled yet).
+
 ## Subcommands
 
 ```bash

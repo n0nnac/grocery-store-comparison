@@ -27,6 +27,7 @@ safeway_rewards_dashboard_capture_*.json
 safeway_rewards_adjacent_capture_*.json
 safeway_coupon_account_state.local.json
 safeway_rewards_account_state.local.json
+giant_coupon_account_state.local.json
 
 # Personal meal-plan prompts and AI returns
 meal_inspiration_*

@@ -175,6 +175,26 @@ Flipp deal prices are dated overlays. They should live in `giant_weekly_deals*.j
 
 Do not attempt to use Flipp circular prices as base prices. Do not overwrite a fresher live Giant browser API observation with a Flipp circular price.
 
+### Giant Coupon Resolution
+
+Giant exposes coupons through two paths:
+
+- A storewide v7 coupon-search endpoint that reports a ~3,000-coupon catalog but in practice always returns the same first ~20 results regardless of pagination params. Treat as a "top storewide promotions" snapshot.
+- A per-product `availableDisplayCoupons` array on the v5 product detail endpoint, harvested by walking saved Giant product IDs in `meal_prices.json`.
+
+`giant_coupon_search.py fetch` aggregates both into `giant_coupons.json`, deduping by coupon id and annotating each entry with `matched_meal_keys` and `matched_product_ids` back-references. Per-user clipped/loaded state lives in the gitignored `giant_coupon_account_state.local.json`.
+
+Use Giant coupon observations only when:
+
+- the source endpoint is documented (`giant_coupon_v7_api`)
+- the coupon's `start_date`/`end_date` window is current
+- the catalog file metadata's `service_location_id` matches the planned shopping store
+- account-state fields (clipped/loaded) are read from the local file, never inferred from the public catalog
+
+Do not subtract Giant coupon discounts from the cart subtotal automatically. Most observed Giant coupons are bundle conditions (e.g. "Save $3 when you buy steak + eggs + sausage"); modelling each bundle's product set is required before savings can be claimed. The cart cross-store summary surfaces matched coupons informationally with `--verbose`.
+
+See `GIANT_COUPON_METHODOLOGY.md` for full details on the hybrid source.
+
 ### Giant Browser V5 API Resolution
 
 Giant's web app exposes live JSON product data under same-origin `/api/v5.0/...` endpoints when called from a normal validated browser session.
@@ -240,6 +260,7 @@ Use these source types consistently:
 - `giant_static_seo_catalog`: Giant `/groceries/...` static catalog JSON-LD product/offer source.
 - `giant_browser_v5_api`: Giant live `/api/v5.0` product observation made from a validated browser session.
 - `giant_flipp_circular_api`: Giant Food weekly circular item from the Flipp public flyer API.
+- `giant_coupon_v7_api`: Giant coupon catalog from the `/api/v7.0/.../coupons/search` endpoint plus per-product `availableDisplayCoupons`.
 - `safeway_cart_manual`: manually filled Safeway cart/checkout observation.
 - `safeway_cart_browser_capture`: read-only browser capture of visible Safeway cart/checkout text.
 - `local_cart_model`: local expected cart model built from saved pricing layers.

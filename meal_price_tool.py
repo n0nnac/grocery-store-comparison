@@ -34,6 +34,8 @@ REWARDS_ACCOUNT_STATE_FILE = ROOT / "safeway_rewards_account_state.local.json"
 OBSERVATIONS_FILE = ROOT / "safeway_price_observations.json"
 WEEKLY_DEAL_BASE_OBSERVATION_PREFIX = "safeway_weekly_deal_base_observations"
 GIANT_FLIPP_DEALS_GLOB = "giant_weekly_deals_*.json"
+GIANT_COUPONS_FILE = ROOT / "giant_coupons.json"
+GIANT_COUPON_ACCOUNT_STATE_FILE = ROOT / "giant_coupon_account_state.local.json"
 
 WEEKLY_DEAL_BASE_ALIASES = {
     "egglands best eggs": "eggs",
@@ -238,6 +240,59 @@ def choose_giant_flipp_deals_file(explicit=None):
         candidates.sort(reverse=True)
         return candidates[0][1]
     return None
+
+
+def load_giant_coupons(explicit=None):
+    """Load the Giant coupon catalog if available, with merged account state.
+
+    Returns (path, data) or (None, None) if no file is on disk. Account state
+    from the gitignored local file is merged in when present.
+    """
+    path = Path(explicit) if explicit else GIANT_COUPONS_FILE
+    if not path.exists():
+        return None, None
+    try:
+        data = load_json(path)
+    except (OSError, json.JSONDecodeError):
+        return None, None
+    account = {}
+    if GIANT_COUPON_ACCOUNT_STATE_FILE.exists():
+        try:
+            account_data = load_json(GIANT_COUPON_ACCOUNT_STATE_FILE)
+            account = account_data.get("by_id") or {}
+        except (OSError, json.JSONDecodeError):
+            account = {}
+    if account:
+        for coupon in data.get("coupons", []):
+            cid = coupon.get("id")
+            if not cid or cid not in account:
+                continue
+            existing = coupon.setdefault("account_state", {})
+            for key, value in account[cid].items():
+                if value is not None:
+                    existing[key] = value
+    return path, data
+
+
+def coupon_active(coupon, today=None):
+    today = today or date.today().isoformat()
+    end = (coupon.get("end_date") or "")[:10]
+    start = (coupon.get("start_date") or "")[:10]
+    if end and end < today:
+        return False
+    if start and start > today:
+        return False
+    return True
+
+
+def giant_coupons_for_meal_key(coupons, meal_key):
+    """Return active coupons whose matched_meal_keys include this key."""
+    rows = []
+    for coupon in coupons or []:
+        if meal_key in (coupon.get("matched_meal_keys") or []):
+            if coupon_active(coupon):
+                rows.append(coupon)
+    return rows
 
 
 def load_giant_flipp_deals(explicit=None):
@@ -2047,6 +2102,64 @@ def cart(args):
             print(f"  Cherry-picking Giant for cheaper lines saves {money(safeway_subtotal - best_subtotal)} vs Safeway-only pre-coupon.")
         if unknown_giant:
             print(f"  No Giant price for: {', '.join(unknown_giant[:6])}{' ...' if len(unknown_giant) > 6 else ''}")
+
+        # Per-line Giant coupon visibility (informational; bundle conditions
+        # not modeled, so we do not subtract from subtotal automatically).
+        _coupons_path, coupon_data = load_giant_coupons()
+        if coupon_data:
+            all_coupons = coupon_data.get("coupons") or []
+            applicable_rows = []
+            seen_coupon_ids = set()
+            potential_max = 0.0
+            for line in lines:
+                meal_key = line["item"]
+                matches = giant_coupons_for_meal_key(all_coupons, meal_key)
+                clipped_matches = [
+                    c for c in matches
+                    if (c.get("account_state") or {}).get("clipped") in (True, None)
+                ]
+                line_max = 0.0
+                for coupon in matches:
+                    cid = coupon.get("id")
+                    if not cid or cid in seen_coupon_ids:
+                        continue
+                    seen_coupon_ids.add(cid)
+                    discount = coupon.get("max_discount") or 0
+                    try:
+                        discount = float(discount)
+                    except (TypeError, ValueError):
+                        discount = 0.0
+                    line_max = max(line_max, discount)
+                    applicable_rows.append({
+                        "meal_key": meal_key,
+                        "coupon_id": cid,
+                        "name": coupon.get("name"),
+                        "max_discount": discount,
+                        "end_date": (coupon.get("end_date") or "")[:10],
+                        "clipping_required": coupon.get("clipping_required"),
+                        "clipped": (coupon.get("account_state") or {}).get("clipped"),
+                    })
+                if line_max:
+                    potential_max += line_max
+
+            if applicable_rows:
+                print(f"\nGiant coupon coverage (informational; bundle conditions not auto-applied)")
+                print(f"  {len(applicable_rows)} unique applicable coupons across {len({r['meal_key'] for r in applicable_rows})} lines")
+                if potential_max:
+                    print(f"  Aggregate max discount if all bundles met: up to {money(potential_max)}")
+                if args.verbose:
+                    grouped = {}
+                    for row in applicable_rows:
+                        grouped.setdefault(row["meal_key"], []).append(row)
+                    for meal_key, rows in grouped.items():
+                        rows.sort(key=lambda r: -(r["max_discount"] or 0))
+                        for row in rows:
+                            clip = "clip needed" if row["clipping_required"] else "auto-apply"
+                            state = "clipped" if row["clipped"] else "unclipped" if row["clipped"] is False else "state unknown"
+                            print(
+                                f"    {meal_key:<28} max {money(row['max_discount']):>6} "
+                                f"{clip:<12} {state:<14} ends {row['end_date']:<10} {row['name']}"
+                            )
 
 
 def list_deals(args):

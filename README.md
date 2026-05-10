@@ -143,7 +143,21 @@ Compare meal-cost estimates across Safeway and Giant in one shot:
 python3 meal_price_tool.py estimate --compare-stores
 python3 meal_price_tool.py estimate ground_beef_lunch_bowls --compare-stores
 python3 meal_price_tool.py cart ground_beef_lunch_bowls --compare-stores
+python3 meal_price_tool.py cart ground_beef_lunch_bowls --compare-stores --verbose
 ```
+
+Aggregate Giant Food coupons relevant to saved meal items (requires browser session):
+
+```bash
+python3 giant_coupon_search.py fetch --write
+python3 giant_coupon_search.py search --query "meal bundle"
+python3 giant_coupon_search.py search --category "Breakfast" --limit 10
+python3 giant_coupon_search.py match --min-score 0.4 --keep 2
+```
+
+`fetch` combines the v7 storewide coupon search (first ~20 storewide promotions, since the endpoint silently caps responses) with per-product `availableDisplayCoupons` harvested via saved Giant product IDs. The result is deduplicated and back-references each coupon to the meal items that surfaced it. Per-user clipped/loaded state is split into ignored `giant_coupon_account_state.local.json`. See `GIANT_COUPON_METHODOLOGY.md` for the hybrid-source design.
+
+`cart --compare-stores --verbose` now lists applicable Giant coupons per cart line, with clipping requirement, account state, and end date. Aggregate discounts are reported informationally; bundle-condition modelling is left for a future pass.
 
 The `estimate --compare-stores` and `cart --compare-stores` modes show per-line Safeway and Giant prices side by side, mark which store wins each line, and report the cherry-picked best-of-both subtotal against each single-store total. The cart variant also shows Safeway's coupon-adjusted final, since cart-level Safeway coupons are not modeled on the Giant side.
 

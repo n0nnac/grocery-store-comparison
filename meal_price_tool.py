@@ -31,6 +31,7 @@ COUPON_OVERRIDES_FILE = ROOT / "safeway_coupon_overrides.json"
 REWARDS_FILE = ROOT / "safeway_rewards.json"
 OBSERVATIONS_FILE = ROOT / "safeway_price_observations.json"
 WEEKLY_DEAL_BASE_OBSERVATION_PREFIX = "safeway_weekly_deal_base_observations"
+GIANT_FLIPP_DEALS_GLOB = "giant_weekly_deals_*.json"
 
 WEEKLY_DEAL_BASE_ALIASES = {
     "egglands best eggs": "eggs",
@@ -215,6 +216,96 @@ def choose_deals_file(explicit=None):
 def load_weekly_deals(explicit=None):
     path = choose_deals_file(explicit)
     return path, normalize_deals(load_json(path))
+
+
+def choose_giant_flipp_deals_file(explicit=None):
+    if explicit:
+        return Path(explicit)
+    candidates = []
+    for path in ROOT.glob(GIANT_FLIPP_DEALS_GLOB):
+        try:
+            data = load_json(path)
+        except (OSError, json.JSONDecodeError):
+            continue
+        metadata = data.get("metadata") or {}
+        valid_from = parse_iso_date(metadata.get("valid_from"))
+        valid_to = parse_iso_date(metadata.get("valid_to"))
+        if valid_from is not None and valid_to is not None and valid_from <= date.today() <= valid_to:
+            candidates.append((valid_from, path))
+    if candidates:
+        candidates.sort(reverse=True)
+        return candidates[0][1]
+    return None
+
+
+def load_giant_flipp_deals(explicit=None):
+    path = choose_giant_flipp_deals_file(explicit)
+    if path is None:
+        return None, None
+    return path, load_json(path)
+
+
+GIANT_MATCH_STOPWORDS = {
+    "and", "any", "or", "with", "the", "for", "fresh", "select", "ea",
+    "each", "pack", "lb", "lbs", "oz", "ct", "count", "size", "family",
+    "value", "store", "brand", "premium", "natural", "organic",
+}
+
+GIANT_CATEGORY_NEGATIVES = {
+    "protein": {"oil", "flour", "cookie", "ice", "cream", "yogurt", "salad", "dressing", "sauce", "spread", "snack", "crackers"},
+    "produce": {"oil", "frozen", "ice", "cream", "yogurt", "snack", "candy", "chocolate", "wine", "beer"},
+    "pantry": {"frozen", "ice", "cream", "wine", "beer", "spirits"},
+    "frozen": {"oil", "wine", "beer", "spirits", "candy"},
+    "dairy": {"oil", "frozen", "wine", "beer", "spirits", "candy", "chocolate", "wax"},
+}
+
+
+def giant_token_set(text):
+    normalized = (text or "").lower()
+    tokens = re.findall(r"[a-z0-9]+", normalized)
+    return {t for t in tokens if len(t) > 2 and t not in GIANT_MATCH_STOPWORDS and not t.isdigit()}
+
+
+def giant_match_score(meal_key, meal_record, item):
+    meal_tokens = giant_token_set(meal_key)
+    item_tokens = giant_token_set(item.get("name", "")) | giant_token_set(item.get("brand", ""))
+    if not meal_tokens:
+        return 0.0
+    overlap = meal_tokens & item_tokens
+    score = len(overlap) / max(1, len(meal_tokens))
+
+    category = (meal_record.get("category") or "").lower()
+    negatives = GIANT_CATEGORY_NEGATIVES.get(category, set())
+    if negatives & item_tokens:
+        score -= 0.25
+
+    if (item.get("brand") or "").lower() == "giant":
+        score += 0.05
+
+    return round(max(score, 0.0), 3)
+
+
+def match_giant_flipp_to_meal_items(meal_items, flipp_deals, min_score=0.5):
+    """Map meal_prices keys to their best Flipp flyer match.
+
+    Returns dict {meal_key: {"score": float, "item": flipp_item}} for matches
+    at or above min_score.
+    """
+    if not flipp_deals:
+        return {}
+    flyer_items = [item for item in flipp_deals.get("items", []) if item.get("current_price") is not None]
+    matches = {}
+    for key, record in meal_items.items():
+        best = None
+        best_score = 0.0
+        for item in flyer_items:
+            score = giant_match_score(key, record, item)
+            if score >= min_score and score > best_score:
+                best = item
+                best_score = score
+        if best is not None:
+            matches[key] = {"score": best_score, "item": best}
+    return matches
 
 
 def effective_price(item_name, prices, deals):
@@ -1711,6 +1802,74 @@ def list_deals(args):
         print(f"{name:<34} {money(sale):>8} {unit:<16} {base_text:>8} {save_text:>8} {freezer:<7} {clip:<5} {detail}")
 
 
+def list_giant_deals(args):
+    prices = load_json(MEAL_PRICES_FILE)
+    deals_path, deals = load_giant_flipp_deals(args.deals_file)
+    if deals is None:
+        print("No active Giant Flipp flyer found.")
+        print(f"Run: python3 giant_flipp_deals.py fetch --write --only-priced")
+        return
+
+    metadata = deals.get("metadata") or {}
+    matches = match_giant_flipp_to_meal_items(prices.get("items", {}), deals, min_score=args.min_score)
+
+    rows = []
+    for meal_key, record in prices.get("items", {}).items():
+        match = matches.get(meal_key)
+        if not match:
+            if args.matched_only or args.only_savings:
+                continue
+            rows.append((meal_key, record, None, None))
+            continue
+
+        item = match["item"]
+        sale = item.get("current_price")
+        safeway_base = record.get("base_prices", {}).get("Safeway")
+        giant_base = record.get("base_prices", {}).get("Giant")
+        compare_base = giant_base if giant_base is not None else safeway_base
+        savings = None if compare_base is None or sale is None else compare_base - sale
+        if args.only_savings and (savings is None or savings <= 0):
+            continue
+        rows.append((meal_key, record, match, savings))
+
+    rows.sort(key=lambda row: (row[3] is None, -(row[3] or 0), row[0]))
+
+    print(f"\nGiant Food weekly circular deals (matched to meal_prices.json)")
+    print(f"File {deals_path.name}; flyer {metadata.get('flyer_id')}; valid {metadata.get('valid_from')} to {metadata.get('valid_to')}")
+    print(f"{len(matches)} of {len(prices.get('items', {}))} meal items have a Flipp match >= {args.min_score}")
+    print()
+    print(f"{'Meal item':<32} {'Sale':>14} {'SW Base':>9} {'Gnt Base':>9} {'Save':>8} {'Sc':>5}  Match (description)")
+    print("-" * 140)
+    for meal_key, record, match, savings in rows:
+        safeway_base = record.get("base_prices", {}).get("Safeway")
+        giant_base = record.get("base_prices", {}).get("Giant")
+        sw_base_text = "n/a" if safeway_base is None else money(safeway_base)
+        gnt_base_text = "n/a" if giant_base is None else money(giant_base)
+        save_text = "n/a" if savings is None else money(savings)
+
+        if match is None:
+            print(f"{meal_key[:32]:<32} {'(no match)':>14} {sw_base_text:>9} {gnt_base_text:>9} {save_text:>8} {'':>5}  -")
+            continue
+
+        item = match["item"]
+        sale_text = item.get("price_display") or money(item.get("current_price"))
+        score = match["score"]
+        flyer_name = item.get("name") or ""
+        description = item.get("description") or ""
+        unit_kind = item.get("unit_kind") or ""
+        valid_to = item.get("valid_to") or metadata.get("valid_to") or ""
+
+        match_label = flyer_name[:50]
+        if description:
+            match_label += f" ({description[:30]})"
+        if unit_kind == "per_lb":
+            match_label += " /lb"
+        if valid_to:
+            match_label += f" until {valid_to[-5:]}"
+
+        print(f"{meal_key[:32]:<32} {sale_text:>14} {sw_base_text:>9} {gnt_base_text:>9} {save_text:>8} {score:>5.2f}  {match_label}")
+
+
 def coupon_matches(args):
     prices = load_json(MEAL_PRICES_FILE)
     _deals_path, deals = load_weekly_deals(args.deals_file)
@@ -1972,6 +2131,13 @@ def main():
     deals_parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")
     deals_parser.add_argument("--all", action="store_false", dest="only_savings", help="Show advertised items even when not cheaper than base")
     deals_parser.set_defaults(func=list_deals, only_savings=True)
+
+    giant_deals_parser = sub.add_parser("giant-deals", help="List Giant Flipp weekly circular deals matched to meal items")
+    giant_deals_parser.add_argument("--deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
+    giant_deals_parser.add_argument("--all", action="store_false", dest="only_savings", help="Show matched items even when not cheaper than base")
+    giant_deals_parser.add_argument("--matched-only", action="store_true", help="Hide meal items with no flyer match")
+    giant_deals_parser.add_argument("--min-score", type=float, default=0.5, help="Minimum token-overlap score for a match")
+    giant_deals_parser.set_defaults(func=list_giant_deals, only_savings=True)
 
     coupons_parser = sub.add_parser("coupon-matches", help="List item-level coupon matches for saved ingredients")
     coupons_parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")

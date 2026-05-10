@@ -159,6 +159,20 @@ python3 giant_flipp_deals.py match --min-score 0.4
 python3 giant_flipp_deals.py match --only "eggs" --only "rice"
 ```
 
+## Integration With Meal Planning
+
+Once a `giant_weekly_deals_<valid_from>.json` file is on disk, `meal_price_tool.py` exposes the matched view through its own subcommand:
+
+```bash
+python3 meal_price_tool.py giant-deals
+python3 meal_price_tool.py giant-deals --matched-only --all
+python3 meal_price_tool.py giant-deals --min-score 0.4
+```
+
+This view loads the most recent active flyer file, applies the same token-overlap matcher, and prints each meal item alongside the matched flyer item, package description, expiration date, and per-store base prices. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities.
+
+The integration is read-only. `meal_price_tool.py` does not promote Flipp deal prices into `meal_prices.json` `base_prices` and does not auto-select Giant deals over Safeway in the `estimate` or `cart` flows. Promotion of any Flipp deal into the price layers requires manual review.
+
 ## Source Type and Confidence
 
 Per `DATA_SOURCE_POLICY.md`:

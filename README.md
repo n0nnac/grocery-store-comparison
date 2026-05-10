@@ -89,11 +89,21 @@ python3 safeway_coupon_enrich.py --category "Meat & Seafood" --resolve-upcs --wr
 python3 safeway_coupon_account_state.py --cdp-url http://127.0.0.1:9223 --add-new --write
 ```
 
-List weekly deal overlays:
+List Safeway weekly deal overlays:
 
 ```bash
 python3 meal_price_tool.py deals --all
 ```
+
+List Giant Flipp weekly circular deals matched to saved meal items:
+
+```bash
+python3 meal_price_tool.py giant-deals
+python3 meal_price_tool.py giant-deals --matched-only --all
+python3 meal_price_tool.py giant-deals --min-score 0.4
+```
+
+The match column shows the flyer item name, package description, and the deal expiration day. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities.
 
 Rank weekly ad ingredients for meal inspiration rather than pure cheapest-cart optimization:
 

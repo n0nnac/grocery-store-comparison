@@ -17,6 +17,7 @@ from pathlib import Path
 from meal_price_tool import (
     MEAL_PRICES_FILE,
     choose_deals_file,
+    giant_flipp_planning_price,
     load_giant_flipp_deals,
     load_json,
     match_giant_flipp_to_meal_items,
@@ -795,6 +796,7 @@ def giant_circular_context(args, prices):
     matched_deals = []
     for meal_key, match in matches.items():
         item = match["item"]
+        meal_item = prices.get("items", {}).get(meal_key, {})
         deal_entry = {
             "meal_key": meal_key,
             "deal_name": item.get("name"),
@@ -802,6 +804,8 @@ def giant_circular_context(args, prices):
             "description": item.get("description"),
             "price_display": item.get("price_display"),
             "current_price": item.get("current_price"),
+            "planning_price": giant_flipp_planning_price(meal_item, item),
+            "planning_unit": meal_item.get("unit"),
             "unit_kind": item.get("unit_kind"),
             "multi_buy_qty": item.get("multi_buy_qty"),
             "valid_from": item.get("valid_from"),
@@ -950,8 +954,8 @@ def prompt_payload(args):
         contract_rules.append(
             "When a Giant Flipp deal in giant_circular.matched_deals fits a recipe better "
             "than the Safeway base/weekly price, you may use source Giant with price_key "
-            "set to the matched meal_key. Use the price from giant_circular.matched_deals "
-            "current_price; respect multi_buy_qty thresholds the same way as Safeway "
+            "set to the matched meal_key. Use planning_price in the matching planning_unit, "
+            "not raw current_price; respect multi_buy_qty thresholds the same way as Safeway "
             "weekly deals. Cite the qualifying SKU brand+size from qualifying_skus when "
             "specifying which variety to buy."
         )

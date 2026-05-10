@@ -16,7 +16,8 @@
       "source_path": "safeway_rewards_dashboard_capture_2026-05-07.json",
       "sections": 11,
       "rewards": 75
-    }
+    },
+    "account_state_storage": "Account-specific rewards state belongs in ignored safeway_rewards_account_state.local.json."
   },
   "earning_rules": {
     "grocery": {
@@ -8668,13 +8669,5 @@
       "observed_on": "2026-05-07",
       "price_resolution": null
     }
-  ],
-  "account_state": {
-    "source_type": "rewards_dashboard",
-    "observed_on": "2026-05-07",
-    "available_points": 480,
-    "freshpass_points_do_not_expire": true,
-    "auto_cash_off_enabled": false,
-    "notes": "Observed on Rewards dashboard header: 480 Points, FreshPass points do not expire, cash reward toggle off."
-  }
+  ]
 }

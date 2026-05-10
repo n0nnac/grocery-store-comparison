@@ -30,6 +30,7 @@ ACCOUNT_CLIPPED_PATH = (
 ACCOUNT_GALLERY_PATH = (
     "/abs/pub/dce/offergallery/J4UProgram1/services/gallery/companion/v1/offers"
 )
+ACCOUNT_STATE_FILE = COUPONS_FILE.with_name("safeway_coupon_account_state.local.json")
 
 
 class CdpClient:
@@ -237,12 +238,35 @@ def print_summary(counts, write):
     print(f"- new account-gallery offers added: {counts['new_account_gallery_offers_added']}")
 
 
+def local_account_state_payload(data, counts, observed_on):
+    state_by_id = {}
+    account_only_offers = []
+    for offer in data.get("offers", []):
+        offer_id = str(offer.get("offer_id") or "")
+        state = offer.get("account_state")
+        if offer_id and state and state.get("source_type") == "logged_in_gallery":
+            state_by_id[offer_id] = state
+            if offer.get("source_type") == "coupon_account_gallery_api":
+                account_only_offers.append(offer)
+    return {
+        "metadata": {
+            "source_type": "local_account_state_overlay",
+            "observed_on": observed_on,
+            "counts": counts,
+            "notes": "Ignored local overlay. Do not commit account-specific clipped state.",
+        },
+        "account_state_by_offer_id": state_by_id,
+        "account_only_offers": account_only_offers,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="Refresh Safeway coupon account clipped state.")
     parser.add_argument("--cdp-url", default="http://127.0.0.1:9223", help="Chrome DevTools Protocol HTTP URL")
     parser.add_argument("--store-id", default=DEFAULT_STORE_ID, help="Safeway store ID")
     parser.add_argument("--add-new", action="store_true", help="Add offers that appear only in the logged-in gallery")
-    parser.add_argument("--write", action="store_true", help=f"Write account state back to {COUPONS_FILE.name}")
+    parser.add_argument("--write", action="store_true", help=f"Write account state to ignored {ACCOUNT_STATE_FILE.name}")
+    parser.add_argument("--write-public", action="store_true", help=f"Also write account state into tracked {COUPONS_FILE.name}")
     args = parser.parse_args()
 
     observed_on = datetime.now(timezone.utc).date().isoformat()
@@ -254,9 +278,11 @@ def main():
 
     data = load_json(COUPONS_FILE)
     counts = apply_account_state(data, clipped_raw, gallery_raw, observed_on, args.add_new)
-    print_summary(counts, args.write)
+    print_summary(counts, args.write or args.write_public)
 
     if args.write:
+        write_json(ACCOUNT_STATE_FILE, local_account_state_payload(data, counts, observed_on))
+    if args.write_public:
         write_json(COUPONS_FILE, data)
 
 

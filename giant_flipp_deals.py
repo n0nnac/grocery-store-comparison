@@ -372,6 +372,12 @@ CATEGORY_NEGATIVES = {
 
 
 def match_score(meal_key, meal_record, item):
+    try:
+        from meal_price_tool import giant_match_score
+        return giant_match_score(meal_key, meal_record, item)
+    except ImportError:
+        pass
+
     meal_tokens = token_set(meal_key)
     item_tokens = token_set(item.get("name", "")) | token_set(item.get("brand", ""))
     if not meal_tokens:

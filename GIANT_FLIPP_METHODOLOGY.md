@@ -128,11 +128,14 @@ The normalized payload is written to `giant_weekly_deals_<valid_from>.json` so e
 
 ### Stage 6 — Match against meal items
 
-`command_match()` compares each `meal_prices.json` key against the flyer items using a token-overlap score:
+`command_match()` compares each `meal_prices.json` key against the flyer items using the same guarded matcher used by `meal_price_tool.py`:
 
-- Tokenize the meal key and the flyer item name + brand (drop stopwords like `select`, `fresh`, `pack`, etc.).
+- Tokenize the meal key and the flyer item name + brand + description (drop stopwords like `select`, `fresh`, `pack`, etc.).
 - Compute `len(overlap) / len(meal_tokens)`.
 - Apply a category-based negative penalty when the flyer item contains tokens that are inconsistent with the meal item's category (e.g. a "frozen" + "chicken" item is penalized for matching a "frozen spinach" meal item).
+- Hard-reject form mismatches that token overlap tends to miss, such as `butter` vs croissants, fresh mushrooms vs canned mushrooms, fresh/raw protein vs cooked/breaded/prepped protein, and lean-ratio mismatches such as `80/20` vs `93% lean`.
+- Apply anchor-token requirements for distinctive terms like `tortillas`, `spinach`, `teriyaki`, `tenderloin`, `raw`, and `sweet`.
+- Apply package-size compatibility scoring so a `5 lb bag` item does not silently match a much smaller package unless the downstream price is explicitly normalized.
 - Add a small bonus when the flyer item's brand is `Giant`.
 
 The match command outputs a side-by-side table with the meal key, the flyer name, the parsed price, the description, and the score. The user reviews matches and decides whether to promote any to a price layer; `--write` saves the structured match summary.
@@ -184,9 +187,9 @@ python3 meal_price_tool.py giant-deals --matched-only --all
 python3 meal_price_tool.py giant-deals --min-score 0.4
 ```
 
-This view loads the most recent active flyer file, applies the same token-overlap matcher, and prints each meal item alongside the matched flyer item, package description, expiration date, and per-store base prices. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities.
+This view loads the most recent active flyer file, applies the guarded matcher, and prints each meal item alongside the matched flyer item, package description, expiration date, and per-store base prices. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities. When the flyer price is for a package that differs from the saved planning unit, the displayed sale price is normalized to the planning unit and the raw flyer display is shown in parentheses.
 
-The integration is read-only. `meal_price_tool.py` does not promote Flipp deal prices into `meal_prices.json` `base_prices` and does not auto-select Giant deals over Safeway in the `estimate` or `cart` flows. Promotion of any Flipp deal into the price layers requires manual review.
+The integration is read-only with respect to base prices. `meal_price_tool.py` does not promote Flipp deal prices into `meal_prices.json` `base_prices`. The `estimate --compare-stores` and `cart --compare-stores` flows may use Flipp as a dated sale overlay, but only after planning-unit normalization and only when multi-buy thresholds are satisfied by the selected lines. Promotion of any Flipp deal into the base price layers requires manual review.
 
 ## Source Type and Confidence
 

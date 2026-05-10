@@ -99,9 +99,9 @@ python3 safeway_coupon_pipeline.py --account-state --write
 Default pipeline stages:
 
 1. Refresh the public coupon gallery.
-2. Merge public offer facts into `safeway_coupons.json` while preserving existing detail, UPC resolution, and account-state fields.
+2. Merge public offer facts into `safeway_coupons.json` while preserving existing detail and UPC resolution.
 3. Retain account-only or recently missing saved offers unless `--no-keep-missing` is passed.
-4. If `--account-state` is passed, launch a temporary copied Chrome profile, read logged-in clipped/unclipped state, then delete the copy.
+4. If `--account-state` is passed, launch a temporary copied Chrome profile, read logged-in clipped/unclipped state, write it to ignored `safeway_coupon_account_state.local.json`, then delete the copy.
 5. Enrich default high-value slices: `Meat & Seafood`, `department_threshold`, `basket_threshold`, `points_bonus`, and clipped line-item coupons.
 6. Validate duplicate IDs and account-state shape before writing.
 
@@ -149,7 +149,7 @@ Refresh logged-in account clipped state:
 python3 safeway_coupon_account_state.py --cdp-url http://127.0.0.1:9223 --add-new --write
 ```
 
-This command expects a Chrome DevTools Protocol endpoint with a logged-in `safeway.com` page. The safest repeatable setup is a temporary copy of the Chrome profile, launched with remote debugging, so the real browser profile is not mutated. The account-state script only performs `GET`/same-origin `fetch` reads.
+This command expects a Chrome DevTools Protocol endpoint with a logged-in `safeway.com` page. By default `--write` writes the clipped/unclipped state to ignored `safeway_coupon_account_state.local.json`; use `--write-public` only for deliberate debugging. The safest repeatable setup is a temporary copy of the Chrome profile, launched with remote debugging, so the real browser profile is not mutated. The account-state script only performs `GET`/same-origin `fetch` reads.
 
 Example temporary-profile launch:
 
@@ -179,7 +179,7 @@ Use that only for temporary account-specific coupons that are not visible in the
 
 ## Account And Clipping State
 
-Every coupon offer should have an `account_state` object:
+Every tracked public coupon offer should have a sanitized `account_state` object:
 
 ```json
 {
@@ -200,6 +200,8 @@ Field rules:
 
 Cart estimates may show a coupon as mathematically eligible while still flagging `clip unknown` or `clip needed`. That is intentional: eligibility and account state are separate facts.
 
+Logged-in account-state overlays live in ignored `safeway_coupon_account_state.local.json` and are merged at runtime by `meal_price_tool.py`. Do not commit household clipped/unclipped state into `safeway_coupons.json`.
+
 ## Logged-In Read-Only Account State
 
 Working read-only endpoints observed from a logged-in Safeway page:
@@ -213,8 +215,8 @@ Observed behavior:
 
 - `companion/clipped` returns clipped offers and includes account clipping fields such as `clipId` and `clipTs`.
 - `companion/v1/offers` returns the logged-in gallery visible to the account.
-- Offers present in `companion/clipped` are stored as `account_state.clipped: true`.
-- Offers present in the logged-in gallery but absent from `companion/clipped` are stored as `account_state.clipped: false`.
+- Offers present in `companion/clipped` are stored in the local overlay as `account_state.clipped: true`.
+- Offers present in the logged-in gallery but absent from `companion/clipped` are stored in the local overlay as `account_state.clipped: false`.
 - Saved offers absent from the logged-in gallery are left unchanged rather than inferred unavailable.
 
 Manual overrides should be marked inactive when a real account coupon supersedes them, to avoid double-counting cart-level savings.

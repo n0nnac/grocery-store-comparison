@@ -39,6 +39,13 @@ Rewards rules and redemption options live in:
 safeway_rewards.json
 ```
 
+Account-specific state such as current points balance and auto-cash-off status
+lives in ignored local overlay data:
+
+```bash
+safeway_rewards_account_state.local.json
+```
+
 Captured dashboard tab text can be kept as evidence in dated files such as:
 
 ```bash
@@ -52,7 +59,7 @@ Point multiplier offers from the coupon/deal gallery live in:
 safeway_coupons.json
 ```
 
-This split matters because an "Earn 3X Points" offer behaves like a clippable deal, while "$20 off groceries for 1200 points" behaves like a redemption choice.
+This split matters because an "Earn 3X Points" offer behaves like a clippable deal, while "$20 off groceries for 1200 points" behaves like a redemption choice. Public rewards valuation should be commit-safe; account balance state should stay local.
 
 ## Public Point Offers
 

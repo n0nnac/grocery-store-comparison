@@ -28,7 +28,9 @@ WEEKLY_DEALS_FILE = ROOT / "weekly_deals.json"
 WEEKLY_DEAL_GLOB = "weekly_deals*.json"
 COUPONS_FILE = ROOT / "safeway_coupons.json"
 COUPON_OVERRIDES_FILE = ROOT / "safeway_coupon_overrides.json"
+COUPON_ACCOUNT_STATE_FILE = ROOT / "safeway_coupon_account_state.local.json"
 REWARDS_FILE = ROOT / "safeway_rewards.json"
+REWARDS_ACCOUNT_STATE_FILE = ROOT / "safeway_rewards_account_state.local.json"
 OBSERVATIONS_FILE = ROOT / "safeway_price_observations.json"
 WEEKLY_DEAL_BASE_OBSERVATION_PREFIX = "safeway_weekly_deal_base_observations"
 GIANT_FLIPP_DEALS_GLOB = "giant_weekly_deals_*.json"
@@ -253,10 +255,48 @@ GIANT_MATCH_STOPWORDS = {
 
 GIANT_CATEGORY_NEGATIVES = {
     "protein": {"oil", "flour", "cookie", "ice", "cream", "yogurt", "salad", "dressing", "sauce", "spread", "snack", "crackers"},
-    "produce": {"oil", "frozen", "ice", "cream", "yogurt", "snack", "candy", "chocolate", "wine", "beer"},
+    "produce": {"oil", "frozen", "ice", "cream", "yogurt", "snack", "candy", "chocolate", "wine", "beer", "canned", "jarred"},
     "pantry": {"frozen", "ice", "cream", "wine", "beer", "spirits"},
     "frozen": {"oil", "wine", "beer", "spirits", "candy"},
-    "dairy": {"oil", "frozen", "wine", "beer", "spirits", "candy", "chocolate", "wax"},
+    "dairy": {"oil", "frozen", "wine", "beer", "spirits", "candy", "chocolate", "wax", "croissant", "croissants"},
+}
+
+GIANT_REQUIRED_TOKEN_GROUPS = [
+    ({"raw"}, {"raw"}),
+    ({"sweet"}, {"sweet"}),
+    ({"tortillas"}, {"tortilla", "tortillas"}),
+    ({"spinach"}, {"spinach"}),
+    ({"tomatoes"}, {"tomato", "tomatoes"}),
+    ({"crushed"}, {"crushed"}),
+    ({"tenderloin"}, {"tenderloin"}),
+    ({"chops"}, {"chop", "chops"}),
+    ({"butter"}, {"butter"}),
+    ({"cheese"}, {"cheese"}),
+    ({"mushrooms"}, {"mushroom", "mushrooms"}),
+    ({"pepper", "peppers"}, {"pepper", "peppers"}),
+    ({"teriyaki"}, {"teriyaki"}),
+    ({"broccoli"}, {"broccoli"}),
+    ({"rice"}, {"rice"}),
+    ({"pasta"}, {"pasta"}),
+    ({"avocados"}, {"avocado", "avocados"}),
+    ({"potatoes"}, {"potato", "potatoes"}),
+    ({"onions"}, {"onion", "onions"}),
+    ({"beef"}, {"beef"}),
+    ({"turkey"}, {"turkey"}),
+    ({"chicken"}, {"chicken"}),
+    ({"shrimp"}, {"shrimp"}),
+    ({"salmon"}, {"salmon"}),
+]
+
+GIANT_FORM_CONFLICTS = {
+    "butter": {"btl", "cellars", "croissant", "croissants", "cookie", "cookies", "popcorn", "wine"},
+    "mushrooms": {"can", "canned", "jar", "jarred", "stems", "pieces"},
+    "spinach": {"chicken", "dip"},
+}
+
+GIANT_PREPARED_PROTEIN_TOKENS = {
+    "battered", "breaded", "cooked", "diced", "entree", "entrees",
+    "fajita", "grilled", "shredded",
 }
 
 
@@ -266,11 +306,132 @@ def giant_token_set(text):
     return {t for t in tokens if len(t) > 2 and t not in GIANT_MATCH_STOPWORDS and not t.isdigit()}
 
 
+def giant_item_tokens(item):
+    return (
+        giant_token_set(item.get("name", ""))
+        | giant_token_set(item.get("brand", ""))
+        | giant_token_set(item.get("description", ""))
+    )
+
+
+def giant_parse_size(text):
+    if not text:
+        return (None, None)
+    t = str(text).lower()
+    weight_match = re.search(r"(\d+(?:\.\d+)?)\s*(lbs?|pound)", t)
+    if weight_match:
+        return (float(weight_match.group(1)) * 16, "weight")
+    fl_oz_match = re.search(r"(\d+(?:\.\d+)?)\s*fl\.?\s*oz", t)
+    if fl_oz_match:
+        return (float(fl_oz_match.group(1)), "weight")
+    oz_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:oz|ounce)", t)
+    if oz_match:
+        return (float(oz_match.group(1)), "weight")
+    if re.search(r"\b(doz|dozen)", t):
+        qty_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:doz|dozen)", t)
+        qty = float(qty_match.group(1)) if qty_match else 1.0
+        return (qty * 12, "count")
+    count_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:ct|count|pack|piece|pk)\b", t)
+    if count_match:
+        return (float(count_match.group(1)), "count")
+    if re.search(r"\b(lbs?|pound|sold\s+by\s+lb)\b", t):
+        return (None, "weight")
+    if re.search(r"\b(each|ea)\b", t):
+        return (1.0, "count")
+    return (None, None)
+
+
+def giant_parse_size_range(text):
+    if not text:
+        return (None, None, None)
+    t = str(text).lower()
+    weight_range = re.search(r"(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*(lbs?|pound|oz|ounce)", t)
+    if weight_range:
+        low = float(weight_range.group(1))
+        high = float(weight_range.group(2))
+        unit = weight_range.group(3)
+        if unit.startswith("lb") or unit.startswith("pound"):
+            low *= 16
+            high *= 16
+        return (low, high, "weight")
+    count_range = re.search(r"(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*(?:ct|count|pack|pk)\b", t)
+    if count_range:
+        return (float(count_range.group(1)), float(count_range.group(2)), "count")
+    qty, kind = giant_parse_size(t)
+    if kind is not None:
+        return (qty, qty, kind)
+    return (None, None, None)
+
+
+def giant_size_score(meal_unit, item):
+    meal_qty, meal_kind = giant_parse_size(meal_unit)
+    low, high, item_kind = giant_parse_size_range(item.get("description") or "")
+    if item_kind is None and item.get("unit_kind") == "per_lb":
+        item_kind = "weight"
+    if meal_kind is None or item_kind is None:
+        return 0.0
+    item_text = " ".join(str(item.get(key) or "").lower() for key in ("name", "description"))
+    if meal_kind == "weight" and item_kind == "count" and "shrimp" in item_text:
+        return 0.0
+    if meal_kind != item_kind:
+        return -0.60
+    if meal_qty is None or low is None or high is None:
+        return 0.05
+    if low * 0.85 <= meal_qty <= high * 1.20:
+        return 0.15
+    if high < meal_qty * 0.5 or low > meal_qty * 2.0:
+        return -0.60
+    return 0.0
+
+
+def giant_lean_ratios(text):
+    ratios = set()
+    text = str(text or "").lower()
+    for lean, fat in re.findall(r"\b(\d{2})\s*/\s*(\d{1,2})\b", text):
+        ratios.add((int(lean), int(fat)))
+    for lean in re.findall(r"\b(\d{2})\s*%\s*lean\b", text):
+        lean_i = int(lean)
+        ratios.add((lean_i, 100 - lean_i))
+    return ratios
+
+
+def giant_reject_match(meal_key, meal_record, item, meal_tokens, item_tokens):
+    for triggers, required in GIANT_REQUIRED_TOKEN_GROUPS:
+        if meal_tokens & triggers and not (item_tokens & required):
+            return True
+
+    for trigger, conflicts in GIANT_FORM_CONFLICTS.items():
+        if trigger in meal_tokens and item_tokens & conflicts:
+            return True
+
+    expected_ratios = giant_lean_ratios(meal_key)
+    item_ratios = giant_lean_ratios(
+        " ".join(str(item.get(key) or "") for key in ("name", "brand", "description"))
+    )
+    if expected_ratios and item_ratios and expected_ratios.isdisjoint(item_ratios):
+        return True
+
+    category = (meal_record.get("category") or "").lower()
+    if (
+        category == "protein"
+        and item_tokens & GIANT_PREPARED_PROTEIN_TOKENS
+        and not meal_tokens & GIANT_PREPARED_PROTEIN_TOKENS
+    ):
+        return True
+    if category == "produce" and item_tokens & {"can", "canned", "jar", "jarred", "pickled", "dried"}:
+        return True
+
+    return False
+
+
 def giant_match_score(meal_key, meal_record, item):
     meal_tokens = giant_token_set(meal_key)
-    item_tokens = giant_token_set(item.get("name", "")) | giant_token_set(item.get("brand", ""))
+    item_tokens = giant_item_tokens(item)
     if not meal_tokens:
         return 0.0
+    if giant_reject_match(meal_key, meal_record, item, meal_tokens, item_tokens):
+        return 0.0
+
     overlap = meal_tokens & item_tokens
     score = len(overlap) / max(1, len(meal_tokens))
 
@@ -281,6 +442,7 @@ def giant_match_score(meal_key, meal_record, item):
 
     if (item.get("brand") or "").lower() == "giant":
         score += 0.05
+    score += giant_size_score(meal_record.get("unit"), item)
 
     return round(max(score, 0.0), 3)
 
@@ -326,18 +488,40 @@ def load_coupon_overlays():
                 offer for offer in data.get("offers", [])
                 if offer.get("active", True) is not False
             )
+    apply_local_coupon_account_state(offers)
     return offers
+
+
+def apply_local_coupon_account_state(offers):
+    if not COUPON_ACCOUNT_STATE_FILE.exists():
+        return
+    data = load_json(COUPON_ACCOUNT_STATE_FILE)
+    by_id = data.get("account_state_by_offer_id") or {}
+    for offer in offers:
+        offer_id = str(offer.get("offer_id") or "")
+        if offer_id in by_id:
+            offer["account_state"] = by_id[offer_id]
+    existing_ids = {str(offer.get("offer_id") or "") for offer in offers}
+    for offer in data.get("account_only_offers") or []:
+        offer_id = str(offer.get("offer_id") or "")
+        if offer_id and offer_id not in existing_ids:
+            offers.append(offer)
 
 
 def load_rewards_config():
     if REWARDS_FILE.exists():
-        return load_json(REWARDS_FILE)
-    return {
-        "earning_rules": {"grocery": {"points_per_dollar": 1}},
-        "valuation": {"default_point_value": 0.0},
-        "redemption_options": [],
-        "product_rewards": [],
-    }
+        config = load_json(REWARDS_FILE)
+    else:
+        config = {
+            "earning_rules": {"grocery": {"points_per_dollar": 1}},
+            "valuation": {"default_point_value": 0.0},
+            "redemption_options": [],
+            "product_rewards": [],
+        }
+    if REWARDS_ACCOUNT_STATE_FILE.exists():
+        account_state = load_json(REWARDS_ACCOUNT_STATE_FILE)
+        config["account_state"] = account_state.get("account_state", account_state)
+    return config
 
 
 def point_value(option):
@@ -1635,10 +1819,14 @@ def estimate_plan(args):
 
 def augment_lines_with_giant(lines, prices, flipp_matches):
     """Annotate each cart line with Giant base / Flipp deal pricing."""
+    flipp_counts = giant_flipp_counts(
+        {line["item"]: line.get("qty") for line in lines},
+        flipp_matches,
+    )
     for line in lines:
         item_name = line["item"]
         item = prices.get("items", {}).get(item_name) or {}
-        gnt_price, gnt_label = best_giant_price(item_name, item, flipp_matches)
+        gnt_price, gnt_label = best_giant_price(item_name, item, flipp_matches, flipp_counts)
         line["giant_unit_price"] = gnt_price
         line["giant_label"] = gnt_label or ""
         if gnt_price is None:
@@ -1909,18 +2097,18 @@ def list_giant_deals(args):
         if not match:
             if args.matched_only or args.only_savings:
                 continue
-            rows.append((meal_key, record, None, None))
+            rows.append((meal_key, record, None, None, None))
             continue
 
         item = match["item"]
-        sale = item.get("current_price")
+        sale = giant_flipp_planning_price(record, item)
         safeway_base = record.get("base_prices", {}).get("Safeway")
         giant_base = record.get("base_prices", {}).get("Giant")
         compare_base = giant_base if giant_base is not None else safeway_base
         savings = None if compare_base is None or sale is None else compare_base - sale
         if args.only_savings and (savings is None or savings <= 0):
             continue
-        rows.append((meal_key, record, match, savings))
+        rows.append((meal_key, record, match, savings, sale))
 
     rows.sort(key=lambda row: (row[3] is None, -(row[3] or 0), row[0]))
 
@@ -1930,7 +2118,7 @@ def list_giant_deals(args):
     print()
     print(f"{'Meal item':<32} {'Sale':>14} {'SW Base':>9} {'Gnt Base':>9} {'Save':>8} {'Sc':>5}  Match (description)")
     print("-" * 140)
-    for meal_key, record, match, savings in rows:
+    for meal_key, record, match, savings, sale in rows:
         safeway_base = record.get("base_prices", {}).get("Safeway")
         giant_base = record.get("base_prices", {}).get("Giant")
         sw_base_text = "n/a" if safeway_base is None else money(safeway_base)
@@ -1942,7 +2130,12 @@ def list_giant_deals(args):
             continue
 
         item = match["item"]
-        sale_text = item.get("price_display") or money(item.get("current_price"))
+        sale_text = money(sale)
+        raw_display = item.get("price_display")
+        if raw_display and item.get("current_price") != sale:
+            sale_text = f"{sale_text} ({raw_display})"
+        elif raw_display:
+            sale_text = raw_display
         score = match["score"]
         flyer_name = item.get("name") or ""
         description = item.get("description") or ""
@@ -2187,7 +2380,59 @@ def estimate_recipe(recipe_key, prices, deals):
     return recipe, rows, total
 
 
-def best_giant_price(item_name, item, flipp_matches):
+def giant_flipp_group_id(flipp_item):
+    if not flipp_item or not flipp_item.get("multi_buy_qty"):
+        return None
+    return f"giant_flipp:{flipp_item.get('flipp_id') or flipp_item.get('deal_name') or flipp_item.get('name')}"
+
+
+def giant_flipp_counts(quantities, flipp_matches):
+    counts = {}
+    for item_name, qty in quantities.items():
+        match = (flipp_matches or {}).get(item_name)
+        flipp_item = (match or {}).get("item")
+        group_id = giant_flipp_group_id(flipp_item)
+        if not group_id:
+            continue
+        try:
+            counts[group_id] = counts.get(group_id, 0.0) + float(qty or 0)
+        except (TypeError, ValueError):
+            continue
+    return counts
+
+
+def giant_flipp_planning_price(meal_item, flipp_item):
+    price = flipp_item.get("current_price")
+    if price is None:
+        return None
+    try:
+        price = float(price)
+    except (TypeError, ValueError):
+        return None
+
+    meal_qty, meal_kind = giant_parse_size(meal_item.get("unit"))
+    low, high, item_kind = giant_parse_size_range(flipp_item.get("description") or "")
+
+    if flipp_item.get("unit_kind") == "per_lb":
+        return price
+    if meal_kind == "weight" and meal_qty is None and item_kind == "weight" and low and high and abs(low - high) < 0.001:
+        pounds = low / 16
+        if pounds > 0:
+            return round(price / pounds, 2)
+    if (
+        meal_kind is not None
+        and item_kind == meal_kind
+        and meal_qty is not None
+        and low is not None
+        and high is not None
+        and abs(low - high) < 0.001
+        and low > 0
+    ):
+        return round(price * (meal_qty / low), 2)
+    return price
+
+
+def best_giant_price(item_name, item, flipp_matches, flipp_counts=None):
     """Return (price, source_label) for the best available Giant price.
 
     Considers Giant base price (from price_sources.Giant) and the matched
@@ -2196,29 +2441,39 @@ def best_giant_price(item_name, item, flipp_matches):
     base = item.get("base_prices", {}).get("Giant")
     deal_price = None
     deal_label = None
+    deal_blocked = None
     match = (flipp_matches or {}).get(item_name)
     if match and match.get("item"):
-        deal_price = match["item"].get("current_price")
+        flipp_item = match["item"]
+        group_id = giant_flipp_group_id(flipp_item)
+        threshold = flipp_item.get("multi_buy_qty")
+        if group_id and threshold:
+            count = (flipp_counts or {}).get(group_id, 0.0)
+            if count < float(threshold):
+                deal_blocked = f"flipp unmet {count:g}/{float(threshold):g}"
+            else:
+                deal_price = giant_flipp_planning_price(item, flipp_item)
+        else:
+            deal_price = giant_flipp_planning_price(item, flipp_item)
         if deal_price is not None:
-            deal_label = match["item"].get("price_display") or money(deal_price)
+            deal_label = flipp_item.get("price_display") or money(deal_price)
 
     candidates = []
     if base is not None:
-        candidates.append((base, "base"))
+        candidates.append((base, "base" if not deal_blocked else f"base; {deal_blocked}"))
     if deal_price is not None:
-        candidates.append((deal_price, "flipp"))
+        candidates.append((deal_price, f"flipp ({deal_label})"))
 
     if not candidates:
         return None, None
     candidates.sort(key=lambda pair: pair[0])
-    price, kind = candidates[0]
-    label = "base" if kind == "base" else f"flipp ({deal_label})"
-    return price, label
+    return candidates[0]
 
 
 def estimate_recipe_cross_store(recipe_key, prices, deals, flipp_matches):
     """Compute Safeway and Giant per-line totals side by side."""
     recipe = RECIPES[recipe_key]
+    flipp_counts = giant_flipp_counts(recipe["ingredients"], flipp_matches)
     rows = []
     safeway_total = 0.0
     giant_total = 0.0
@@ -2230,7 +2485,7 @@ def estimate_recipe_cross_store(recipe_key, prices, deals, flipp_matches):
     for name, qty in recipe["ingredients"].items():
         sw_price, sw_type, _deal = effective_price(name, prices, deals)
         item = prices["items"].get(name, {})
-        gnt_price, gnt_label = best_giant_price(name, item, flipp_matches)
+        gnt_price, gnt_label = best_giant_price(name, item, flipp_matches, flipp_counts)
 
         sw_line = None if sw_price is None else qty * sw_price
         gnt_line = None if gnt_price is None else qty * gnt_price

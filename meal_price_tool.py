@@ -145,14 +145,29 @@ def planning_price_from_doc(doc, unit, price_kind):
 
 
 def promotion_from_condition(condition):
-    text = str(condition or "")
-    match = re.search(r"when\s+you\s+buy\s+(\d+)\+\s+participating\s+items", text, re.I)
-    if not match:
-        match = re.search(r"buy\s+(\d+)\+\s+participating\s+items", text, re.I)
-    if not match:
-        return None
+    """Parse a buy-N+-participating-items promo out of a label string.
 
-    threshold = int(match.group(1))
+    Recognized patterns (case-insensitive):
+    - 'when you buy N+ participating items'  (canonical normalized_deals.source_label)
+    - 'buy N+ participating items'
+    - 'BUY N OR MORE ... PARTICIPATING ITEMS' (ad_items.label flyer copy)
+    - 'BUY N OR MORE ... PARTICIPATING PICK 4 ITEMS'
+    """
+    text = str(condition or "")
+    patterns = (
+        r"when\s+you\s+buy\s+(\d+)\+\s+participating\s+items",
+        r"buy\s+(\d+)\+\s+participating\s+items",
+        r"buy\s+(\d+)\s+or\s+more.*?participating\s+items",
+        r"buy\s+(\d+)\s+or\s+more.*?participating\s+pick",
+    )
+    threshold = None
+    for pat in patterns:
+        m = re.search(pat, text, re.I | re.S)
+        if m:
+            threshold = int(m.group(1))
+            break
+    if threshold is None:
+        return None
     return {
         "type": "mix_and_match_min_count",
         "group_id": f"buy_{threshold}_participating_items",
@@ -2073,6 +2088,54 @@ def write_resolved_prices(priced, prices):
     return rows
 
 
+def consolidated_shopping_list(priced):
+    """Aggregate priced ingredient lines across all recipes into a single
+    shopping list. Bucketed by (price_key, unit, store) so a shared
+    ingredient (e.g. a 1 lb onion bag used in both recipes) collapses to
+    one row. Owned and pantry items are excluded — they aren't purchased.
+    """
+    bucket = {}
+    order = []
+    for recipe in priced.get("recipes") or []:
+        for line in recipe.get("lines") or []:
+            store = line.get("store") or ""
+            if store in ("owned", "pantry"):
+                continue
+            if not line.get("priced"):
+                continue
+            qty = line.get("qty") or 0
+            line_total = line.get("line_total") or 0.0
+            key = (
+                line.get("item") or line.get("display_name") or "",
+                line.get("unit") or "",
+                store,
+            )
+            if key not in bucket:
+                bucket[key] = {
+                    "name": line.get("display_name") or "",
+                    "item": line.get("item"),
+                    "unit": line.get("unit"),
+                    "store": store,
+                    "unit_price": line.get("unit_price"),
+                    "qty": 0,
+                    "line_total": 0.0,
+                    "detail": line.get("detail"),
+                    "requires_clip": bool(line.get("requires_clip")),
+                }
+                order.append(key)
+            entry = bucket[key]
+            entry["qty"] += qty
+            entry["line_total"] += line_total
+            if line.get("requires_clip"):
+                entry["requires_clip"] = True
+            # Use the first non-zero-qty display name (avoids the "shared
+            # ingredient with quantity=0" kludge taking over the label).
+            current_first_qty = entry["qty"] - qty
+            if current_first_qty <= 0 and qty > 0:
+                entry["name"] = line.get("display_name") or entry["name"]
+    return [bucket[key] for key in order]
+
+
 def estimate_plan(args):
     prices = load_json(MEAL_PRICES_FILE)
     deals_path, deals = load_weekly_deals(args.deals_file)
@@ -2118,6 +2181,25 @@ def estimate_plan(args):
             f"Recipe total: {money(recipe['total'])}"
             + (f"  |  Per serving: {money(recipe['per_serving'])}" if recipe.get("per_serving") is not None else "")
         )
+
+    shopping_rows = consolidated_shopping_list(priced)
+    if shopping_rows:
+        print("\nConsolidated shopping list (single trip, aggregated across recipes)")
+        print(f"{'Item':<48} {'Qty':>6} {'Unit':<18} {'Unit $':>8} {'Subtotal':>9} Notes")
+        print("-" * 130)
+        for row in shopping_rows:
+            tags = []
+            if row.get("requires_clip"):
+                tags.append("clip")
+            note = ", ".join(tags)
+            print(
+                f"{(row['name'] or '')[:48]:<48} {row['qty']:>6g} "
+                f"{(row['unit'] or '')[:18]:<18} {money(row['unit_price']):>8} "
+                f"{money(row['line_total']):>9} {note}"
+            )
+        print("-" * 130)
+        grand = sum(row["line_total"] for row in shopping_rows)
+        print(f"{'Shopping list total':<48} {'':>6} {'':<18} {'':>8} {money(grand):>9}")
 
     if priced.get("shopping_notes"):
         print("\nShopping notes")

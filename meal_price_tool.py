@@ -2120,6 +2120,47 @@ def write_resolved_prices(priced, prices):
     return rows
 
 
+def plan_stale_observations(priced, prices, threshold_days=14):
+    """Identify priced plan lines whose underlying Safeway base/current
+    observation is older than `threshold_days`.
+
+    Skips lines that were live-resolved via the API at price-time
+    (`source` starts with "api-") since those carry fresh observation
+    timestamps. Returns a list of dicts shaped for rendering.
+    """
+    warnings = []
+    items_map = prices.get("items") or {}
+    for recipe in priced.get("recipes") or []:
+        for line in recipe.get("lines") or []:
+            if (line.get("store") or "").lower() != "safeway":
+                continue
+            if not line.get("priced"):
+                continue
+            source = (line.get("source") or "").lower()
+            # Live API resolutions are by definition fresh; skip them.
+            if source.startswith("api-"):
+                continue
+            item_key = line.get("item")
+            item = items_map.get(item_key)
+            if not item:
+                continue
+            safeway = (item.get("price_sources") or {}).get("Safeway") or {}
+            observed = safeway.get("observed_on")
+            age = observed_age_days(observed)
+            if age is None or age <= threshold_days:
+                continue
+            warnings.append({
+                "item": item_key,
+                "display_name": line.get("display_name"),
+                "observed_on": observed,
+                "age_days": age,
+                "source": line.get("source"),
+                "unit_price": line.get("unit_price"),
+            })
+    warnings.sort(key=lambda w: -w["age_days"])
+    return warnings
+
+
 def line_is_safeway_store_brand(line):
     """Best-effort check whether a priced plan line corresponds to a
     Safeway store-brand SKU. Looks at the rendered display name + detail
@@ -2397,6 +2438,22 @@ def estimate_plan(args):
             f"Recipe total: {money(recipe['total'])}"
             + (f"  |  Per serving: {money(recipe['per_serving'])}" if recipe.get("per_serving") is not None else "")
         )
+
+    if not getattr(args, "no_stale_warnings", False):
+        stale = plan_stale_observations(
+            priced, prices,
+            threshold_days=getattr(args, "stale_threshold_days", 14),
+        )
+        if stale:
+            threshold = getattr(args, "stale_threshold_days", 14)
+            print(f"\nStale Safeway price observations (>{threshold} days old)")
+            for w in stale:
+                print(
+                    f"  {(w['display_name'] or w['item'])[:42]:<42} "
+                    f"{money(w['unit_price']):>7}  observed {w['observed_on']} "
+                    f"({w['age_days']} days ago)"
+                )
+            print("  Consider running `python3 plan.py refresh` to update saved prices.")
 
     shopping_rows = consolidated_shopping_list(priced)
     if shopping_rows:
@@ -3624,6 +3681,8 @@ def main():
     plan_parser.add_argument("--no-resolve-missing", action="store_true", help="Do not query Safeway API for missing or stale Safeway ingredients")
     plan_parser.add_argument("--no-prefer-store-brand", action="store_true", help="Disable the default store-brand promotion: when set, the resolver picks the top API match regardless of brand. Default behavior promotes a Signature SELECT / O Organics / Lucerne / etc. candidate when its price is within --store-brand-tolerance of the leader (Safeway awards 2x rewards points on store-brand SKUs).")
     plan_parser.add_argument("--no-rewards", action="store_true", help="Skip the Safeway rewards points block in the priced output.")
+    plan_parser.add_argument("--no-stale-warnings", action="store_true", help="Skip the stale-observation warning block.")
+    plan_parser.add_argument("--stale-threshold-days", type=int, default=14, help="Surface a warning for any priced Safeway line whose underlying saved observation is older than this many days. Default 14.")
     plan_parser.add_argument("--compare-stores", action="store_true", help="Add a cross-store comparison block: each Safeway-priced line is also priced via Giant Flipp / saved Giant base, item-scope Giant coupons applied, and aggregate Safeway/Giant/best-of-both totals reported.")
     plan_parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
     plan_parser.add_argument("--no-giant-coupons", action="store_true", help="Skip Giant coupon application in cross-store mode")

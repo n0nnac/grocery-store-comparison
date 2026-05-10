@@ -33,6 +33,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 SAFEWAY_REFRESH = ROOT / "safeway_refresh_prices.py"
+SAFEWAY_DEAL_ENRICH = ROOT / "safeway_weekly_deal_enrich.py"
 GIANT_REFRESH = ROOT / "giant_refresh_prices.py"
 GIANT_FLIPP = ROOT / "giant_flipp_deals.py"
 SAFEWAY_INSPIRATION = ROOT / "safeway_meal_inspiration.py"
@@ -57,6 +58,20 @@ def cmd_refresh(args):
         if args.stale_days:
             safeway_cmd.extend(["--stale-days", str(args.stale_days)])
         run(safeway_cmd, label="Safeway base prices")
+
+        # Auto-enrich the active weekly deals JSON with structured promo
+        # metadata and per-deal pack mechanic. Both subcommands are
+        # idempotent (backfill-promos skips deals that already have a
+        # populated `promotion` field; verify-packs skips deals that
+        # already have a `verified_on` timestamp), so calling them every
+        # refresh is cheap when the deals file is unchanged and does real
+        # work only when a fresh weekly ad has been imported.
+        if not args.skip_deal_enrichment:
+            run(["python3", SAFEWAY_DEAL_ENRICH, "--backfill-promos", "--write"],
+                label="Safeway deal promo metadata", allow_fail=True)
+            run(["python3", SAFEWAY_DEAL_ENRICH, "--verify-packs", "--write"],
+                label="Safeway deal pack-mechanic verification", allow_fail=True)
+
     if not args.no_giant:
         giant_cmd = ["python3", GIANT_REFRESH]
         if args.fill_only:
@@ -127,6 +142,7 @@ def main():
     p_refresh.add_argument("--no-giant", action="store_true", help="Skip the Giant refresh (browser session not required)")
     p_refresh.add_argument("--stale-days", type=int, default=7, help="Refresh saved prices older than this many days")
     p_refresh.add_argument("--fill-only", action="store_true", help="Only fill ingredients without saved prices; preserve curated bases")
+    p_refresh.add_argument("--skip-deal-enrichment", action="store_true", help="Skip the auto promo-backfill + pack-verify steps that follow the Safeway base-price refresh")
     p_refresh.set_defaults(func=cmd_refresh)
 
     p_context = sub.add_parser(
@@ -150,6 +166,7 @@ def main():
     p_week.add_argument("--no-giant-deals", action="store_true")
     p_week.add_argument("--stale-days", type=int, default=7)
     p_week.add_argument("--fill-only", action="store_true")
+    p_week.add_argument("--skip-deal-enrichment", action="store_true", help="Skip the promo-backfill + pack-verify enrichment that follows the Safeway base-price refresh")
     p_week.add_argument("--limit", type=int)
     p_week.add_argument("--ideas", type=int)
     p_week.add_argument("--write", action="store_true")

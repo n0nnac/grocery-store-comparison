@@ -8,8 +8,13 @@ cart breakdown copied from Safeway checkout/cart.
 
 import argparse
 import json
+import os
+import sys
 from datetime import date
 from pathlib import Path
+
+# Allow imports from the repo root when this script is run from research/.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from meal_price_tool import (
     COUPON_OVERRIDES_FILE,
@@ -31,7 +36,7 @@ from meal_price_tool import (
 )
 
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).parent.parent  # repo root, since data files live there
 DEFAULT_OBSERVED_TEMPLATE = ROOT / "safeway_cart_observed_template.json"
 
 def today():

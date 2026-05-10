@@ -886,15 +886,17 @@ def prompt_payload(args):
             "version": "meal_inspiration_plan_v1",
             "rules": [
                 "Return valid JSON.",
-                "Every priced ingredient must use a price_key from pricing_catalog.allowed_price_keys.",
+                "pricing_catalog.allowed_price_keys is a price hint, not a menu. Any ingredient is allowed.",
+                "When an ingredient IS in allowed_price_keys, prefer that exact price_key (it has a saved price).",
+                "When an ingredient ISN'T in allowed_price_keys, use price_key=resolve:<snake_case_name>, source=Safeway, needs_price_resolution=true, plus quantity and unit. The local estimator resolves these live via Safeway's API.",
                 "Use source Safeway for weekly_deal price_keys.",
                 "Use source Trader Joe's only when known_store_prices includes Trader Joe's for that saved_item.",
                 "Use source pantry for assumed on-hand seasonings, oil, vinegar, spices, and condiments; pantry items are not priced.",
-                "Quantities must be in the planning_unit for the chosen price_key.",
-                "If a purchased Safeway ingredient is needed but is not in pricing_catalog.allowed_price_keys, include it in ingredients with source Safeway, price_key resolve:<snake_case_name>, quantity, unit, and needs_price_resolution true.",
+                "Quantities must be in the planning_unit for the chosen price_key (or a sensible unit when resolving live).",
                 "Use unpriced_items only for optional or truly unpriced items that should not be purchased or locally resolved.",
                 "Treat weekly_deal promotion objects as hard pricing constraints.",
                 "For promotion.type mix_and_match_min_count, the total quantity across all returned ingredients with the same promotion.group_id should be at least threshold_count, or the plan should explicitly say the deal may not apply.",
+                "Lean toward dishes that aren't an obvious repeat of recently-suggested meals; novelty and exploration are valued over absolute lowest cost.",
             ],
             "schema": {
                 "version": "meal_inspiration_plan_v1",
@@ -1049,23 +1051,27 @@ def prompt_markdown(args):
         "Do not browse and do not invent prices. Use only the JSON input below.\n\n"
         "Goal: suggest meals that are interesting because this week's deals make "
         "specific proteins or produce unusually attractive, not meals that are "
-        "only the absolute cheapest possible.\n\n"
+        "only the absolute cheapest possible. Lean toward dishes I haven't seen "
+        "before — the saved catalog is a price hint, NOT a constraint on what to cook.\n\n"
         "Return one JSON object matching `pricing_return_contract.schema`. "
         "The returned JSON must be directly usable by my local pricing estimator. "
-        "Use exact `price_key` strings from `pricing_catalog.allowed_price_keys` "
-        "when possible. If you need a purchasable Safeway ingredient that is not "
-        "in the catalog, keep it in `ingredients` with `source: Safeway`, "
-        "`price_key: resolve:<snake_case_name>`, `needs_price_resolution: true`, "
-        "and a practical quantity/unit so my local estimator can look it up. "
+        "Any ingredient is fair game — `pricing_catalog.allowed_price_keys` lists "
+        "items I already have saved prices for, but you should treat it as a hint "
+        "of what's known, not a menu of what to use. If a dish wants something "
+        "that isn't in the allowlist, just include it in `ingredients` with "
+        "`source: Safeway`, `price_key: resolve:<snake_case_name>`, "
+        "`needs_price_resolution: true`, and a practical quantity/unit. The local "
+        "estimator will resolve the price live via the Safeway search API at "
+        "run time, so unknown ingredients are not a problem.\n\n"
         "Use `unpriced_items` only for pantry/optional items that should not be "
         "purchased or resolved. Surface any required clipping explicitly. "
         "Treat multi-buy promotions as hard constraints: if you use a weekly deal "
         "with a `promotion`, make sure the total planned quantity across all recipes "
         "meets the threshold, or call out that the deal may not apply.\n\n"
-        "Prefer meals that use multiple high-ranked weekly deals and feel like "
-        "a good excuse to experiment this week. Use Trader Joe's for support "
-        "ingredients only when the saved catalog says Trader Joe's has a known "
-        "price advantage.\n\n"
+        "Prefer meals that use multiple high-ranked weekly deals, lean on novelty, "
+        "and feel like a good excuse to try something this week. Use Trader Joe's "
+        "for support ingredients only when the saved catalog says Trader Joe's "
+        "has a known price advantage.\n\n"
         "```json\n"
         f"{json.dumps(payload, indent=2, sort_keys=True)}\n"
         "```\n"
@@ -1112,16 +1118,20 @@ def use_up_prompt_markdown(args):
         "Every owned ingredient must appear as an ingredient with `source` set "
         "to `owned` and an exact `price_key` from `pricing_catalog.owned_items`, "
         "unless you explicitly mark it skipped in `owned_ingredient_usage`. "
-        "Owned ingredients are zero incremental cost. Purchased ingredients must "
-        "use exact `price_key` strings from `pricing_catalog.allowed_price_keys` "
-        "when possible. If a purchasable Safeway ingredient is not in the catalog, "
-        "keep it in `ingredients` with `source: Safeway`, "
-        "`price_key: resolve:<snake_case_name>`, `needs_price_resolution: true`, "
-        "and quantity/unit. Use `unpriced_items` only for pantry or optional items "
-        "that should not be purchased or resolved. Surface clipping and multi-buy "
-        "constraints explicitly.\n\n"
+        "Owned ingredients are zero incremental cost. For purchased ingredients, "
+        "any item is fair game — `pricing_catalog.allowed_price_keys` lists "
+        "items I already have saved prices for, but you should treat it as a hint "
+        "of what's known, not a menu of what to use. If a dish wants something "
+        "that isn't in the allowlist, include it in `ingredients` with "
+        "`source: Safeway`, `price_key: resolve:<snake_case_name>`, "
+        "`needs_price_resolution: true`, and quantity/unit. The local estimator "
+        "will resolve the price live via Safeway's API at run time. "
+        "Use `unpriced_items` only for pantry or optional items that should not "
+        "be purchased or resolved. Surface clipping and multi-buy constraints "
+        "explicitly.\n\n"
         "Prefer ideas that feel like a smart use-up meal rather than a generic "
-        "weekly-deal meal. The owned ingredient should shape the dish.\n\n"
+        "weekly-deal meal, and lean toward dishes that aren't an obvious repeat. "
+        "The owned ingredient should shape the dish.\n\n"
         "```json\n"
         f"{json.dumps(payload, indent=2, sort_keys=True)}\n"
         "```\n"

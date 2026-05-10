@@ -7,16 +7,20 @@ observed-cart JSON schema used by safeway_cart_reconcile.py.
 
 import argparse
 import json
+import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 
+# Allow imports from the repo root when this script is run from research/.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from safeway_coupon_account_state import CdpClient, cdp_page
 from safeway_coupon_search import write_json
 
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).parent.parent  # repo root, since data files live there
 DEFAULT_CAPTURE = ROOT / f"safeway_cart_capture_{datetime.now().date().isoformat()}.json"
 DEFAULT_TEMPLATE = ROOT / "safeway_cart_observed_template.json"
 DEFAULT_OBSERVED = ROOT / f"safeway_cart_observed_{datetime.now().date().isoformat()}.json"

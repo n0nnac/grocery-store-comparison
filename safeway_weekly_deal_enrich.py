@@ -459,6 +459,179 @@ def backfill_promotions(args):
     return 0
 
 
+def _normalize_weight(value):
+    if isinstance(value, list):
+        value = value[0] if value else None
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def verify_pack_mechanic(deal_name, deal, args):
+    """Query Safeway's product search API for the deal item, identify SKUs
+    whose per-unit price matches the deal's sale price, and infer the deal
+    mechanic from those SKUs' pack sizes.
+
+    Returns a dict like::
+
+        {"deal_mechanic": "per_pack_only" | "per_unit_at_any_weight" | "uncertain",
+         "pack_quantity": 4.0,        # only when per_pack_only
+         "pack_unit": "lb",
+         "verified_on": "2026-05-10",
+         "evidence": [{"pid": ..., "name": ..., "price": 7.96,
+                        "price_per": 1.99, "average_weight": 4.0, ...}, ...]}
+
+    or ``None`` if the deal has no sale price.
+
+    The mechanic is "per_pack_only" when ALL deal-priced SKUs share the
+    same pack size (with weight > 1 unit). It's "per_unit_at_any_weight"
+    when the deal price applies across multiple pack sizes. Otherwise
+    "uncertain" — the caller should not assume.
+    """
+    sale_price = deal.get("sale_price")
+    if sale_price is None:
+        return None
+    sale_unit = (deal.get("unit") or "").lower()
+
+    query = deal_name
+    try:
+        payload = fetch_search(
+            query, args.store_id, max(args.rows or 12, 12), 0,
+            args.banner, args.channel, args.timeout,
+        )
+    except (urllib.error.HTTPError, urllib.error.URLError):
+        return {"deal_mechanic": "uncertain", "reason": "api_error"}
+
+    docs = payload.get("response", {}).get("docs", []) or []
+    matches = []
+    for doc in docs:
+        price_per = doc.get("pricePer")
+        if price_per is None:
+            continue
+        try:
+            price_per_val = float(price_per)
+        except (TypeError, ValueError):
+            continue
+        if abs(price_per_val - float(sale_price)) > 0.05:
+            continue
+        avg = _normalize_weight(doc.get("averageWeight"))
+        min_w = _normalize_weight(doc.get("minWeight"))
+        max_w = _normalize_weight(doc.get("maxWeight"))
+        unit = (doc.get("unitQuantity") or doc.get("unitOfMeasure") or sale_unit).lower()
+        matches.append({
+            "pid": str(doc.get("id") or doc.get("upc") or ""),
+            "name": doc.get("name"),
+            "price": doc.get("price"),
+            "price_per": price_per_val,
+            "unit": unit,
+            "average_weight": avg,
+            "min_weight": min_w,
+            "max_weight": max_w,
+            "sell_by_weight": doc.get("sellByWeight"),
+            "inventory_available": doc.get("inventoryAvailable"),
+        })
+
+    if not matches:
+        return {
+            "deal_mechanic": "uncertain",
+            "reason": "no_matching_skus",
+            "verified_on": date.today().isoformat(),
+            "evidence": [],
+        }
+
+    weights = [m["average_weight"] for m in matches if m["average_weight"]]
+    if weights:
+        same_pack = max(weights) - min(weights) < 0.1
+        substantial = min(weights) >= 1.0
+        if same_pack and substantial:
+            return {
+                "deal_mechanic": "per_pack_only",
+                "pack_quantity": round(min(weights), 2),
+                "pack_unit": matches[0].get("unit") or sale_unit,
+                "verified_on": date.today().isoformat(),
+                "evidence": matches[:3],
+            }
+        if not same_pack:
+            return {
+                "deal_mechanic": "per_unit_at_any_weight",
+                "verified_on": date.today().isoformat(),
+                "evidence": matches[:3],
+            }
+
+    # No weight info on any match (e.g. count-based items like eggs).
+    # Treat as uncertain unless all matches are clearly per-each.
+    return {
+        "deal_mechanic": "uncertain",
+        "reason": "no_pack_size_info",
+        "verified_on": date.today().isoformat(),
+        "evidence": matches[:3],
+    }
+
+
+def verify_packs_command(args):
+    """Walk every priced deal in the deals JSON, query the API, and persist
+    a structured ``deal_mechanic`` (and ``pack_quantity`` when known) onto
+    each deal record. Mutates the deals JSON in place when --write is set.
+    """
+    deals_path = choose_deals_file(args.deals_file)
+    raw = load_json(deals_path)
+    deals = raw.get("normalized_deals") or {}
+    if not deals:
+        print("No normalized_deals to verify.")
+        return 0
+
+    selected = list(deals.items())
+    if args.role:
+        selected = [(name, deal) for name, deal in selected if classify_role(name, deal) in args.role]
+    if args.limit:
+        selected = selected[: args.limit]
+
+    print(f"Verifying pack mechanic for {len(selected)} deal(s) via Safeway API...\n")
+    print(f"{'Deal':<32} {'Sale':>7} {'Mechanic':<24} {'Pack':>10} Top match")
+    print("-" * 130)
+
+    verified = 0
+    for name, deal in selected:
+        if not args.force and deal.get("deal_mechanic") and deal.get("verified_on"):
+            top_evidence = (deal.get("verified_evidence") or [{}])[0].get("name") or ""
+            print(f"{name[:32]:<32} {money(deal.get('sale_price')):>7} {(deal.get('deal_mechanic') or '?'):<24} "
+                  f"{deal.get('pack_quantity') or '':>10} {top_evidence[:55]}  [cached]")
+            continue
+
+        result = verify_pack_mechanic(name, deal, args)
+        if result is None:
+            print(f"{name[:32]:<32} {money(deal.get('sale_price')):>7} {'(no sale price)':<24}")
+            continue
+
+        deal["deal_mechanic"] = result["deal_mechanic"]
+        if "pack_quantity" in result:
+            deal["pack_quantity"] = result["pack_quantity"]
+            deal["pack_unit"] = result.get("pack_unit")
+        deal["verified_on"] = result.get("verified_on")
+        deal["verified_evidence"] = result.get("evidence", [])
+
+        verified += 1
+        top = (result.get("evidence") or [{}])[0]
+        top_name = (top.get("name") or "")[:55]
+        pack_str = ""
+        if result.get("pack_quantity") is not None:
+            pack_str = f"{result['pack_quantity']} {result.get('pack_unit') or ''}"
+        print(f"{name[:32]:<32} {money(deal.get('sale_price')):>7} {(result['deal_mechanic'] or '?'):<24} "
+              f"{pack_str:>10} {top_name}")
+
+        if args.sleep:
+            time.sleep(args.sleep)
+
+    print(f"\nVerified {verified} deal(s)")
+    if args.write:
+        deals_path.write_text(json.dumps(raw, indent=2) + "\n")
+        print(f"Wrote {deals_path}")
+    else:
+        print("Mode: dry-run; pass --write to save")
+    return 0
+
+
 def output_path_for(metadata, explicit=None):
     if explicit:
         return Path(explicit)
@@ -539,9 +712,13 @@ def main():
     parser.add_argument("--write", action="store_true", help="Write observation JSON")
     parser.add_argument("--output", help="Output path when using --write")
     parser.add_argument("--backfill-promos", action="store_true", help="Skip API enrichment and instead parse promotion language out of deal source_label and ad_items.label, writing structured `promotion` fields back into the deals JSON in place. Use with --write to persist.")
+    parser.add_argument("--verify-packs", action="store_true", help="Skip API enrichment and instead query Safeway product search for each deal, infer deal_mechanic (per_pack_only vs per_unit_at_any_weight) and pack_quantity from the matching SKUs' average weights, writing the result back into the deals JSON in place. Use with --write to persist.")
+    parser.add_argument("--force", action="store_true", help="With --verify-packs: re-verify deals that already have a verified_on timestamp")
     args = parser.parse_args()
     if args.backfill_promos:
         return backfill_promotions(args)
+    if args.verify_packs:
+        return verify_packs_command(args)
     return enrich(args)
 
 

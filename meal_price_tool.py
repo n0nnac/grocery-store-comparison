@@ -580,19 +580,42 @@ GIANT_COUPON_DESCRIPTOR_TOKENS = {
 def giant_coupon_meal_score(meal_key, meal_record, coupon, giant_pid):
     """Score how strongly a coupon matches a meal item.
 
-    Strongest signals (>= 1.0):
-    - matched_meal_keys back-reference (per-product harvest)
-    - product_ids list contains the saved Giant product_id
+    Authoritative signals, in priority order:
+    - 1.5: matched_meal_keys back-reference (per-product harvest established
+      this coupon was returned by Giant for this saved meal item).
+    - 1.4: scope-resolved product_ids includes the saved Giant product_id.
 
-    Text-overlap signal (0.0-1.0):
+    Authoritative non-match (only when scope is resolved and we have a saved
+    giant_pid): if the resolved product_ids does NOT contain our SKU, the
+    coupon definitively does not apply — return 0.0 and skip the name
+    fallback. This eliminates the "ground beef -> ground coffee" class of
+    false positives once we have authoritative scope.
+
+    Text-overlap signal (used when scope is unresolved or no saved giant_pid):
     - Requires every "anchor" token of the meal_key (non-descriptor tokens)
       to appear in the coupon's name+description. Descriptor tokens like
       "ground" or "fresh" are not required and don't carry the match alone.
     - Adds a Giant store-brand boost when both sides are store brand.
     """
+    # Strongest signal: per-product harvest tagged this coupon for this meal item.
     if meal_key in (coupon.get("matched_meal_keys") or []):
         return 1.5
-    if giant_pid and str(giant_pid) in {str(p) for p in coupon.get("product_ids") or []}:
+
+    coupon_pids = {str(p) for p in (coupon.get("product_ids") or [])}
+    pid_str = str(giant_pid) if giant_pid else ""
+
+    # Authoritative scope check.
+    if coupon.get("scope_resolved_on") and pid_str:
+        if pid_str in coupon_pids:
+            return 1.4
+        # Coupon's qualifying-products list does not include our SKU.
+        # Skip the token fallback for this coupon — Giant says it doesn't apply.
+        return 0.0
+
+    # Pre-scope or no-saved-pid path: keep the existing product_ids check
+    # (catches per-product-harvest-supplied product_ids on coupons that
+    # haven't been scope-resolved yet) and fall back to name matching.
+    if pid_str and pid_str in coupon_pids:
         return 1.4
 
     meal_tokens = giant_token_set(meal_key)

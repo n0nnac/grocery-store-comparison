@@ -4,7 +4,7 @@ This document describes how `giant_coupon_search.py` discovers and aggregates Gi
 
 ## Why a Hybrid Source
 
-Giant exposes two endpoints that surface coupon data, and each has trade-offs.
+Giant exposes two endpoints that surface coupon data, and each has different strengths.
 
 ### v7 Storewide Search
 
@@ -13,15 +13,32 @@ POST /api/v7.0/coupons/users/{user_id}/prism/service-locations/{loc}/coupons/sea
      ?fullDocument=true&unwrap=true
 ```
 
-`paging.total` reports ~3,005 coupons in the catalog, but in practice the endpoint always returns the same first ~20 coupons regardless of pagination params. None of the following changed the response in our probes:
+The endpoint **does** paginate, once you send the body shape the savings page actually uses. The page sends:
 
-- Body params: `start`, `offset`, `from`, `page`, `pageSize`, `rows`, `size`, `paging.start`
-- Filter params: `categoryTreeId`, `categoryTreeIds`, `filters`, `facetFilters`, `refinements`, `keywords`, `text`, `keyword`
-- Query string variants of the above
-- Different user IDs and service location IDs
-- The `v8.0` variant of the endpoint (returns 254 entries with the same first-page-only behavior)
+```json
+{
+  "query": {"start": 0, "size": 60},
+  "filter": {
+    "sourceSystems": ["QUO", "COP", "INM"],
+    "loadable": true,
+    "loaded": false
+  },
+  "copientQuotientTargetingEnabled": true,
+  "sorts": [{"targeted": "desc"}]
+}
+```
 
-The savings page may use a different mechanism (per-category fetches, GraphQL, or a server-rendered first page), but for shell automation this endpoint behaves as a "top ~20 storewide promotions" snapshot rather than a full catalog mirror.
+The trick we missed at first is that `start` and `size` are nested inside a `query` object — top-level `start` / `rows` / `offset` / `page` are silently ignored, which is what made the endpoint look broken in early probes. We confirmed this by capturing the live request body via Chrome DevTools Protocol's `Network.requestWillBeSent` event during a fresh navigation to `/savings/coupons/browse`.
+
+What we now know about the body fields:
+
+- `query.start`, `query.size`: real pagination. Server caps `size` at 90 even when a larger value is requested.
+- `filter.sourceSystems`: restrict to specific source-system tags (`COP`, `ECI`, `INM`, `QUO`, `PHX`, etc.).
+- `filter.loadable`, `filter.loaded`: per-account scope. The page defaults to `loadable: true, loaded: false`, which yields ~257 coupons (loadable for this account but not yet loaded).
+- `copientQuotientTargetingEnabled: true`: enables targeted/personalized matching, which dramatically narrows the result set.
+- `sorts: [{targeted: "desc"}]`: sorts targeted-first; safe to include without restricting scope.
+
+For a meal-planning catalog mirror we want the **full** ~3,051-coupon catalog, so the script defaults to no filter and `targeting_enabled=False`. The savings page's narrow ~257-coupon view can be reproduced with `--targeting-only` plus `--loadable-only --unloaded-only`.
 
 ### v5 Per-Product Display Coupons
 
@@ -33,15 +50,15 @@ GET /api/v5.0/products/info/{user}/{loc}/{prodId}?extendedInfo=true&flags=true&s
 
 Each saved Giant product carries 4–5 coupons directly relevant to it (often "meal bundle" offers like "Save $3 when you buy steak & eggs"). These records have a thinner schema than the v7 search response — no `productIds`/`categoryTreeIds`/`brandIds` scope arrays — but they include the source system, validity dates, max discount, clipping requirement, and per-user account state.
 
-Walking the Giant product IDs already saved in `meal_prices.json` therefore gives us coupons that are **demonstrably relevant** to our planning catalog without paginating an unpaginatable storewide endpoint.
+Walking the Giant product IDs already saved in `meal_prices.json` adds the `matched_meal_keys` and `matched_product_ids` back-references onto each coupon record, which is the strongest signal the meal-item match scorer uses.
 
 ## Aggregation
 
 `giant_coupon_search.py fetch` combines both sources into a single deduplicated catalog written to `giant_coupons.json`:
 
-1. Pull the v7 storewide first page (configurable up to `--max-pages` calls).
+1. Paginate the v7 storewide endpoint with the real body shape (`{query: {start, size}, ...}`) until the catalog is exhausted (~35 pages at `size=90`).
 2. For each saved Giant product ID in `meal_prices.json`, GET the product detail and harvest `availableDisplayCoupons`.
-3. Dedupe by coupon `id`. When the same coupon appears in both sources, the richer v7 record wins for fields like `productIds` and `legalText`, while the per-product source contributes back-references.
+3. Dedupe by coupon `id`. When the same coupon appears in both sources, the richer v7 record wins for fields like `productIds` and `legalText`, while the per-product source contributes the back-references.
 4. Annotate each coupon with `matched_meal_keys` and `matched_product_ids` listing which saved items surfaced it.
 
 Per-user `clipped`/`loaded`/`loadable` state is sanitized out of the tracked `giant_coupons.json` and written instead to `giant_coupon_account_state.local.json` (gitignored), mirroring the Safeway public/local split.
@@ -50,13 +67,15 @@ Per-user `clipped`/`loaded`/`loadable` state is sanitized out of the tracked `gi
 
 ```bash
 python3 giant_coupon_search.py fetch --write
+python3 giant_coupon_search.py fetch --targeting-only --loadable-only --unloaded-only --write
+python3 giant_coupon_search.py fetch --source-systems COP --source-systems ECI --write
 python3 giant_coupon_search.py fetch --no-storewide --only "eggs" "shredded cheese"
 python3 giant_coupon_search.py search --query "meal bundle"
 python3 giant_coupon_search.py search --category "Breakfast" --limit 10
 python3 giant_coupon_search.py match --min-score 0.4 --keep 2
 ```
 
-`fetch` runs both sources by default. `--no-storewide` skips the v7 step (useful when only product-relevant coupons matter); `--no-per-product` skips the v5 walk.
+`fetch` runs both sources by default. `--no-storewide` skips the v7 step (useful when only product-relevant coupons matter); `--no-per-product` skips the v5 walk. `--targeting-only`, `--loadable-only`, `--unloaded-only`, and `--source-systems` map directly onto the v7 body fields the savings page uses.
 
 `match` scores active coupons against `meal_prices.json` items. The strongest signal is a `matched_meal_keys` back-reference (added during the per-product harvest); secondary signals include token overlap with the meal key and brand match.
 

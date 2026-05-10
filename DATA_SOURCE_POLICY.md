@@ -179,8 +179,8 @@ Do not attempt to use Flipp circular prices as base prices. Do not overwrite a f
 
 Giant exposes coupons through two paths:
 
-- A storewide v7 coupon-search endpoint that reports a ~3,000-coupon catalog but in practice always returns the same first ~20 results regardless of pagination params. Treat as a "top storewide promotions" snapshot.
-- A per-product `availableDisplayCoupons` array on the v5 product detail endpoint, harvested by walking saved Giant product IDs in `meal_prices.json`.
+- A storewide v7 coupon-search endpoint that paginates correctly when the body wraps `start`/`size` inside a `query` object (the page's actual shape). Total catalog is ~3,051 coupons retrievable in pages of up to 90 each.
+- A per-product `availableDisplayCoupons` array on the v5 product detail endpoint, harvested by walking saved Giant product IDs in `meal_prices.json`. Adds `matched_meal_keys` back-references onto each coupon.
 
 `giant_coupon_search.py fetch` aggregates both into `giant_coupons.json`, deduping by coupon id and annotating each entry with `matched_meal_keys` and `matched_product_ids` back-references. Per-user clipped/loaded state lives in the gitignored `giant_coupon_account_state.local.json`.
 

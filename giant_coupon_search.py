@@ -93,20 +93,48 @@ def fetch_product_detail(port, user_id, service_location_id, product_id, timeout
     return evaluate_in_giant_page(port, expression)
 
 
-def fetch_coupon_page(port, user_id, service_location_id, start, rows, timeout):
-    """POST one page of the coupon catalog through the browser tab."""
+def fetch_coupon_page(port, user_id, service_location_id, start, size, timeout, source_systems=None, loadable=None, loaded=None, sort_targeted=False, targeting_enabled=False):
+    """POST one page of the coupon catalog through the browser tab.
+
+    The Giant savings page uses a structured body where pagination params
+    are nested under `query`. Top-level `start`/`rows` are silently ignored.
+    The server caps `size` at 90 even when a larger value is requested.
+
+    Two flags shape the result scope:
+
+    - `targeting_enabled=True` (the page's default) restricts results to
+      targeted/personalized coupons for the user; total reduces from
+      ~3,051 to ~257.
+    - `sort_targeted=True` sorts targeted-first; safe to include without
+      restricting scope, but we leave it off by default to keep the
+      response stable for catalog mirroring.
+    """
     url = (
         f"{API_BASE}/coupons/users/{user_id}/prism"
         f"/service-locations/{service_location_id}"
         f"/coupons/search?fullDocument=true&unwrap=true"
     )
-    body = {"start": start, "rows": rows}
+    body = {"query": {"start": start, "size": size}}
+    if targeting_enabled:
+        body["copientQuotientTargetingEnabled"] = True
+    filter_block = {}
+    if source_systems:
+        filter_block["sourceSystems"] = list(source_systems)
+    if loadable is not None:
+        filter_block["loadable"] = loadable
+    if loaded is not None:
+        filter_block["loaded"] = loaded
+    if filter_block:
+        body["filter"] = filter_block
+    if sort_targeted:
+        body["sorts"] = [{"targeted": "desc"}]
+
     expression = f"""
     (async () => {{
       const response = await fetch({json.dumps(url)}, {{
         method: "POST",
         credentials: "include",
-        headers: {{"Content-Type": "application/json"}},
+        headers: {{"Content-Type": "application/json", "Accept": "application/json, text/plain, */*"}},
         body: {json.dumps(json.dumps(body))}
       }});
       const text = await response.text();
@@ -243,22 +271,34 @@ def iter_giant_product_refs():
         yield meal_key, str(product_id), source.get("brand")
 
 
-def fetch_full_catalog(port, user_id, service_location_id, page_size, max_pages, timeout, sleep):
-    """Fetch the full coupon catalog by paginating from start=0.
+def fetch_full_catalog(port, user_id, service_location_id, page_size, max_pages, timeout, sleep, source_systems=None, loadable=None, loaded=None, targeting_enabled=False):
+    """Fetch the full coupon catalog by paginating with the real body shape.
 
-    Giant's v7 search endpoint silently caps the response size at 20 regardless
-    of the `rows` parameter we send, so we use the API's actual returned page
-    size as our increment.
+    The page sends `{query: {start, size}, filter, sorts, ...}` rather than
+    top-level `start`/`rows`. The server returns a real `paging.size` (often
+    capped at 90 even when a larger size is requested). We increment `start`
+    by the actual returned size each iteration.
     """
     coupons = []
     account_state = {}
     facets = None
     paging_total = None
-    api_page_size = page_size
+    seen_ids = set()
     start = 0
 
     for _ in range(max_pages):
-        result = fetch_coupon_page(port, user_id, service_location_id, start, page_size, timeout)
+        result = fetch_coupon_page(
+            port,
+            user_id,
+            service_location_id,
+            start,
+            page_size,
+            timeout,
+            source_systems=source_systems,
+            loadable=loadable,
+            loaded=loaded,
+            targeting_enabled=targeting_enabled,
+        )
         if not result.get("ok"):
             raise GiantBrowserError(
                 f"Coupon search failed at start={start}: status={result.get('status')} "
@@ -271,21 +311,25 @@ def fetch_full_catalog(port, user_id, service_location_id, page_size, max_pages,
             facets = payload.get("facets")
         if paging_total is None:
             paging_total = paging.get("total")
-        actual_size = paging.get("size") or len(page_coupons) or page_size
-        if actual_size and actual_size != api_page_size:
-            api_page_size = actual_size
+        returned = paging.get("size") or len(page_coupons)
+
+        added = 0
         for raw in page_coupons:
-            coupons.append(normalize_coupon(raw))
             coupon_id = raw.get("id")
-            if coupon_id:
-                account_state[coupon_id] = extract_account_state(raw)
-        if not page_coupons:
+            if not coupon_id or coupon_id in seen_ids:
+                continue
+            seen_ids.add(coupon_id)
+            coupons.append(normalize_coupon(raw))
+            account_state[coupon_id] = extract_account_state(raw)
+            added += 1
+
+        if not page_coupons or added == 0:
             break
         if paging_total is not None and len(coupons) >= paging_total:
             break
-        # Use the API's actual returned page size to increment, not the
-        # requested rows (which the API ignores).
-        start += api_page_size
+
+        # Increment by the real returned page size rather than what we asked for.
+        start += returned if returned else len(page_coupons)
         if sleep:
             time.sleep(sleep)
 
@@ -400,6 +444,10 @@ def command_fetch(args):
             args.max_pages,
             args.timeout,
             args.sleep,
+            source_systems=args.source_systems or None,
+            loadable=args.loadable_only or None,
+            loaded=False if args.unloaded_only else None,
+            targeting_enabled=args.targeting_only,
         )
         storewide_total = paging_total
         seen = set()
@@ -494,7 +542,7 @@ def command_fetch(args):
     }
 
     print(
-        f"Storewide: {storewide_count} unique coupons (paging.total={storewide_total or '?'}; v7 endpoint caps at first ~20)"
+        f"Storewide: {storewide_count} unique coupons (paging.total={storewide_total or '?'}; server caps page size at 90)"
     )
     print(f"Per-product: {per_product_count} unique coupons across saved Giant products")
     print(f"Combined: {len(coupons)} unique coupons total")
@@ -638,8 +686,12 @@ def parse_args():
     fetch.add_argument("--port", type=int, default=DEFAULT_PORT)
     fetch.add_argument("--service-location-id", default=DEFAULT_SERVICE_LOCATION_ID)
     fetch.add_argument("--user-id", default=DEFAULT_USER_ID)
-    fetch.add_argument("--page-size", type=int, default=20, help="Requested page size for the v7 storewide endpoint")
-    fetch.add_argument("--max-pages", type=int, default=10, help="Max storewide pages to attempt before declaring the catalog exhausted")
+    fetch.add_argument("--page-size", type=int, default=90, help="Requested page size; server caps at 90")
+    fetch.add_argument("--max-pages", type=int, default=50, help="Max storewide pages; ~35 covers the full ~3000 catalog at size 90")
+    fetch.add_argument("--source-systems", action="append", help="Filter to specific source systems (COP, ECI, INM, QUO, etc.); repeatable")
+    fetch.add_argument("--loadable-only", action="store_true", help="Restrict to loadable coupons via filter.loadable=true")
+    fetch.add_argument("--unloaded-only", action="store_true", help="Restrict to unloaded coupons via filter.loaded=false")
+    fetch.add_argument("--targeting-only", action="store_true", help="Restrict to targeted/personalized coupons via copientQuotientTargetingEnabled=true (mirrors the savings page default)")
     fetch.add_argument("--no-storewide", action="store_true", help="Skip the v7 storewide search step")
     fetch.add_argument("--no-per-product", action="store_true", help="Skip per-product display-coupon harvesting")
     fetch.add_argument("--only", action="append", help="Restrict per-product harvest to these meal_prices keys (repeatable)")

@@ -155,7 +155,7 @@ python3 giant_coupon_search.py search --category "Breakfast" --limit 10
 python3 giant_coupon_search.py match --min-score 0.4 --keep 2
 ```
 
-`fetch` combines the v7 storewide coupon search (first ~20 storewide promotions, since the endpoint silently caps responses) with per-product `availableDisplayCoupons` harvested via saved Giant product IDs. The result is deduplicated and back-references each coupon to the meal items that surfaced it. Per-user clipped/loaded state is split into ignored `giant_coupon_account_state.local.json`. See `GIANT_COUPON_METHODOLOGY.md` for the hybrid-source design.
+`fetch` paginates the v7 storewide coupon search (the savings page's body shape, with `start`/`size` nested under `query`) and combines it with per-product `availableDisplayCoupons` harvested via saved Giant product IDs. Default fetch returns the full ~3,000-coupon catalog; the savings page's narrower personalized view can be reproduced with `--targeting-only --loadable-only --unloaded-only`. Results are deduplicated and back-reference each coupon to the meal items that surfaced it. Per-user clipped/loaded state is split into ignored `giant_coupon_account_state.local.json`. See `GIANT_COUPON_METHODOLOGY.md` for the hybrid-source design.
 
 `cart --compare-stores --verbose` now lists applicable Giant coupons per cart line, with clipping requirement, account state, and end date. Aggregate discounts are reported informationally; bundle-condition modelling is left for a future pass.
 

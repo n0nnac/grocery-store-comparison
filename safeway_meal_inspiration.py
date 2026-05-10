@@ -988,13 +988,19 @@ def owned_ingredient_rows(args):
                 }
             )
 
-    for name in args.ingredients or []:
+    positional = list(args.ingredients or [])
+    quantity = getattr(args, "quantity", None)
+    unit = getattr(args, "unit", None)
+    if (quantity is not None or unit) and len(positional) != 1:
+        raise SystemExit("--quantity / --unit only apply when exactly one positional ingredient is given; use --owned-json for multi-ingredient quantities")
+
+    for name in positional:
         rows.append(
             {
                 "name": name,
                 "price_key": f"owned:{slugify(name)}",
-                "quantity": None,
-                "unit": None,
+                "quantity": quantity,
+                "unit": unit,
                 "notes": None,
                 "source": "owned",
             }
@@ -1068,15 +1074,40 @@ def prompt_markdown(args):
 
 def use_up_prompt_markdown(args):
     payload = use_up_prompt_payload(args)
-    owned_names = ", ".join(item["name"] for item in payload["owned_ingredients"])
+
+    owned_phrases = []
+    for item in payload["owned_ingredients"]:
+        qty, unit, name = item.get("quantity"), item.get("unit"), item["name"]
+        if qty is not None and unit:
+            qty_str = f"{int(qty)}" if isinstance(qty, (int, float)) and float(qty).is_integer() else f"{qty}"
+            owned_phrases.append(f"{qty_str} {unit} of {name}")
+        elif qty is not None:
+            owned_phrases.append(f"{qty} {name}")
+        else:
+            owned_phrases.append(name)
+    owned_phrase = ", ".join(owned_phrases)
+
+    portions = getattr(args, "portions", None)
+    single_dish = getattr(args, "single_dish", False)
+    meal_prep = getattr(args, "meal_prep", False)
+
+    portions_clause = f" yielding exactly {portions} portions" if portions else ""
+    dish_clause = "Build one coherent dish" if single_dish else "Build one or more coherent dishes"
+    prep_clause = (
+        " The dish must be meal-preppable: cooked once, refrigerator-stable for the week, "
+        "and reheat-friendly. Avoid raw salads or texture-fragile components that wilt."
+        if meal_prep else ""
+    )
+
     return (
         "# Use-Up Meal Inspiration Prompt\n\n"
         "You are helping plan a dish from grounded grocery pricing data and "
         "ingredients I already have. Do not browse and do not invent prices. "
         "Use only the JSON input below.\n\n"
-        f"Goal: use up these owned ingredients: {owned_names}. Build one or more "
-        "coherent dishes around them, using this week's unusually strong Safeway "
-        "deals as add-ons where they make the dish better or more interesting.\n\n"
+        f"Goal: use up these owned ingredients: {owned_phrase}. "
+        f"{dish_clause} around them{portions_clause}, using this week's unusually strong "
+        "Safeway deals as add-ons where they make the dish better or more interesting."
+        f"{prep_clause}\n\n"
         "Return one JSON object matching `pricing_return_contract.schema`. "
         "Every owned ingredient must appear as an ingredient with `source` set "
         "to `owned` and an exact `price_key` from `pricing_catalog.owned_items`, "
@@ -1180,6 +1211,11 @@ def main():
     add_source_args(use_up_parser)
     use_up_parser.add_argument("ingredients", nargs="*", help="Owned ingredients to use up, e.g. 'ground beef' 'artichokes'")
     use_up_parser.add_argument("--owned-json", help="Optional JSON list of owned ingredient objects with name/quantity/unit")
+    use_up_parser.add_argument("--quantity", type=float, help="Quantity for the (single) positional ingredient (use --owned-json for multi-ingredient quantities)")
+    use_up_parser.add_argument("--unit", help="Unit for --quantity, e.g. 'lb', 'oz', 'package'")
+    use_up_parser.add_argument("--portions", type=int, help="Portion count the dish should yield")
+    use_up_parser.add_argument("--single-dish", action="store_true", help="Ask for one coherent dish rather than several alternatives")
+    use_up_parser.add_argument("--meal-prep", action="store_true", help="Frame the dish as meal-preppable: refrigerator-stable, reheat-friendly")
     use_up_parser.add_argument("--limit", type=int, default=20, help="Number of ranked deals to include")
     use_up_parser.add_argument("--catalog-limit", type=int, default=24, help="Number of weekly deal price keys to expose")
     use_up_parser.add_argument("--write", action="store_true", help="Write prompt Markdown to disk")

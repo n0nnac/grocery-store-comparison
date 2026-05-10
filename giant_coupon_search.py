@@ -1,26 +1,37 @@
 #!/usr/bin/env python3
 """Aggregate Giant Food coupons relevant to saved meal items.
 
-Two sources combine into a single `giant_coupons.json` catalog:
+Three sources combine into a single `giant_coupons.json` catalog:
 
-1. The storewide v7 search endpoint:
+1. The storewide v7 search endpoint paginates over the full ~3,000 catalog
+   when given the right body shape:
 
        POST /api/v7.0/coupons/users/{user}/prism/service-locations/{loc}
             /coupons/search?fullDocument=true&unwrap=true
+       body: {"query": {"start": N, "size": 90}, ...}
 
-   In practice this endpoint always returns the same first ~20 coupons —
-   it ignores `start`, `offset`, `page`, and any filter we have tried.
-   `paging.total` reports ~3,005, but no offset/cursor probe surfaces a
-   different result. Treat this as a "top storewide promotions" snapshot.
+   `start`/`size` MUST be nested under `query` — top-level pagination keys
+   are silently ignored. The server caps `size` at 90.
 
 2. The per-product `availableDisplayCoupons` array on the v5 product detail
    endpoint, walked via `giant_refresh_prices.py` saved Giant product IDs.
    This is much richer: each saved meal-item product carries 4-5 coupons
    directly relevant to it, plus their full discount/scope metadata.
 
+3. The `scope` subcommand back-fills authoritative qualifying-product SKUs
+   for ITEM-target coupons via:
+
+       GET /api/v5.0/products/{user}/{loc}?couponId={id}
+           &start=0&rows=200&sort=bestMatch+asc&flags=true
+
+   This is the same call the savings page's "View Coupon Details" modal
+   uses to render its "Qualifying Products" grid. The v7 search response
+   leaves `productIds` empty for every coupon; this endpoint is the one
+   that surfaces the per-coupon SKU list.
+
 The aggregated catalog is keyed by coupon id and back-references the meal
-items the coupon applies to. Subcommands let you search the catalog or
-match coupons against `meal_prices.json` items.
+items the coupon applies to. Subcommands let you search the catalog,
+resolve qualifying-product SKUs, or match coupons against `meal_prices.json`.
 """
 
 import argparse
@@ -384,6 +395,82 @@ def collect_per_product_coupons(port, user_id, service_location_id, timeout, sle
     return coupons_by_id, coupon_to_meal_keys, coupon_to_product_ids, account_state, failures
 
 
+def fetch_coupon_scope_page(port, user_id, service_location_id, coupon_id, start, rows, timeout):
+    """Fetch one page of qualifying products for a single coupon.
+
+    Hits `/api/v5.0/products/{user}/{loc}?couponId={id}&start={start}&rows={rows}`,
+    the same endpoint the savings-page "View Coupon Details" modal uses to
+    render its qualifying-products grid. Returns the raw payload object the
+    browser sees.
+    """
+    url = (
+        f"/api/v5.0/products/{user_id}/{service_location_id}"
+        f"?couponId={coupon_id}&start={start}&rows={rows}&sort=bestMatch+asc&flags=true"
+    )
+    expression = f"""
+    (async () => {{
+      const response = await fetch({json.dumps(url)}, {{
+        method: "GET",
+        credentials: "include",
+      }});
+      const text = await response.text();
+      let payload = null;
+      try {{ payload = JSON.parse(text); }} catch (e) {{}}
+      return {{
+        status: response.status,
+        ok: response.ok,
+        payload,
+        text: payload ? null : text.slice(0, 400),
+      }};
+    }})()
+    """
+    return evaluate_in_giant_page(port, expression)
+
+
+def fetch_coupon_scope_products(port, user_id, service_location_id, coupon_id, page_size, max_pages, timeout, sleep):
+    """Walk paginated qualifying products for one coupon.
+
+    Returns ``(products, total, error_or_None)``. Each product entry carries
+    ``prod_id`` (string), ``name``, ``brand``, ``size``.
+    """
+    products = []
+    total = None
+    start = 0
+    for _ in range(max_pages):
+        result = fetch_coupon_scope_page(
+            port, user_id, service_location_id, coupon_id, start, page_size, timeout
+        )
+        if not result.get("ok"):
+            return products, total, {
+                "status": result.get("status"),
+                "text": result.get("text"),
+                "start": start,
+            }
+        payload = result.get("payload") or {}
+        resp = payload.get("response") or {}
+        page_products = resp.get("products") or []
+        for p in page_products:
+            pid = p.get("prodId")
+            if pid is None:
+                continue
+            products.append({
+                "prod_id": str(pid),
+                "name": p.get("name"),
+                "brand": p.get("brand"),
+                "size": p.get("size"),
+            })
+        pagination = resp.get("pagination") or {}
+        total = pagination.get("total") if pagination.get("total") is not None else total
+        if total is not None and len(products) >= total:
+            break
+        if not page_products:
+            break
+        start += page_size
+        if sleep:
+            time.sleep(sleep)
+    return products, total, None
+
+
 def coupon_active(coupon, today=None):
     today = today or date.today().isoformat()
     end = (coupon.get("end_date") or "")[:10]
@@ -511,10 +598,11 @@ def command_fetch(args):
                 f"Account-specific clipped/loaded state belongs in ignored {ACCOUNT_STATE_FILE.name}."
             ),
             "notes": [
-                "Combined catalog: storewide v7 search snapshot plus per-product display coupons.",
-                "The v7 storewide endpoint silently caps responses; only the first ~20 storewide deals are retrievable.",
+                "Combined catalog: storewide v7 search plus per-product display coupons.",
+                "The v7 storewide search paginates correctly when query.start/size are nested under `query`; server caps size at 90.",
                 "Per-product coupons are harvested by walking saved Giant product IDs in meal_prices.json.",
                 "Each coupon record carries matched_meal_keys / matched_product_ids back-references when relevant.",
+                "Authoritative product_ids for ITEM-target coupons come from the `scope` subcommand, which hits /api/v5.0/products?couponId=...",
                 "Account-state fields are sanitized in this tracked file. Real per-account state lives in the local file.",
             ],
         },
@@ -554,6 +642,287 @@ def command_fetch(args):
         print(f"Wrote {COUPONS_FILE.name}")
         write_json(ACCOUNT_STATE_FILE, account_payload)
         print(f"Wrote {ACCOUNT_STATE_FILE.name} (gitignored)")
+    else:
+        print("Mode: dry-run; pass --write to save")
+    return 0
+
+
+DESCRIPTOR_TOKENS = {
+    "boneless", "skinless", "raw", "fresh", "frozen", "ground", "diced",
+    "shredded", "lean", "fat", "free", "low", "reduced", "natural",
+}
+
+
+def _tokens(text):
+    return {t for t in re.findall(r"[a-z]+", (text or "").lower()) if len(t) > 2}
+
+
+def _meal_anchor_tokens():
+    """Build the union of anchor tokens across every meal_prices.json item.
+
+    Anchor tokens are all alphabetic 3+-letter substrings of the meal key,
+    category, and tags, minus generic descriptors (`fresh`, `lean`, etc.).
+    Used by `--relevant-only` to pre-filter coupons whose name/description
+    can plausibly apply to at least one tracked meal item.
+    """
+    if not MEAL_PRICES_FILE.exists():
+        return set()
+    data = load_json(MEAL_PRICES_FILE)
+    items = data.get("items") or {}
+    tokens = set()
+    for meal_key, item in items.items():
+        blob = " ".join([
+            meal_key,
+            item.get("category") or "",
+            " ".join(item.get("meal_tags") or []),
+            item.get("unit") or "",
+        ])
+        tokens.update(_tokens(blob))
+    return tokens - DESCRIPTOR_TOKENS
+
+
+def _coupon_is_relevant(coupon, meal_tokens):
+    blob = " ".join(filter(None, [coupon.get("name"), coupon.get("description")]))
+    return bool(_tokens(blob) & meal_tokens)
+
+
+def scope_warmup(port, settle_seconds=8.0):
+    """Reload the Giant savings page tab via CDP, then wait for it to settle.
+
+    Mimics the natural "user opened savings page" flow before we start
+    hammering the per-coupon scope endpoint. Returns (ok, message).
+    """
+    try:
+        from giant_browser_api_probe import find_giant_page  # local import to avoid cycle
+    except ImportError as exc:
+        return False, f"could not import find_giant_page: {exc}"
+    try:
+        page = find_giant_page(port)
+    except GiantBrowserError as exc:
+        return False, str(exc)
+
+    try:
+        import websocket  # type: ignore
+    except ImportError:
+        return False, "websocket-client not installed"
+
+    try:
+        ws = websocket.create_connection(
+            page["webSocketDebuggerUrl"],
+            timeout=15,
+            origin=f"http://127.0.0.1:{port}",
+        )
+    except Exception as exc:  # noqa: BLE001 - diagnostic preserved
+        return False, f"websocket connect failed: {exc}"
+
+    try:
+        ws.send(json.dumps({"id": 1, "method": "Page.enable", "params": {}}))
+        ws.send(json.dumps({"id": 2, "method": "Page.reload", "params": {"ignoreCache": True}}))
+        ws.settimeout(2.0)
+        try:
+            for _ in range(6):
+                ws.recv()
+        except Exception:  # noqa: BLE001 - drain best-effort
+            pass
+    finally:
+        try:
+            ws.close()
+        except Exception:
+            pass
+
+    if settle_seconds:
+        time.sleep(settle_seconds)
+    return True, f"reloaded and waited {settle_seconds:.0f}s"
+
+
+def scope_preflight(port, user_id, service_location_id, coupon_id, timeout):
+    """Single test call to /api/v5.0/products?couponId=... to detect a DataDome
+    block before starting the sweep. Returns (ok, message).
+
+    `coupon_id` should be a real coupon ID; if the response carries products,
+    the session is healthy.
+    """
+    try:
+        result = fetch_coupon_scope_page(
+            port, user_id, service_location_id, coupon_id,
+            start=0, rows=1, timeout=timeout,
+        )
+    except GiantBrowserError as exc:
+        return False, f"browser error: {exc}"
+    if result.get("ok"):
+        payload = result.get("payload") or {}
+        resp = payload.get("response") or {}
+        pagination = resp.get("pagination") or {}
+        total = pagination.get("total")
+        return True, f"v5 scope endpoint responded; total products for {coupon_id}: {total}"
+    text = (result.get("text") or "")
+    if result.get("status") == 403 or "Please enable JS" in text:
+        return False, f"DataDome challenge (status {result.get('status')}); session is blocked. Try again later or refresh the savings tab manually."
+    return False, f"unexpected status {result.get('status')}: {text[:200]}"
+
+
+def command_scope(args):
+    if not COUPONS_FILE.exists():
+        print(f"{COUPONS_FILE.name} not found; run fetch --write first.", file=sys.stderr)
+        return 2
+    wait_for_devtools(args.port)
+
+    catalog = load_json(COUPONS_FILE)
+    coupons = catalog.get("coupons") or []
+    today = date.today().isoformat()
+
+    coupon_id_filter = set(args.coupon_ids or [])
+    source_system_filter = set(args.source_systems or [])
+    only_meal_keys = {k.lower() for k in (args.only or [])}
+    relevant_tokens = _meal_anchor_tokens() if args.relevant_only else None
+
+    candidates = []
+    for coupon in coupons:
+        if coupon.get("coupon_reward_target") != "ITEM":
+            continue
+        if not coupon_active(coupon, today):
+            continue
+        if coupon_id_filter and coupon.get("id") not in coupon_id_filter:
+            continue
+        if source_system_filter and coupon.get("source_system") not in source_system_filter:
+            continue
+        if only_meal_keys:
+            mks = {(k or "").lower() for k in coupon.get("matched_meal_keys") or []}
+            if not (mks & only_meal_keys):
+                continue
+        if args.skip_resolved and coupon.get("scope_resolved_on"):
+            continue
+        if relevant_tokens is not None and not _coupon_is_relevant(coupon, relevant_tokens):
+            continue
+        candidates.append(coupon)
+
+    if args.limit:
+        candidates = candidates[: args.limit]
+
+    if args.warmup and candidates:
+        print("Warming up: reloading the Giant savings tab to refresh the session...", file=sys.stderr)
+        ok, message = scope_warmup(args.port, settle_seconds=args.warmup_settle)
+        print(f"  {message}", file=sys.stderr)
+        if not ok and not args.no_preflight:
+            print("Warmup failed and preflight is enabled; aborting before any scope calls.", file=sys.stderr)
+            return 2
+
+    if not args.no_preflight and candidates:
+        # Pick a probe coupon: prefer one already resolved (so we know what to expect),
+        # otherwise the first candidate.
+        already_resolved = next(
+            (c for c in coupons if c.get("scope_resolved_on") and c.get("coupon_reward_target") == "ITEM"),
+            None,
+        )
+        probe = already_resolved or candidates[0]
+        probe_id = probe.get("id")
+        ok, message = scope_preflight(
+            args.port, args.user_id, args.service_location_id, probe_id, args.timeout,
+        )
+        if not ok:
+            print(f"Preflight failed on {probe_id}: {message}", file=sys.stderr)
+            print("Skipping sweep. Resume later with --skip-resolved when DataDome clears.", file=sys.stderr)
+            return 2
+        print(f"Preflight ok on {probe_id}: {message}", file=sys.stderr)
+
+    print(f"Scope-resolving {len(candidates)} active ITEM-target coupons (rows={args.rows}, max-pages={args.max_pages}, sleep={args.sleep}s)")
+
+    failures = []
+    resolved_count = 0
+    total_links = 0
+    skipped_total = 0
+    consecutive_403s = 0
+    aborted = False
+    write_every = max(args.write_every or 0, 0)
+
+    def maybe_persist():
+        if not args.write:
+            return
+        catalog.setdefault("metadata", {})
+        catalog["metadata"]["scope_resolved_count"] = sum(
+            1 for c in coupons if c.get("scope_resolved_on")
+        )
+        catalog["metadata"]["last_scope_resolved_on"] = today
+        write_json(COUPONS_FILE, catalog)
+
+    for index, coupon in enumerate(candidates):
+        cid = coupon.get("id")
+        attempt = 0
+        products, total, error = [], None, None
+        while attempt <= args.max_retries:
+            try:
+                products, total, error = fetch_coupon_scope_products(
+                    args.port,
+                    args.user_id,
+                    args.service_location_id,
+                    cid,
+                    page_size=args.rows,
+                    max_pages=args.max_pages,
+                    timeout=args.timeout,
+                    sleep=0,
+                )
+            except GiantBrowserError as exc:
+                error = {"status": "browser-error", "text": str(exc)}
+                products, total = [], None
+            is_block = bool(error) and (
+                error.get("status") == 403
+                or "Please enable JS" in (error.get("text") or "")
+            )
+            if is_block and attempt < args.max_retries:
+                attempt += 1
+                backoff = args.backoff * (2 ** (attempt - 1))
+                print(f"  [{index+1}/{len(candidates)}] {cid}: 403 challenge, backing off {backoff:.0f}s (attempt {attempt}/{args.max_retries})", file=sys.stderr)
+                time.sleep(backoff)
+                continue
+            break  # success, non-block error, or retries exhausted
+
+        if error:
+            failures.append({"id": cid, "error": error})
+            is_block = (
+                error.get("status") == 403
+                or "Please enable JS" in (error.get("text") or "")
+            )
+            if is_block:
+                consecutive_403s += 1
+                if consecutive_403s >= args.abort_after_403s:
+                    print(f"\nAborting: {consecutive_403s} consecutive 403s — DataDome appears to be blocking the session.", file=sys.stderr)
+                    aborted = True
+                    break
+            else:
+                consecutive_403s = 0
+            continue
+
+        consecutive_403s = 0
+        coupon["product_ids"] = sorted({p["prod_id"] for p in products})
+        coupon["scope_total"] = total
+        coupon["scope_resolved_on"] = today
+        if total is not None and len(products) < total:
+            skipped_total += total - len(products)
+        resolved_count += 1
+        total_links += len(products)
+        if args.verbose and products:
+            sample = ", ".join(p["name"] or "" for p in products[:3])
+            print(f"  [{index+1}/{len(candidates)}] {cid}: {len(products)} products  {sample[:80]}")
+        elif args.verbose:
+            print(f"  [{index+1}/{len(candidates)}] {cid}: 0 products")
+
+        if write_every and resolved_count % write_every == 0:
+            maybe_persist()
+
+        if args.sleep and index < len(candidates) - 1:
+            time.sleep(args.sleep)
+
+    print(f"\nResolved {resolved_count} / {len(candidates)} coupons; {total_links} total product links")
+    if skipped_total:
+        print(f"Note: {skipped_total} qualifying products beyond max-pages cap were not captured")
+    if failures:
+        print(f"Failures: {len(failures)}; first error: {failures[0]['error'] if isinstance(failures[0]['error'], str) else (failures[0]['error'].get('status') if isinstance(failures[0]['error'], dict) else failures[0]['error'])}")
+    if aborted:
+        print(f"Aborted after {consecutive_403s} consecutive 403s; resume later with --skip-resolved.")
+
+    if args.write:
+        maybe_persist()
+        print(f"Wrote {COUPONS_FILE.name}")
     else:
         print("Mode: dry-run; pass --write to save")
     return 0
@@ -699,6 +1068,33 @@ def parse_args():
     fetch.add_argument("--timeout", type=float, default=30.0)
     fetch.add_argument("--write", action="store_true")
 
+    scope = sub.add_parser(
+        "scope",
+        help="Resolve qualifying-product SKUs for ITEM-target coupons via /api/v5.0/products?couponId=...",
+    )
+    scope.add_argument("--port", type=int, default=DEFAULT_PORT)
+    scope.add_argument("--service-location-id", default=DEFAULT_SERVICE_LOCATION_ID)
+    scope.add_argument("--user-id", default=DEFAULT_USER_ID)
+    scope.add_argument("--rows", type=int, default=200, help="Products per page (page used 40; we bump for fewer round-trips)")
+    scope.add_argument("--max-pages", type=int, default=5, help="Cap on pagination per coupon")
+    scope.add_argument("--limit", type=int, default=None, help="Resolve at most this many coupons in one run")
+    scope.add_argument("--coupon-ids", nargs="*", default=None, help="Restrict to specific coupon IDs (e.g. COP_7444913)")
+    scope.add_argument("--source-systems", nargs="*", default=None, help="Restrict to specific source systems")
+    scope.add_argument("--only", nargs="*", default=None, help="Restrict to coupons whose matched_meal_keys overlap these")
+    scope.add_argument("--skip-resolved", action="store_true", help="Skip coupons that already have scope_resolved_on set")
+    scope.add_argument("--relevant-only", action="store_true", help="Only resolve coupons whose name+description shares anchor tokens with at least one tracked meal item (uses meal_prices.json)")
+    scope.add_argument("--sleep", type=float, default=1.0, help="Delay between coupon requests (sec); too low triggers DataDome 403 challenges")
+    scope.add_argument("--backoff", type=float, default=30.0, help="Seconds to sleep on a 403 challenge before retrying (doubled per attempt)")
+    scope.add_argument("--max-retries", type=int, default=2, help="Retries per coupon when hitting 403 challenges")
+    scope.add_argument("--abort-after-403s", type=int, default=10, help="Abort the whole sweep after this many consecutive 403s")
+    scope.add_argument("--write-every", type=int, default=50, help="Persist progress to giant_coupons.json every N successful resolutions (0 disables)")
+    scope.add_argument("--warmup", action="store_true", help="Reload the savings tab via CDP before the sweep, mimicking the natural page-load flow that DataDome expects")
+    scope.add_argument("--warmup-settle", type=float, default=8.0, help="Seconds to wait after warmup reload for the page to settle")
+    scope.add_argument("--no-preflight", action="store_true", help="Skip the single-call preflight that aborts early when DataDome is blocking the session")
+    scope.add_argument("--timeout", type=float, default=30.0)
+    scope.add_argument("--verbose", action="store_true")
+    scope.add_argument("--write", action="store_true")
+
     search = sub.add_parser("search", help="Search the saved coupon catalog by keyword/category.")
     search.add_argument("--query", help="Keyword text; matches name/description/category")
     search.add_argument("--category", help="Substring of category name (e.g. Dairy, Produce)")
@@ -721,6 +1117,8 @@ def main():
     try:
         if args.command == "fetch":
             return command_fetch(args)
+        if args.command == "scope":
+            return command_scope(args)
         if args.command == "search":
             return command_search(args)
         if args.command == "match":

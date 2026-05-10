@@ -36,6 +36,8 @@ WEEKLY_DEAL_BASE_OBSERVATION_PREFIX = "safeway_weekly_deal_base_observations"
 GIANT_FLIPP_DEALS_GLOB = "giant_weekly_deals_*.json"
 GIANT_COUPONS_FILE = ROOT / "giant_coupons.json"
 GIANT_COUPON_ACCOUNT_STATE_FILE = ROOT / "giant_coupon_account_state.local.json"
+GIANT_COUPONS_FILE = ROOT / "giant_coupons.json"
+GIANT_COUPON_ACCOUNT_STATE_FILE = ROOT / "giant_coupon_account_state.local.json"
 
 WEEKLY_DEAL_BASE_ALIASES = {
     "egglands best eggs": "eggs",
@@ -523,6 +525,182 @@ def match_giant_flipp_to_meal_items(meal_items, flipp_deals, min_score=0.5):
         if best is not None:
             matches[key] = {"score": best_score, "item": best}
     return matches
+
+
+GIANT_COUPON_BUNDLE_PHRASES = (
+    "when you buy",
+    "when you spend",
+    "with $",
+    "with purchase of",
+    "qualifying products",
+    "buy any",
+)
+
+
+def giant_coupon_is_simple_item(coupon):
+    """A coupon that is plausibly a single-item discount.
+
+    Excludes bundle deals (`coupon_reward_target: "ORDER"`, name contains
+    "bundle"), basket-condition deals (`with $X purchase`, `when you spend`),
+    and multi-buy threshold deals (`multi_qty: true`). These need separate
+    modeling because they depend on what else is in the cart.
+    """
+    if coupon.get("coupon_reward_target") != "ITEM":
+        return False
+    if coupon.get("multi_qty"):
+        return False
+    name = (coupon.get("name") or "").lower()
+    desc = (coupon.get("description") or "").lower()
+    if "bundle" in name:
+        return False
+    if any(phrase in desc for phrase in GIANT_COUPON_BUNDLE_PHRASES):
+        return False
+    return True
+
+
+def giant_coupon_text_blob(coupon):
+    """Coupon text used for token matching.
+
+    Deliberately excludes category fields. A coupon for Barilla pasta in the
+    "Rice, Pasta & Beans" category should not match a meal item keyed as
+    "rice" — token overlap on the category name would be a false positive.
+    """
+    return " ".join(filter(None, [coupon.get("name"), coupon.get("description")])).lower()
+
+
+# Descriptor tokens that are common across many proteins/products and rarely
+# discriminate between coupons. We require a non-descriptor token to overlap
+# in addition to any of these.
+GIANT_COUPON_DESCRIPTOR_TOKENS = {
+    "boneless", "skinless", "raw", "fresh", "frozen", "ground", "diced",
+    "shredded", "lean", "fat", "free", "low", "reduced", "natural",
+}
+
+
+def giant_coupon_meal_score(meal_key, meal_record, coupon, giant_pid):
+    """Score how strongly a coupon matches a meal item.
+
+    Authoritative signals, in priority order:
+    - 1.5: matched_meal_keys back-reference (per-product harvest established
+      this coupon was returned by Giant for this saved meal item).
+    - 1.4: scope-resolved product_ids includes the saved Giant product_id.
+
+    Authoritative non-match (only when scope is resolved and we have a saved
+    giant_pid): if the resolved product_ids does NOT contain our SKU, the
+    coupon definitively does not apply — return 0.0 and skip the name
+    fallback. This eliminates the "ground beef -> ground coffee" class of
+    false positives once we have authoritative scope.
+
+    Text-overlap signal (used when scope is unresolved or no saved giant_pid):
+    - Requires every "anchor" token of the meal_key (non-descriptor tokens)
+      to appear in the coupon's name+description. Descriptor tokens like
+      "ground" or "fresh" are not required and don't carry the match alone.
+    - Adds a Giant store-brand boost when both sides are store brand.
+    """
+    # Strongest signal: per-product harvest tagged this coupon for this meal item.
+    if meal_key in (coupon.get("matched_meal_keys") or []):
+        return 1.5
+
+    coupon_pids = {str(p) for p in (coupon.get("product_ids") or [])}
+    pid_str = str(giant_pid) if giant_pid else ""
+
+    # Authoritative scope check.
+    if coupon.get("scope_resolved_on") and pid_str:
+        if pid_str in coupon_pids:
+            return 1.4
+        # Coupon's qualifying-products list does not include our SKU.
+        # Skip the token fallback for this coupon — Giant says it doesn't apply.
+        return 0.0
+
+    # Pre-scope or no-saved-pid path: keep the existing product_ids check
+    # (catches per-product-harvest-supplied product_ids on coupons that
+    # haven't been scope-resolved yet) and fall back to name matching.
+    if pid_str and pid_str in coupon_pids:
+        return 1.4
+
+    meal_tokens = giant_token_set(meal_key)
+    if not meal_tokens:
+        return 0.0
+    anchor_tokens = meal_tokens - GIANT_COUPON_DESCRIPTOR_TOKENS
+    if not anchor_tokens:
+        # Meal key is all descriptors (e.g. just "fresh"); not informative.
+        return 0.0
+
+    blob = giant_coupon_text_blob(coupon)
+    blob_tokens = giant_token_set(blob)
+    if not anchor_tokens.issubset(blob_tokens):
+        return 0.0
+    # All anchor tokens overlap; baseline score is 1.0.
+    score = 1.0
+
+    giant_source = (meal_record.get("price_sources") or {}).get("Giant") or {}
+    product_brand = (giant_source.get("brand") or "").lower()
+    product_name_lower = (giant_source.get("product_name") or "").lower()
+    is_store_brand_meal = product_brand == "our brand" or product_name_lower.startswith("giant ")
+    if is_store_brand_meal and ("our brand" in blob or "giant " in blob):
+        score += 0.20
+
+    return score
+
+
+def best_giant_coupon_for_item(meal_key, meal_record, coupons, account_state, min_score=1.2, allow_clipping_required=False):
+    """Return (coupon, score, blocked_reason) for the best applicable item-scope coupon.
+
+    `account_state` is the local clipped/loaded map. If `clipping_required`
+    is true and we don't have confirmed clip state, we treat the coupon as
+    blocked unless `allow_clipping_required=True`.
+    """
+    if not coupons:
+        return None, 0.0, None
+    giant_source = (meal_record.get("price_sources") or {}).get("Giant") or {}
+    giant_pid = giant_source.get("product_id")
+
+    best = None
+    best_score = 0.0
+    best_blocked = None
+
+    for coupon in coupons:
+        if not giant_coupon_is_simple_item(coupon):
+            continue
+        if not coupon_active(coupon):
+            continue
+        max_discount = coupon.get("max_discount")
+        if max_discount in (None, 0, 0.0):
+            continue
+
+        score = giant_coupon_meal_score(meal_key, meal_record, coupon, giant_pid)
+        if score < min_score:
+            continue
+
+        # Track clip state from merged coupon (or fallback account_state map).
+        coupon_state = coupon.get("account_state") or {}
+        external_state = account_state.get(coupon.get("id")) or {}
+        clipping_required = bool(coupon.get("clipping_required"))
+        clipped = coupon_state.get("clipped")
+        if clipped is None:
+            clipped = external_state.get("clipped")
+        loaded = coupon_state.get("loaded")
+        if loaded is None:
+            loaded = external_state.get("loaded")
+        applied_clip = clipped is True or loaded is True
+
+        if clipping_required and not applied_clip and not allow_clipping_required:
+            blocked = "needs clipping"
+            if score > best_score and best is None:
+                best = coupon
+                best_score = score
+                best_blocked = blocked
+            continue
+
+        # Eligible — keep the best by score then by max_discount.
+        candidate_priority = (score, float(max_discount))
+        current_priority = (best_score, float(best.get("max_discount") or 0)) if best else (-1, -1)
+        if best_blocked or candidate_priority > current_priority:
+            best = coupon
+            best_score = score
+            best_blocked = None
+
+    return best, best_score, best_blocked
 
 
 def effective_price(item_name, prices, deals):
@@ -1872,29 +2050,81 @@ def estimate_plan(args):
             )
 
 
-def augment_lines_with_giant(lines, prices, flipp_matches):
-    """Annotate each cart line with Giant base / Flipp deal pricing."""
+def augment_lines_with_giant(lines, prices, flipp_matches, giant_coupons=None, giant_account_state=None, allow_clipping_required=False, coupon_min_score=1.2):
+    """Annotate each cart line with Giant base/Flipp pricing and item-scope coupon discounts."""
     flipp_counts = giant_flipp_counts(
         {line["item"]: line.get("qty") for line in lines},
         flipp_matches,
     )
+    giant_coupons = giant_coupons or []
+    giant_account_state = giant_account_state or {}
+
     for line in lines:
         item_name = line["item"]
         item = prices.get("items", {}).get(item_name) or {}
         gnt_price, gnt_label = best_giant_price(item_name, item, flipp_matches, flipp_counts)
+        line["giant_unit_price_pre_coupon"] = gnt_price
         line["giant_unit_price"] = gnt_price
         line["giant_label"] = gnt_label or ""
+        line["giant_coupon"] = None
+        line["giant_coupon_savings"] = 0.0
+        line["giant_coupon_blocked_reason"] = None
+
         if gnt_price is None:
             line["giant_line_total"] = None
+            line["giant_line_total_pre_coupon"] = None
             line["cheaper_store"] = "n/a"
             continue
-        line["giant_line_total"] = line["qty"] * gnt_price
+
+        line_total_pre_coupon = line["qty"] * gnt_price
+        line["giant_line_total_pre_coupon"] = line_total_pre_coupon
+
+        # Apply best item-scope coupon when one matches.
+        coupon, score, blocked = best_giant_coupon_for_item(
+            item_name,
+            item,
+            giant_coupons,
+            giant_account_state,
+            min_score=coupon_min_score,
+            allow_clipping_required=allow_clipping_required,
+        )
+        coupon_savings = 0.0
+        if coupon and not blocked:
+            max_discount = float(coupon.get("max_discount") or 0)
+            # Cap savings at the line total — a coupon can't make a line negative.
+            coupon_savings = min(max_discount, line_total_pre_coupon)
+            line["giant_coupon"] = {
+                "id": coupon.get("id"),
+                "name": coupon.get("name"),
+                "description": coupon.get("description"),
+                "max_discount": coupon.get("max_discount"),
+                "applied_savings": round(coupon_savings, 2),
+                "match_score": round(score, 2),
+                "end_date": coupon.get("end_date"),
+                "clipping_required": bool(coupon.get("clipping_required")),
+            }
+            line["giant_coupon_savings"] = round(coupon_savings, 2)
+        elif coupon and blocked:
+            line["giant_coupon"] = {
+                "id": coupon.get("id"),
+                "name": coupon.get("name"),
+                "max_discount": coupon.get("max_discount"),
+                "match_score": round(score, 2),
+                "end_date": coupon.get("end_date"),
+                "blocked_reason": blocked,
+            }
+            line["giant_coupon_blocked_reason"] = blocked
+
+        line_total_post_coupon = round(line_total_pre_coupon - coupon_savings, 2)
+        line["giant_line_total"] = line_total_post_coupon
+
         sw_price = line.get("unit_price")
-        if sw_price is None:
+        sw_line_total = line.get("line_total")
+        if sw_line_total is None:
             line["cheaper_store"] = "Giant only"
-        elif abs(sw_price - gnt_price) < 0.005:
+        elif abs(sw_line_total - line_total_post_coupon) < 0.005:
             line["cheaper_store"] = "tie"
-        elif sw_price < gnt_price:
+        elif sw_line_total < line_total_post_coupon:
             line["cheaper_store"] = "Safeway"
         else:
             line["cheaper_store"] = "Giant"
@@ -1910,6 +2140,8 @@ def cart(args):
     recipe_refs, lines, servings = build_cart_lines(keys, prices, deals, coupons)
 
     flipp_matches = {}
+    giant_coupons_loaded = []
+    giant_account_state = {}
     if getattr(args, "compare_stores", False):
         _flipp_path, flipp_data = load_giant_flipp_deals(getattr(args, "giant_deals_file", None))
         if flipp_data is not None:
@@ -1918,7 +2150,19 @@ def cart(args):
                 flipp_data,
                 min_score=getattr(args, "min_flipp_score", 0.5),
             )
-        augment_lines_with_giant(lines, prices, flipp_matches)
+        if not getattr(args, "no_giant_coupons", False):
+            _coupons_path, coupon_data = load_giant_coupons()
+            if coupon_data:
+                giant_coupons_loaded = coupon_data.get("coupons") or []
+        augment_lines_with_giant(
+            lines,
+            prices,
+            flipp_matches,
+            giant_coupons=giant_coupons_loaded,
+            giant_account_state=giant_account_state,
+            allow_clipping_required=getattr(args, "assume_giant_clipped", False),
+            coupon_min_score=getattr(args, "giant_coupon_min_score", 1.2),
+        )
 
     subtotal = sum(line["line_total"] or 0 for line in lines)
     coupon_rows = cart_level_coupon_rows(lines, coupons, show_ineligible=args.show_ineligible_coupons)
@@ -1957,12 +2201,20 @@ def cart(args):
             gnt_price = money(line.get("giant_unit_price"))
             gnt_line = money(line.get("giant_line_total"))
             cheaper = line.get("cheaper_store") or "n/a"
+            coupon = line.get("giant_coupon") or {}
+            applied_savings = line.get("giant_coupon_savings") or 0
+            coupon_marker = f"  -${applied_savings:.2f} g.coupon" if applied_savings else ""
             print(
                 f"{line['item'][:32]:<32} {line['qty']:>5g} {line['unit'][:12]:<12} "
-                f"{sw_price:>7} {sw_line:>8} {gnt_price:>7} {gnt_line:>9} {cheaper:<13} {clip_detail:<26}"
+                f"{sw_price:>7} {sw_line:>8} {gnt_price:>7} {gnt_line:>9} {cheaper:<13} {clip_detail:<26}{coupon_marker}"
             )
             if args.verbose and line.get("giant_label"):
-                print(f"{'':<32} {'':>5} {'':<12} {'Giant detail:':<25} {line['giant_label']}")
+                print(f"{'':<32} {'':>5} {'':<12} {'Giant source:':<25} {line['giant_label']}")
+            if args.verbose and coupon:
+                if applied_savings:
+                    print(f"{'':<32} {'':>5} {'':<12} {'Giant coupon:':<25} {coupon.get('name')} (applied -${applied_savings:.2f}, end {coupon.get('end_date','')[:10]})")
+                elif line.get("giant_coupon_blocked_reason"):
+                    print(f"{'':<32} {'':>5} {'':<12} {'Giant coupon (blocked):':<25} {coupon.get('name')} ({line['giant_coupon_blocked_reason']})")
     else:
         print(f"\n{'Item':<34} {'Qty':>6} {'Unit':<14} {'Price':>8} {'Source':<12} {'Line':>8} Clip / Detail")
         print("-" * 126)
@@ -2072,7 +2324,16 @@ def cart(args):
         priced_lines = [line for line in lines if line.get("line_total") is not None]
         giant_priced_lines = [line for line in lines if line.get("giant_line_total") is not None]
         safeway_subtotal = sum(line["line_total"] for line in priced_lines)
+        # Pre-coupon Giant subtotal uses giant_line_total_pre_coupon when set,
+        # else falls back to giant_line_total. Post-coupon uses giant_line_total
+        # which augment_lines_with_giant computes after subtracting savings.
+        giant_subtotal_pre_coupon = sum(
+            line.get("giant_line_total_pre_coupon") if line.get("giant_line_total_pre_coupon") is not None
+            else (line.get("giant_line_total") or 0)
+            for line in giant_priced_lines
+        )
         giant_subtotal = sum(line.get("giant_line_total") or 0 for line in giant_priced_lines)
+        giant_coupon_total = round(sum(line.get("giant_coupon_savings") or 0 for line in lines), 2)
         best_subtotal = 0.0
         best_known = True
         unknown_giant = []
@@ -2094,10 +2355,16 @@ def cart(args):
         print("\nCross-store comparison")
         print(f"  Safeway pre-coupon subtotal: {money(safeway_subtotal)}")
         print(f"  Safeway final (with coupons): {money(final_total)}")
-        print(f"  Giant subtotal: {money(giant_subtotal)} (Flipp deals + Giant base; coupons not modeled)")
+        print(f"  Giant pre-coupon subtotal: {money(giant_subtotal_pre_coupon)} (Flipp deals + Giant base)")
+        if giant_coupon_total > 0:
+            applied_count = sum(1 for line in lines if (line.get("giant_coupon_savings") or 0) > 0)
+            print(f"  Giant item-scope coupon savings: -{money(giant_coupon_total)} ({applied_count} line{'s' if applied_count != 1 else ''} applied)")
+            print(f"  Giant final (with item coupons): {money(giant_subtotal)}")
+        else:
+            print(f"  Giant final: {money(giant_subtotal)} (no item-scope coupons matched at min score)")
         print(f"  Best-of-both subtotal: {money(best_subtotal) if best_known else 'partial (some lines missing both stores)'}")
         if best_known and final_total < best_subtotal:
-            print(f"  Safeway-only with coupons still beats best-of-both pre-coupon by {money(best_subtotal - final_total)}.")
+            print(f"  Safeway-only with coupons still beats best-of-both by {money(best_subtotal - final_total)}.")
         elif best_known and best_subtotal < safeway_subtotal:
             print(f"  Cherry-picking Giant for cheaper lines saves {money(safeway_subtotal - best_subtotal)} vs Safeway-only pre-coupon.")
         if unknown_giant:
@@ -2834,6 +3101,9 @@ def main():
     cart_parser.add_argument("--compare-stores", action="store_true", help="Show Safeway and Giant price columns side by side and a cross-store summary")
     cart_parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
     cart_parser.add_argument("--min-flipp-score", type=float, default=0.5, help="Minimum Flipp match score to include a Giant deal")
+    cart_parser.add_argument("--no-giant-coupons", action="store_true", help="Skip applying Giant item-scope coupons to the cross-store comparison")
+    cart_parser.add_argument("--assume-giant-clipped", action="store_true", help="Treat clipping-required Giant coupons as clipped even when no account-state file confirms them")
+    cart_parser.add_argument("--giant-coupon-min-score", type=float, default=1.2, help="Minimum giant_coupon_meal_score to auto-apply a coupon (default 1.2 requires store-brand alignment; lower to 1.0 for any name-overlap match)")
     cart_parser.set_defaults(func=cart)
 
     args = parser.parse_args()

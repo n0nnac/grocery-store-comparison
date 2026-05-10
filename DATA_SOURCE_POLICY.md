@@ -177,12 +177,13 @@ Do not attempt to use Flipp circular prices as base prices. Do not overwrite a f
 
 ### Giant Coupon Resolution
 
-Giant exposes coupons through two paths:
+Giant exposes coupons through three paths:
 
-- A storewide v7 coupon-search endpoint that paginates correctly when the body wraps `start`/`size` inside a `query` object (the page's actual shape). Total catalog is ~3,051 coupons retrievable in pages of up to 90 each.
+- A storewide v7 coupon-search endpoint that paginates correctly when the body wraps `start`/`size` inside a `query` object (the page's actual shape). Total catalog is ~3,051 coupons retrievable in pages of up to 90 each. Crucially, the response **never populates `productIds`** — the field exists but is universally empty across the catalog.
 - A per-product `availableDisplayCoupons` array on the v5 product detail endpoint, harvested by walking saved Giant product IDs in `meal_prices.json`. Adds `matched_meal_keys` back-references onto each coupon.
+- A per-coupon qualifying-products lookup at `GET /api/v5.0/products/{user}/{loc}?couponId={id}&start=0&rows=200&sort=bestMatch+asc&flags=true`. This is the same call the savings-page "View Coupon Details" modal uses to render its "Qualifying Products" grid. It is the only authoritative source for per-coupon SKU scope.
 
-`giant_coupon_search.py fetch` aggregates both into `giant_coupons.json`, deduping by coupon id and annotating each entry with `matched_meal_keys` and `matched_product_ids` back-references. Per-user clipped/loaded state lives in the gitignored `giant_coupon_account_state.local.json`.
+`giant_coupon_search.py fetch` aggregates the first two paths into `giant_coupons.json`. `giant_coupon_search.py scope` then back-fills authoritative `product_ids` from the third path for every active ITEM-target coupon, also writing `scope_total` and `scope_resolved_on` per-record annotations. Per-user clipped/loaded state lives in the gitignored `giant_coupon_account_state.local.json`.
 
 Use Giant coupon observations only when:
 
@@ -191,7 +192,9 @@ Use Giant coupon observations only when:
 - the catalog file metadata's `service_location_id` matches the planned shopping store
 - account-state fields (clipped/loaded) are read from the local file, never inferred from the public catalog
 
-Do not subtract Giant coupon discounts from the cart subtotal automatically. Most observed Giant coupons are bundle conditions (e.g. "Save $3 when you buy steak + eggs + sausage"); modelling each bundle's product set is required before savings can be claimed. The cart cross-store summary surfaces matched coupons informationally with `--verbose`.
+When applying a coupon to a meal item in the cart, prefer authoritative scope (`product_ids` includes the meal item's saved Giant `product_id`, or `matched_meal_keys` includes the meal key) over name-based matching. Token matching is a fallback for coupons that haven't been scope-resolved yet.
+
+Do not subtract bundle-condition Giant coupon discounts from the cart subtotal automatically. Most observed Giant per-product matched coupons are bundle conditions (e.g. "Save $3 when you buy steak + eggs + sausage"); modelling each bundle's product set is required before savings can be claimed. The cart cross-store summary surfaces matched bundle coupons informationally with `--verbose`. Item-scope coupons (single-SKU `coupon_reward_target=ITEM` with no bundle phrasing) are auto-applied to the Giant subtotal.
 
 See `GIANT_COUPON_METHODOLOGY.md` for full details on the hybrid source.
 

@@ -159,7 +159,7 @@ python3 giant_coupon_search.py match --min-score 0.4 --keep 2
 
 `cart --compare-stores --verbose` now lists applicable Giant coupons per cart line, with clipping requirement, account state, and end date. Aggregate discounts are reported informationally; bundle-condition modelling is left for a future pass.
 
-The `estimate --compare-stores` and `cart --compare-stores` modes show per-line Safeway and Giant prices side by side, mark which store wins each line, and report the cherry-picked best-of-both subtotal against each single-store total. The cart variant also shows Safeway's coupon-adjusted final, since cart-level Safeway coupons are not modeled on the Giant side.
+The `estimate --compare-stores` and `cart --compare-stores` modes show per-line Safeway and Giant prices side by side, mark which store wins each line, and report the cherry-picked best-of-both subtotal against each single-store total. The cart variant also subtracts item-scope Giant coupon savings (matched conservatively via store-brand alignment) so the comparison is symmetric for direct item discounts. Add `--assume-giant-clipped` to allow clipping-required Giant coupons even without a local account-state file, or `--giant-coupon-min-score 1.0` to broaden matching beyond store-brand alignment. Bundle-condition Giant offers (e.g. "Save $3 on the steak & eggs meal bundle") are surfaced informationally but not auto-applied since their cart conditions are not modeled.
 
 Rank weekly ad ingredients for meal inspiration rather than pure cheapest-cart optimization:
 

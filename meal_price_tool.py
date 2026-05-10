@@ -1705,6 +1705,8 @@ def api_resolution_line(ingredient, key, source, qty, args, item=None):
         ),
         "requires_clip": False,
         "priced": True,
+        "scopes": item_department_scopes(item) if item else [],
+        "rewards_eligible": item_rewards_eligible(item) if item else True,
         "resolution": {
             "query": result.get("query"),
             "confidence": result.get("confidence"),
@@ -1770,6 +1772,8 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
             "detail": detail,
             "requires_clip": False,
             "priced": True,
+            "scopes": [],
+            "rewards_eligible": False,
         }
 
     item = prices.get("items", {}).get(key)
@@ -1819,6 +1823,8 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
                 "deal_mechanic": selected_deal.get("deal_mechanic"),
                 "pack_quantity": selected_deal.get("pack_quantity"),
                 "pack_unit": selected_deal.get("pack_unit"),
+                "scopes": item_department_scopes(item),
+                "rewards_eligible": item_rewards_eligible(item),
             }
         if deal:
             unit_price = deal.get("sale_price")
@@ -1833,6 +1839,8 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
                 "source": "weekly",
                 "detail": deal.get("condition") or deal.get("source_label") or "Weekly ad",
                 "requires_clip": bool(deal.get("requires_clip")),
+                "scopes": [],
+                "rewards_eligible": True,
                 "priced": unit_price is not None,
                 "promotion": deal.get("promotion"),
                 "deal_mechanic": deal.get("deal_mechanic"),
@@ -1858,6 +1866,8 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
             "detail": f"{source} saved base price" if unit_price is not None else f"No saved {source} price",
             "requires_clip": False,
             "priced": unit_price is not None,
+            "scopes": item_department_scopes(item),
+            "rewards_eligible": item_rewards_eligible(item),
         }
 
     return {
@@ -1872,6 +1882,8 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
         "detail": "No matching saved item or weekly deal",
         "requires_clip": False,
         "priced": False,
+        "scopes": [],
+        "rewards_eligible": False,
     }
 
 
@@ -2281,6 +2293,73 @@ def estimate_plan(args):
     priced = price_external_plan(plan, prices, deals, coupons, args=args)
     write_rows = write_resolved_prices(priced, prices) if args.write_resolved else []
 
+    # Cross-store augmentation: when --compare-stores is set, run the same
+    # augment_lines_with_giant() the cart command uses, so each priced
+    # Safeway line is annotated with Giant base/Flipp pricing and item-scope
+    # coupon savings. Aggregate totals are surfaced in a summary section.
+    cross_store_data = None
+    if getattr(args, "compare_stores", False):
+        all_safeway_lines = [
+            line
+            for recipe in priced.get("recipes") or []
+            for line in recipe.get("lines") or []
+            if (line.get("store") or "").lower() == "safeway" and line.get("priced")
+        ]
+        flipp_matches = {}
+        giant_coupons_loaded = []
+        _flipp_path, flipp_data = load_giant_flipp_deals(getattr(args, "giant_deals_file", None))
+        if flipp_data is not None:
+            flipp_matches = match_giant_flipp_to_meal_items(
+                prices.get("items", {}),
+                flipp_data,
+                min_score=getattr(args, "min_flipp_score", 0.5),
+            )
+        if not getattr(args, "no_giant_coupons", False):
+            _coupons_path, coupon_data = load_giant_coupons()
+            if coupon_data:
+                giant_coupons_loaded = coupon_data.get("coupons") or []
+
+        augment_lines_with_giant(
+            all_safeway_lines,
+            prices,
+            flipp_matches,
+            giant_coupons=giant_coupons_loaded,
+            giant_account_state={},
+            allow_clipping_required=getattr(args, "assume_giant_clipped", False),
+            coupon_min_score=getattr(args, "giant_coupon_min_score", 1.2),
+        )
+
+        # Compare only on lines where Giant has a price too. Lines without
+        # Giant pricing fall back to Safeway in best-of-both.
+        comparable_lines = [
+            line for line in all_safeway_lines
+            if line.get("giant_line_total") is not None
+        ]
+        sw_subtotal = sum(line.get("line_total") or 0 for line in all_safeway_lines)
+        sw_comparable = sum(line.get("line_total") or 0 for line in comparable_lines)
+        giant_pre = sum(line.get("giant_line_total_pre_coupon") or 0 for line in comparable_lines)
+        giant_savings = sum(line.get("giant_coupon_savings") or 0 for line in comparable_lines)
+        giant_post = sum(line.get("giant_line_total") or 0 for line in comparable_lines)
+        best_of_both = sum(
+            min(
+                line.get("line_total") or float("inf"),
+                line.get("giant_line_total") or float("inf"),
+            )
+            for line in all_safeway_lines
+        )
+        cross_store_data = {
+            "lines": all_safeway_lines,
+            "comparable_count": len(comparable_lines),
+            "total_count": len(all_safeway_lines),
+            "safeway_subtotal": round(sw_subtotal, 2),
+            "safeway_comparable_subtotal": round(sw_comparable, 2),
+            "giant_pre_coupon": round(giant_pre, 2),
+            "giant_coupon_savings": round(giant_savings, 2),
+            "giant_post_coupon": round(giant_post, 2),
+            "best_of_both": round(best_of_both, 2),
+            "applied_giant_coupons": [line.get("giant_coupon") for line in comparable_lines if line.get("giant_coupon_savings")],
+        }
+
     if args.json:
         if write_rows:
             priced["written_resolved_prices"] = write_rows
@@ -2349,6 +2428,63 @@ def estimate_plan(args):
         grand = sum(row["line_total"] for row in shopping_rows)
         print(f"{'Shopping list total':<48} {'':>6} {'':<18} {'':>8} {money(grand):>9}")
 
+    if not args.no_coupons:
+        all_lines = [line for recipe in priced.get("recipes") or [] for line in recipe.get("lines") or []]
+        applied_item_coupons = []
+        clip_opportunities = []
+        for line in all_lines:
+            source = (line.get("source") or "").lower()
+            if source.startswith("coupon") and not source.startswith("coupon-needs") and not source.startswith("coupon-unknown"):
+                applied_item_coupons.append(line)
+            for cand in line.get("price_candidates") or []:
+                if (cand.get("type") or "").lower() != "coupon":
+                    continue
+                cand_label = (cand.get("label") or "").lower()
+                if cand_label not in ("coupon-needs-clip", "coupon-unknown"):
+                    continue
+                chosen_price = line.get("unit_price")
+                cand_price = cand.get("price")
+                if chosen_price is None or cand_price is None:
+                    continue
+                if cand_price < chosen_price:
+                    qty = line.get("qty") or 0
+                    clip_opportunities.append({
+                        "line": line,
+                        "candidate": cand,
+                        "potential_savings": (chosen_price - cand_price) * qty,
+                    })
+
+        coupon_rows = cart_level_coupon_rows(all_lines, coupons)
+        coupon_total = sum(row["amount"] for row in coupon_rows if row["applied"])
+        relevant_cart = [
+            row for row in coupon_rows
+            if row["applied"] or row["eligible_subtotal"] > 0
+        ]
+
+        if applied_item_coupons or clip_opportunities or relevant_cart:
+            print("\nSafeway coupons")
+            for line in applied_item_coupons:
+                print(
+                    f"  [item, applied]  {line.get('display_name')[:50]:<50} "
+                    f"{money(line.get('line_total')):>8}  {line.get('detail') or ''}"
+                )
+            for opp in clip_opportunities:
+                line = opp["line"]
+                cand = opp["candidate"]
+                print(
+                    f"  [item, clip-to-save]  {line.get('display_name')[:50]:<50} "
+                    f"save {money(opp['potential_savings'])}  via {cand.get('detail') or cand.get('label')}"
+                )
+            for row in relevant_cart:
+                status = "applied" if row["applied"] else "not applied"
+                print(
+                    f"  [cart, {status}]  {(row.get('name') or row.get('offer_id') or '')[:42]:<42} "
+                    f"min {money(row['threshold']):>6}  save {money(row['amount']):>6}  "
+                    f"(eligible: {money(row['eligible_subtotal'])}; {row.get('clip_status') or ''})"
+                )
+            if coupon_total > 0:
+                print(f"  Cart-level coupon savings applied: -{money(coupon_total)}")
+
     if not getattr(args, "no_rewards", False):
         rewards_config = load_rewards_config()
         store_brand_mult = 1 if getattr(args, "no_store_brand_2x", False) else getattr(args, "store_brand_multiplier", 2)
@@ -2384,6 +2520,59 @@ def estimate_plan(args):
                 print(
                     f"- Best theoretical option including gas: {best_with_gas['name']} "
                     f"({money(_per_100(best_with_gas))} per 100 pts)"
+                )
+
+    if cross_store_data:
+        print("\nCross-store comparison (Safeway plan vs Giant alternatives)")
+        sw_total = cross_store_data["safeway_subtotal"]
+        sw_comparable = cross_store_data["safeway_comparable_subtotal"]
+        gp = cross_store_data["giant_pre_coupon"]
+        gs = cross_store_data["giant_coupon_savings"]
+        gpost = cross_store_data["giant_post_coupon"]
+        best = cross_store_data["best_of_both"]
+        comparable_count = cross_store_data["comparable_count"]
+        total_count = cross_store_data["total_count"]
+        print(f"  Safeway subtotal (all {total_count} priced lines): {money(sw_total)}")
+        if comparable_count == 0:
+            print(f"  No Giant pricing available for any plan line (no Flipp matches, no saved Giant base).")
+        else:
+            print(f"  Lines with Giant pricing available: {comparable_count} of {total_count}")
+            print(f"    Safeway cost on those {comparable_count} lines: {money(sw_comparable)}")
+            if gs > 0:
+                print(f"    Giant pre-coupon: {money(gp)}; item-scope coupon savings: -{money(gs)} "
+                      f"({len(cross_store_data['applied_giant_coupons'])} line(s) applied); final: {money(gpost)}")
+            else:
+                print(f"    Giant cost on those {comparable_count} lines: {money(gpost)} "
+                      f"(no item-scope coupons matched)")
+            comparable_delta = sw_comparable - gpost
+            if abs(comparable_delta) > 0.01:
+                cheaper = "Giant" if comparable_delta > 0 else "Safeway"
+                print(f"    On comparable lines: {cheaper} is {money(abs(comparable_delta))} cheaper.")
+        print(f"\n  Best-of-both subtotal (Giant where cheaper, Safeway elsewhere): {money(best)}")
+        delta_best = sw_total - best
+        if delta_best > 0.01:
+            print(f"  Cherry-picking Giant on the cheaper lines saves {money(delta_best)} vs Safeway-only.")
+
+        # Per-line ones where Giant is meaningfully cheaper
+        cheaper_at_giant = [
+            line for line in cross_store_data["lines"]
+            if line.get("giant_line_total") is not None
+            and line.get("line_total") is not None
+            and line["giant_line_total"] < line["line_total"] - 0.10
+        ]
+        if cheaper_at_giant:
+            print(f"\n  Lines where Giant beats Safeway (>{money(0.10)} delta):")
+            for line in sorted(cheaper_at_giant, key=lambda l: l["line_total"] - l["giant_line_total"], reverse=True)[:8]:
+                delta = line["line_total"] - line["giant_line_total"]
+                gnt_label = line.get("giant_label") or ""
+                gnt_coupon = line.get("giant_coupon") or {}
+                coupon_note = ""
+                if gnt_coupon and line.get("giant_coupon_savings"):
+                    coupon_note = f"; coupon: {(gnt_coupon.get('name') or '')[:32]} -{money(line.get('giant_coupon_savings'))}"
+                print(
+                    f"    {line['display_name'][:42]:<42} "
+                    f"sw={money(line['line_total']):>7}  giant={money(line['giant_line_total']):>7}  "
+                    f"save {money(delta):>5}  ({gnt_label}{coupon_note})"
                 )
 
     if priced.get("shopping_notes"):
@@ -3435,6 +3624,12 @@ def main():
     plan_parser.add_argument("--no-resolve-missing", action="store_true", help="Do not query Safeway API for missing or stale Safeway ingredients")
     plan_parser.add_argument("--no-prefer-store-brand", action="store_true", help="Disable the default store-brand promotion: when set, the resolver picks the top API match regardless of brand. Default behavior promotes a Signature SELECT / O Organics / Lucerne / etc. candidate when its price is within --store-brand-tolerance of the leader (Safeway awards 2x rewards points on store-brand SKUs).")
     plan_parser.add_argument("--no-rewards", action="store_true", help="Skip the Safeway rewards points block in the priced output.")
+    plan_parser.add_argument("--compare-stores", action="store_true", help="Add a cross-store comparison block: each Safeway-priced line is also priced via Giant Flipp / saved Giant base, item-scope Giant coupons applied, and aggregate Safeway/Giant/best-of-both totals reported.")
+    plan_parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
+    plan_parser.add_argument("--no-giant-coupons", action="store_true", help="Skip Giant coupon application in cross-store mode")
+    plan_parser.add_argument("--assume-giant-clipped", action="store_true", help="Allow Giant coupons that require clipping in cross-store mode (otherwise blocked unless local account-state file confirms clipped)")
+    plan_parser.add_argument("--giant-coupon-min-score", type=float, default=1.2, help="Minimum match score for Giant item-scope coupons in cross-store mode (default 1.2 requires store-brand alignment; drop to 1.0 for plain anchor-token matches)")
+    plan_parser.add_argument("--min-flipp-score", type=float, default=0.5, help="Minimum token-overlap score for Giant Flipp deal matches")
     plan_parser.add_argument("--no-store-brand-2x", action="store_true", help="Compute rewards at the bare 1x baseline rate; otherwise the points block awards 2x on store-brand SKUs (the typical Safeway for U store-brand bonus).")
     plan_parser.add_argument("--store-brand-multiplier", type=int, default=2, help="Override the rewards multiplier applied on store-brand spend (default 2). Set 1 to disable.")
     plan_parser.add_argument("--store-brand-tolerance", type=float, default=0.10, help="Max price premium ($) over the cheapest API match for which the resolver still promotes a store-brand candidate. Default 0.10. Set 0 for a strict 'cheaper than leader' rule.")

@@ -1,0 +1,1057 @@
+{
+  "metadata": {
+    "zip_code": "20037",
+    "primary_store": {
+      "name": "Safeway",
+      "address": "1701 Corcoran St NW, Washington, DC 20009",
+      "store_id": "923"
+    },
+    "last_updated": "2026-05-07",
+    "currency": "USD",
+    "notes": [
+      "Base prices are regular or observed shelf prices used for meal-planning estimates.",
+      "Scraped Safeway source details are recorded per item when available and in safeway_price_observations.json.",
+      "Weekly deals override base prices when active and applicable.",
+      "Digital-only offers may require clipping the Safeway for U coupon and may have limits.",
+      "Official Safeway recipe/bundle pages are used as secondary price sources when PDP prices do not render; these are labeled in price_sources.",
+      "Safeway search/substitute API price docs are preferred when a known product ID returns an exact match."
+    ]
+  },
+  "items": {
+    "ground beef 80/20": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 5.99,
+        "Trader Joe's": 5.99,
+        "Giant": 6.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "188100054",
+          "product_name": "Signature SELECT 80% Lean 20% Fat Ground Beef - 1.00 Lb",
+          "url": "https://www.safeway.com/shop/product-details.188100054.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 5.99,
+          "current_price": 5.99,
+          "regular_unit_price": 5.99,
+          "current_unit_price": 5.99,
+          "api_unit_quantity": "LB",
+          "api_unit_of_measure": "LB",
+          "api_item_size_qty": "1",
+          "api_item_package_qty": "1",
+          "planning_base_price": 5.99,
+          "planning_current_price": 5.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0020169200000"
+        }
+      },
+      "meal_tags": [
+        "tacos",
+        "burgers",
+        "bolognese",
+        "chili",
+        "bowls"
+      ],
+      "freezer_friendly": true
+    },
+    "ground turkey 93/7": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 4.33
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "970300152",
+          "product_name": "Signature Select 93% Lean 7% Fat Ground Turkey Family Pack - 3 ct 1 Lb - 48oz",
+          "regular_price": 12.99,
+          "regular_unit_price": 0.27,
+          "current_price": 12.79,
+          "current_unit_price": 0.27,
+          "url": "https://www.safeway.com/shop/product-details.970300152.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "48",
+          "api_item_package_qty": "1",
+          "planning_base_price": 4.33,
+          "planning_current_price": 4.26,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "inventory_available": "1",
+          "upc": "0002113017301"
+        }
+      },
+      "meal_tags": [
+        "tacos",
+        "rice bowls",
+        "chili",
+        "lettuce wraps"
+      ],
+      "freezer_friendly": true
+    },
+    "boneless skinless chicken thighs": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 3.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960139991",
+          "product_name": "Signature Select Chicken Thigh Boneless Skinless Value Pack - 3 lb",
+          "regular_price": 11.97,
+          "regular_unit_price": 3.99,
+          "current_price": 11.37,
+          "current_unit_price": 3.79,
+          "url": "https://www.safeway.com/shop/product-details.960139991.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "api_unit_quantity": "LB",
+          "api_unit_of_measure": "LB",
+          "api_item_size_qty": "1",
+          "api_item_package_qty": "1",
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.79,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "inventory_available": "1",
+          "upc": "0020786700000"
+        }
+      },
+      "meal_tags": [
+        "rice bowls",
+        "sheet pan",
+        "tacos",
+        "stir fry"
+      ],
+      "freezer_friendly": true
+    },
+    "boneless skinless chicken breast": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 3.99,
+        "Trader Joe's": 6.99,
+        "Giant": 7.99
+      },
+      "meal_tags": [
+        "rice bowls",
+        "salads",
+        "sandwiches",
+        "pasta"
+      ],
+      "freezer_friendly": true
+    },
+    "pork loin chops": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 4.99
+      },
+      "meal_tags": [
+        "sheet pan",
+        "rice bowls",
+        "stir fry"
+      ],
+      "freezer_friendly": true
+    },
+    "salmon portion": {
+      "category": "protein",
+      "unit": "5 oz portion",
+      "base_prices": {
+        "Safeway": 6.99
+      },
+      "meal_tags": [
+        "sheet pan",
+        "rice bowls",
+        "quick dinner"
+      ],
+      "freezer_friendly": true
+    },
+    "raw shrimp 26-30 ct": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 9.99
+      },
+      "meal_tags": [
+        "stir fry",
+        "tacos",
+        "pasta",
+        "quick dinner"
+      ],
+      "freezer_friendly": true
+    },
+    "italian roll sausage": {
+      "category": "protein",
+      "unit": "16 oz roll",
+      "base_prices": {
+        "Safeway": 5.99
+      },
+      "meal_tags": [
+        "pasta",
+        "breakfast hash",
+        "soup"
+      ],
+      "freezer_friendly": true
+    },
+    "eggs": {
+      "category": "protein",
+      "unit": "dozen",
+      "base_prices": {
+        "Safeway": 2.99,
+        "Trader Joe's": 3.99,
+        "Giant": 5.29
+      },
+      "meal_tags": [
+        "breakfast",
+        "fried rice",
+        "salad",
+        "bowls"
+      ],
+      "freezer_friendly": false
+    },
+    "rice": {
+      "category": "pantry",
+      "unit": "5 lb bag",
+      "base_prices": {
+        "Safeway": 3.99,
+        "Trader Joe's": 3.29,
+        "Giant": 3.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-09",
+          "store_id": "923",
+          "product_id": "126150030",
+          "product_name": "Signature SELECT Enriched Long Grain Rice - 5 Lb",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.126150030.html?loc=923",
+          "confidence": "api_price_doc",
+          "match_confidence": "high",
+          "regular_price": 3.99,
+          "current_price": 3.99,
+          "regular_unit_price": 0.8,
+          "current_unit_price": 0.8,
+          "api_unit_quantity": "LB   ",
+          "api_unit_of_measure": "LB",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113050205",
+          "department_name": "Grains, Pasta & Sides",
+          "aisle_name": "Rice|1_6_9"
+        }
+      },
+      "meal_tags": [
+        "rice bowls",
+        "stir fry",
+        "meal prep"
+      ],
+      "freezer_friendly": false
+    },
+    "pasta": {
+      "category": "pantry",
+      "unit": "1 lb box",
+      "base_prices": {
+        "Safeway": 1.89,
+        "Trader Joe's": 1.49,
+        "Giant": 1.99
+      },
+      "meal_tags": [
+        "pasta",
+        "meal prep"
+      ],
+      "freezer_friendly": false
+    },
+    "crushed tomatoes": {
+      "category": "pantry",
+      "unit": "28 oz can",
+      "base_prices": {
+        "Safeway": 2.49
+      },
+      "meal_tags": [
+        "pasta",
+        "chili",
+        "soup"
+      ],
+      "freezer_friendly": false
+    },
+    "marinara sauce": {
+      "category": "pantry",
+      "unit": "24 oz jar",
+      "base_prices": {
+        "Safeway": 8.99
+      },
+      "meal_tags": [
+        "pasta",
+        "meatballs"
+      ],
+      "freezer_friendly": false
+    },
+    "flour tortillas": {
+      "category": "pantry",
+      "unit": "package",
+      "base_prices": {
+        "Safeway": 4.29
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "127102373",
+          "product_name": "Mission Super Soft Flour Tortillas Burrito Size - 8 Count",
+          "url": "https://www.safeway.com/shop/product-details.127102373.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 4.29,
+          "current_price": 3.99,
+          "regular_unit_price": 0.54,
+          "current_unit_price": 0.5,
+          "api_unit_quantity": "COUNT",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 4.29,
+          "planning_current_price": 3.99,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "inventory_available": "1",
+          "upc": "0007373100419"
+        }
+      },
+      "meal_tags": [
+        "tacos",
+        "wraps",
+        "quesadillas"
+      ],
+      "freezer_friendly": true
+    },
+    "salsa": {
+      "category": "pantry",
+      "unit": "16 oz jar",
+      "base_prices": {
+        "Safeway": 3.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "127100031",
+          "product_name": "Pace Chunky Mild Salsa - 16 Oz",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.127100031.html?loc=923",
+          "confidence": "api_price_doc",
+          "regular_price": 3.99,
+          "current_price": 3.0,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.19,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.0,
+          "inventory_available": "1",
+          "upc": "0004156514016"
+        }
+      },
+      "meal_tags": [
+        "tacos",
+        "bowls",
+        "eggs"
+      ],
+      "freezer_friendly": false
+    },
+    "potatoes": {
+      "category": "produce",
+      "unit": "5 lb bag",
+      "base_prices": {
+        "Safeway": 2.99,
+        "Trader Joe's": 3.99,
+        "Giant": 4.99
+      },
+      "meal_tags": [
+        "sheet pan",
+        "breakfast hash",
+        "side"
+      ],
+      "freezer_friendly": false
+    },
+    "broccoli": {
+      "category": "produce",
+      "unit": "12 oz bag",
+      "base_prices": {
+        "Safeway": 2.99
+      },
+      "meal_tags": [
+        "sheet pan",
+        "rice bowls",
+        "stir fry"
+      ],
+      "freezer_friendly": true,
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960055474",
+          "product_name": "Signature SELECT/FARMS Broccoli Florets Steam In Bag - 12 Oz",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.960055474.html?loc=923",
+          "confidence": "api_price_doc",
+          "regular_price": 2.99,
+          "current_price": 2.99,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.25,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "12",
+          "api_item_package_qty": "1",
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113098340"
+        }
+      }
+    },
+    "frozen green peas": {
+      "category": "frozen",
+      "unit": "12 oz bag",
+      "base_prices": {
+        "Safeway": 1.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "971006215",
+          "product_name": "Signature SELECT Green Peas Steam in Bag - 12 Oz",
+          "url": "https://www.safeway.com/shop/product-details.971006215.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 1.99,
+          "current_price": 1.99,
+          "regular_unit_price": 0.17,
+          "current_unit_price": 0.17,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 1.99,
+          "planning_current_price": 1.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113034065"
+        }
+      },
+      "meal_tags": [
+        "fried rice",
+        "rice bowls",
+        "quick side"
+      ],
+      "freezer_friendly": true
+    },
+    "frozen spinach": {
+      "category": "frozen",
+      "unit": "12 oz bag",
+      "base_prices": {
+        "Safeway": 2.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "971006219",
+          "product_name": "O Organics Spinach Chopped Steam In Bag - 12 Oz",
+          "url": "https://www.safeway.com/shop/product-details.971006219.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 2.99,
+          "current_price": 2.99,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.25,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0007989316419"
+        }
+      },
+      "meal_tags": [
+        "pasta",
+        "eggs",
+        "rice bowls"
+      ],
+      "freezer_friendly": true
+    },
+    "frozen green beans": {
+      "category": "frozen",
+      "unit": "12 oz bag",
+      "base_prices": {
+        "Safeway": 2.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "971006225",
+          "product_name": "O Organics Whole Green Beans Steam In Bag - 12 Oz",
+          "url": "https://www.safeway.com/shop/product-details.971006225.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 2.99,
+          "current_price": 2.99,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.25,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0007989316428"
+        }
+      },
+      "meal_tags": [
+        "sheet pan",
+        "rice bowls",
+        "quick side"
+      ],
+      "freezer_friendly": true
+    },
+    "frozen vegetable blend": {
+      "category": "frozen",
+      "unit": "12 oz bag",
+      "base_prices": {
+        "Safeway": 2.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "971006244",
+          "product_name": "O Organics California Style Vegetables Steam Bag - 12 Oz",
+          "url": "https://www.safeway.com/shop/product-details.971006244.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 2.99,
+          "current_price": 2.99,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.25,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0007989316422"
+        }
+      },
+      "meal_tags": [
+        "stir fry",
+        "rice bowls",
+        "quick side"
+      ],
+      "freezer_friendly": true
+    },
+    "vegetable fried rice": {
+      "category": "frozen",
+      "unit": "14 oz bag",
+      "base_prices": {
+        "Safeway": 5.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "970949958",
+          "product_name": "Pictsweet Vegetable Fried Rice With Edamame And Asian Seasoning 14oz - 14 OZ",
+          "url": "https://www.safeway.com/shop/product-details.970949958.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 5.99,
+          "current_price": 5.99,
+          "regular_unit_price": 0.43,
+          "current_unit_price": 0.43,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 5.99,
+          "planning_current_price": 5.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0007056095646"
+        }
+      },
+      "meal_tags": [
+        "quick dinner",
+        "stir fry",
+        "meal prep"
+      ],
+      "freezer_friendly": true
+    },
+    "mushrooms": {
+      "category": "produce",
+      "unit": "8 oz package",
+      "base_prices": {
+        "Safeway": 1.99
+      },
+      "meal_tags": [
+        "sheet pan",
+        "pasta",
+        "rice bowls"
+      ],
+      "freezer_friendly": false,
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960073826",
+          "product_name": "Signature Select White Sliced Mushrooms - 8 Oz",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.960073826.html?loc=923",
+          "confidence": "api_price_doc",
+          "regular_price": 1.99,
+          "current_price": 1.99,
+          "regular_unit_price": 0.25,
+          "current_unit_price": 0.25,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "8",
+          "api_item_package_qty": "1",
+          "planning_base_price": 1.99,
+          "planning_current_price": 1.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113028443"
+        }
+      }
+    },
+    "onions": {
+      "category": "produce",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 1.49,
+        "Trader Joe's": 1.29,
+        "Giant": 1.49
+      },
+      "meal_tags": [
+        "base aromatic",
+        "tacos",
+        "pasta",
+        "stir fry"
+      ],
+      "freezer_friendly": false
+    },
+    "avocados": {
+      "category": "produce",
+      "unit": "5 ct bag",
+      "base_prices": {
+        "Safeway": 4.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960497390",
+          "product_name": "Signature FARMS Hass Avocados Bagged - Each",
+          "regular_price": 4.99,
+          "current_price": 2.99,
+          "url": "https://www.safeway.com/shop/product-details.960497390.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_unit_price": 4.99,
+          "current_unit_price": 2.99,
+          "api_unit_quantity": "EACH",
+          "api_unit_of_measure": "EA",
+          "api_item_size_qty": "1",
+          "api_item_package_qty": "1",
+          "planning_base_price": 4.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "inventory_available": "1",
+          "upc": "0002113034396"
+        }
+      },
+      "meal_tags": [
+        "tacos",
+        "bowls",
+        "salads"
+      ],
+      "freezer_friendly": false
+    },
+    "butter": {
+      "category": "dairy",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 3.99,
+        "Trader Joe's": 4.49,
+        "Giant": 5.49
+      },
+      "meal_tags": [
+        "baking",
+        "pan sauce",
+        "breakfast"
+      ],
+      "freezer_friendly": true
+    },
+    "shredded cheese": {
+      "category": "dairy",
+      "unit": "32 oz bag",
+      "base_prices": {
+        "Safeway": 9.99
+      },
+      "meal_tags": [
+        "tacos",
+        "quesadillas",
+        "pasta bake"
+      ],
+      "freezer_friendly": true,
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960371120",
+          "product_name": "Lucerne Cheese Mexican Blend Thickcut Shredded Family Pack - 32 Oz",
+          "url": "https://www.safeway.com/shop/product-details.960371120.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 9.99,
+          "current_price": 6.99,
+          "regular_unit_price": 0.31,
+          "current_unit_price": 0.22,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 9.99,
+          "planning_current_price": 6.99,
+          "promo_end_date": "2026-05-07T23:59:00",
+          "inventory_available": "1",
+          "upc": "0002113004946"
+        }
+      }
+    },
+    "pork tenderloin": {
+      "category": "protein",
+      "unit": "lb",
+      "base_prices": {
+        "Safeway": 6.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "official_recipe_page",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": null,
+          "product_name": "Signature SELECT Boneless Pork Tenderloin - 1 Lb",
+          "url": "https://www.safeway.com/meal-plans-recipes/shop/orange-glazed-pork-tenderloin",
+          "current_price": 7.34,
+          "current_unit_price": 6.99,
+          "confidence": "official_safeway_recipe_page"
+        }
+      },
+      "meal_tags": [
+        "sheet pan",
+        "stir fry",
+        "rice bowls",
+        "roast"
+      ],
+      "freezer_friendly": true
+    },
+    "sweet potatoes": {
+      "category": "produce",
+      "unit": "24 oz bag",
+      "base_prices": {
+        "Safeway": 2.49
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960151341",
+          "product_name": "Sweet Potatoes Petite Steam It - 24 Oz",
+          "url": "https://www.safeway.com/shop/product-details.960151341.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 2.49,
+          "current_price": 2.49,
+          "regular_unit_price": 0.1,
+          "current_unit_price": 0.1,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "24.00",
+          "api_item_package_qty": "1",
+          "planning_base_price": 2.49,
+          "planning_current_price": 2.49,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0065690564065"
+        }
+      },
+      "meal_tags": [
+        "sheet pan",
+        "bowls",
+        "breakfast hash",
+        "side"
+      ],
+      "freezer_friendly": false
+    },
+    "green bell pepper": {
+      "category": "produce",
+      "unit": "each",
+      "base_prices": {
+        "Safeway": 1.69
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "184480005",
+          "product_name": "Green Bell Pepper",
+          "url": "https://www.safeway.com/shop/product-details.184480005.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 1.69,
+          "current_price": 1.69,
+          "regular_unit_price": 1.69,
+          "current_unit_price": 1.69,
+          "api_unit_quantity": "EACH",
+          "api_unit_of_measure": "EA",
+          "api_item_size_qty": "1",
+          "api_item_package_qty": "1",
+          "planning_base_price": 1.69,
+          "planning_current_price": 1.69,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0048448000501"
+        }
+      },
+      "meal_tags": [
+        "stir fry",
+        "fajitas",
+        "sheet pan",
+        "eggs"
+      ],
+      "freezer_friendly": true
+    },
+    "red bell pepper": {
+      "category": "produce",
+      "unit": "each",
+      "base_prices": {
+        "Safeway": 1.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "official_bundle_page",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": null,
+          "product_name": "Red Bell Pepper",
+          "url": "https://www.safeway.com/bundles/teriyaki-stir-fry",
+          "confidence": "official_safeway_bundle_page"
+        }
+      },
+      "meal_tags": [
+        "stir fry",
+        "fajitas",
+        "sheet pan",
+        "eggs"
+      ],
+      "freezer_friendly": true
+    },
+    "mini sweet bell peppers": {
+      "category": "produce",
+      "unit": "16 oz bag",
+      "base_prices": {
+        "Safeway": 4.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960079433",
+          "product_name": "Signature SELECT/FARMS Mini Sweet Bell Peppers Prepackaged - 16 Oz",
+          "url": "https://www.safeway.com/shop/product-details.960079433.html?loc=923",
+          "confidence": "api_price_doc",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "regular_price": 4.99,
+          "current_price": 4.99,
+          "regular_unit_price": 0.31,
+          "current_unit_price": 0.31,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "16",
+          "api_item_package_qty": "1",
+          "planning_base_price": 4.99,
+          "planning_current_price": 4.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0005783600043"
+        }
+      },
+      "meal_tags": [
+        "stir fry",
+        "snacking",
+        "sheet pan",
+        "fajitas"
+      ],
+      "freezer_friendly": true
+    },
+    "teriyaki sauce": {
+      "category": "pantry",
+      "unit": "12 fl oz bottle",
+      "base_prices": {
+        "Safeway": 1.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960017503",
+          "product_name": "Signature SELECT Marinade Teriyaki with Pineapple Juice - 12 Fl. Oz.",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.960017503.html?loc=923",
+          "confidence": "api_price_doc",
+          "regular_price": 1.99,
+          "current_price": 1.99,
+          "regular_unit_price": 0.17,
+          "current_unit_price": 0.17,
+          "api_unit_quantity": "FL.OZ",
+          "api_unit_of_measure": "FZ",
+          "api_item_size_qty": null,
+          "api_item_package_qty": null,
+          "planning_base_price": 1.99,
+          "planning_current_price": 1.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113048012"
+        }
+      },
+      "meal_tags": [
+        "stir fry",
+        "rice bowls",
+        "marinade",
+        "sheet pan"
+      ],
+      "freezer_friendly": false
+    },
+    "spinach": {
+      "category": "produce",
+      "unit": "8 oz bag",
+      "base_prices": {
+        "Safeway": 2.99
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-07",
+          "store_id": "923",
+          "product_id": "960469903",
+          "product_name": "Signature SELECT/FARMS Spinach - 8 Oz",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.960469903.html?loc=923",
+          "confidence": "api_price_doc",
+          "regular_price": 2.99,
+          "current_price": 2.99,
+          "regular_unit_price": 0.37,
+          "current_unit_price": 0.37,
+          "api_unit_quantity": "OUNCE",
+          "api_unit_of_measure": "OZ",
+          "api_item_size_qty": "8",
+          "api_item_package_qty": "1",
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0002113098134"
+        }
+      },
+      "meal_tags": [
+        "salads",
+        "rice bowls",
+        "eggs",
+        "pasta"
+      ],
+      "freezer_friendly": false
+    },
+    "cilantro": {
+      "category": "produce",
+      "unit": "bunch",
+      "base_prices": {
+        "Safeway": 1.49
+      },
+      "price_sources": {
+        "Safeway": {
+          "source_type": "search_substitute_api",
+          "observed_on": "2026-05-09",
+          "store_id": "923",
+          "product_id": "184410069",
+          "product_name": "Cilantro 1 Bunch",
+          "endpoint": "https://www.safeway.com/abs/pub/xapi/search/substitute",
+          "url": "https://www.safeway.com/shop/product-details.184410069.html?loc=923",
+          "confidence": "api_price_doc",
+          "match_confidence": "high",
+          "regular_price": 1.49,
+          "current_price": 1.49,
+          "regular_unit_price": 1.49,
+          "current_unit_price": 1.49,
+          "api_unit_quantity": "EACH",
+          "api_unit_of_measure": "EA",
+          "api_item_size_qty": "1",
+          "api_item_package_qty": "1",
+          "planning_base_price": 1.49,
+          "planning_current_price": 1.49,
+          "promo_end_date": null,
+          "inventory_available": "1",
+          "upc": "0048441006901",
+          "department_name": "Fruits & Vegetables",
+          "aisle_name": "Fresh Vegetables & Herbs|1_23_2"
+        }
+      },
+      "meal_tags": [],
+      "freezer_friendly": false
+    }
+  }
+}

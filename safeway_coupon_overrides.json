@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "store": "Safeway",
+    "address": "1701 Corcoran St NW, Washington, DC 20009",
+    "store_id": "923",
+    "source_type": "manual_account_coupon_overlay",
+    "notes": [
+      "Temporary home for account-specific or manually observed coupons until logged-in coupon-state reads are automated.",
+      "These coupons are overlays only. They must not overwrite base prices or weekly ad prices."
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "manual-meat-seafood-3-off-15-2026-05-07",
+      "active": false,
+      "superseded_by_offer_id": "72257330",
+      "offer_program": "MANUAL",
+      "brand": "Any Meat & Seafood Department Purchase",
+      "name": "Any Meat & Seafood Department Purchase",
+      "category": "Meat & Seafood",
+      "events": [],
+      "value_text": "$3 OFF",
+      "ecom_description": "$3 OFF",
+      "for_u_description": "$3 OFF",
+      "description": "of $15 or more.",
+      "status": "available_to_clip",
+      "is_clippable": true,
+      "is_displayable": true,
+      "usage_type": "O",
+      "limits": "One time use",
+      "start_date": null,
+      "end_date": "2026-05-07",
+      "discount": {
+        "kind": "amount_off",
+        "amount": 3.0,
+        "text": "$3 OFF"
+      },
+      "source_type": "manual_account_coupon",
+      "account_state": {
+        "source_type": "manual_account_coupon",
+        "clipped": null,
+        "clip_status_confirmed_on": null,
+        "household_specific": true
+      },
+      "application": {
+        "kind": "department_threshold",
+        "scope": "Meat & Seafood",
+        "threshold_amount": 15.0,
+        "discount": {
+          "kind": "amount_off",
+          "amount": 3.0,
+          "text": "$3 OFF"
+        },
+        "allocation": "cart_level"
+      }
+    }
+  ]
+}

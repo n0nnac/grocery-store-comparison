@@ -1,0 +1,170 @@
+{
+  "metadata": {
+    "store": "Safeway",
+    "address": "1701 Corcoran St NW, Washington, DC 20009",
+    "store_id": "923",
+    "valid_from": "2026-05-01",
+    "valid_to": "2026-05-07",
+    "last_updated": "2026-05-03",
+    "notes": [
+      "Built from the Safeway weekly ad for the Corcoran St store.",
+      "Digital-only items require coupon clipping and may have quantity limits.",
+      "BOGO effective prices assume buying the required pair."
+    ]
+  },
+  "deals": {
+    "ground beef 80/20": {
+      "sale_price": 2.99,
+      "unit": "lb",
+      "condition": "Digital-only offer; 80% lean value pack; limit may apply",
+      "requires_clip": true,
+      "coupon_type": "Safeway for U digital coupon",
+      "limit": "Check app; advertised as a digital-only value-pack offer",
+      "confidence": "user-confirmed"
+    },
+    "pork loin chops": {
+      "sale_price": 1.99,
+      "unit": "lb",
+      "condition": "Value pack",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "boneless skinless chicken thighs": {
+      "sale_price": 3.79,
+      "unit": "lb",
+      "condition": "Value pack",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "salmon portion": {
+      "sale_price": 4.99,
+      "unit": "5 oz portion",
+      "condition": "Fresh salmon portions",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "raw shrimp 26-30 ct": {
+      "sale_price": 6.99,
+      "unit": "lb",
+      "condition": "2 lb bag advertised at about $13.98",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "italian roll sausage": {
+      "sale_price": 4.49,
+      "unit": "16 oz roll",
+      "condition": "Bob Evans Italian roll sausage",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "eggs": {
+      "sale_price": 3.99,
+      "unit": "dozen",
+      "condition": "Lucerne eggs; advertised price, not cheaper than last observed base price",
+      "requires_clip": true,
+      "coupon_type": "Safeway for U digital coupon",
+      "limit": "Limit 1",
+      "confidence": "corrected"
+    },
+    "butter": {
+      "sale_price": 3.50,
+      "unit": "lb",
+      "condition": "Lucerne twin pack advertised at $6.99 for 2 lb; normalized to per-lb",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "shredded cheese": {
+      "sale_price": 6.99,
+      "unit": "32 oz bag",
+      "condition": "Lucerne shredded cheese",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "pasta": {
+      "sale_price": 1.33,
+      "unit": "1 lb box",
+      "condition": "Barilla 3 for $4",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "crushed tomatoes": {
+      "sale_price": 1.50,
+      "unit": "28 oz can",
+      "condition": "Tuttorosso 2 for $3",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "marinara sauce": {
+      "sale_price": 5.99,
+      "unit": "24 oz jar",
+      "condition": "Rao's marinara",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "flour tortillas": {
+      "sale_price": 1.99,
+      "unit": "package",
+      "condition": "Mission tortillas",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    },
+    "potatoes": {
+      "sale_price": 2.00,
+      "unit": "1.5 lb bag",
+      "condition": "Signature Select red/gold potatoes BOGO; effective approx. price per bag",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": "Buy 2 for effective BOGO pricing",
+      "confidence": "observed"
+    },
+    "broccoli": {
+      "sale_price": 2.00,
+      "unit": "bag",
+      "condition": "Signature Select cut broccoli/stir-fry mix BOGO; effective approx. price per bag",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": "Buy 2 for effective BOGO pricing",
+      "confidence": "observed"
+    },
+    "mushrooms": {
+      "sale_price": 1.75,
+      "unit": "8 oz package",
+      "condition": "White mushrooms BOGO; effective approx. price per package",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": "Buy 2 for effective BOGO pricing",
+      "confidence": "observed"
+    },
+    "avocados": {
+      "sale_price": 2.99,
+      "unit": "5 ct bag",
+      "condition": "Hass avocados",
+      "requires_clip": false,
+      "coupon_type": null,
+      "limit": null,
+      "confidence": "observed"
+    }
+  }
+}

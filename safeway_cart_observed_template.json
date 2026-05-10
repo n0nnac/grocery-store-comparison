@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "source_type": "safeway_cart_manual",
+    "observed_on": "2026-05-08",
+    "store_id": "923",
+    "notes": [
+      "Fill this from Safeway cart/checkout. Leave unknown fields null.",
+      "Use positive numbers for savings; the reconciler subtracts savings when needed."
+    ]
+  },
+  "summary": {
+    "item_subtotal": null,
+    "club_card_savings": null,
+    "coupon_savings": null,
+    "rewards_savings": null,
+    "tax": null,
+    "fees": null,
+    "estimated_total": null,
+    "points_earned": null
+  },
+  "items": [
+    {
+      "matched_item": "ground beef 80/20",
+      "safeway_name": "Signature SELECT 80% Lean 20% Fat Ground Beef - 1.00 Lb",
+      "product_id": "188100054",
+      "qty": 2,
+      "unit": "lb",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "rice",
+      "safeway_name": "Signature SELECT Enriched Long Grain Rice - 5 Lb",
+      "product_id": "126150030",
+      "qty": 2,
+      "unit": "5 lb bag",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "flour tortillas",
+      "safeway_name": "Mission Super Soft Flour Tortillas Burrito Size - 8 Count",
+      "product_id": "127102373",
+      "qty": 1,
+      "unit": "package",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "shredded cheese",
+      "safeway_name": "Lucerne Cheese Mexican Blend Thickcut Shredded Family Pack - 32 Oz",
+      "product_id": "960371120",
+      "qty": 1,
+      "unit": "32 oz bag",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "avocados",
+      "safeway_name": "Signature FARMS Hass Avocados Bagged - Each",
+      "product_id": "960497390",
+      "qty": 1,
+      "unit": "5 ct bag",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "onions",
+      "safeway_name": null,
+      "product_id": null,
+      "qty": 2,
+      "unit": "lb",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "boneless skinless chicken thighs",
+      "safeway_name": "Signature Select Chicken Thigh Boneless Skinless Value Pack - 3 lb",
+      "product_id": "960139991",
+      "qty": 1.5,
+      "unit": "lb",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "broccoli",
+      "safeway_name": "Signature SELECT/FARMS Broccoli Florets Steam In Bag - 12 Oz",
+      "product_id": "960055474",
+      "qty": 2,
+      "unit": "12 oz bag",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "mushrooms",
+      "safeway_name": "Signature Select White Sliced Mushrooms - 8 Oz",
+      "product_id": "960073826",
+      "qty": 1,
+      "unit": "8 oz package",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "salmon portion",
+      "safeway_name": null,
+      "product_id": null,
+      "qty": 1,
+      "unit": "5 oz portion",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    },
+    {
+      "matched_item": "potatoes",
+      "safeway_name": null,
+      "product_id": null,
+      "qty": 1,
+      "unit": "5 lb bag",
+      "observed_unit_price": null,
+      "observed_line_total": null,
+      "observed_savings": null,
+      "notes": null
+    }
+  ],
+  "discounts": [],
+  "rewards": {
+    "points_earned": null,
+    "points_redeemed": null,
+    "reward_savings": null
+  }
+}

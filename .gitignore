@@ -1,0 +1,31 @@
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Claude Code session state
+.claude/
+
+# APK decompilation traces (Giant Android app research)
+androguard.log
+
+# Copyrighted ad PDFs and downloads
+ad_downloads/
+
+# Browser-session captures (account-context observations)
+safeway_cart_capture_*.json
+safeway_cart_observed_from_capture_*.json
+safeway_rewards_dashboard_capture_*.json
+safeway_rewards_adjacent_capture_*.json
+
+# Personal meal-plan prompts and AI returns
+meal_inspiration_*
+meal_use_up_prompt_*

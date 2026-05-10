@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "zip_code": "20037",
+    "last_updated": "2026-03-28",
+    "stores": ["Trader Joe's", "Safeway", "Giant"]
+  },
+  "items": {
+    "milk (1 gallon)": {
+      "Trader Joe's": 4.29,
+      "Safeway": 3.79,
+      "Giant": 4.79
+    },
+    "eggs (1 dozen)": {
+      "Trader Joe's": 3.99,
+      "Safeway": 2.99,
+      "Giant": 5.29
+    },
+    "bread (loaf)": {
+      "Trader Joe's": 3.49,
+      "Safeway": 1.49,
+      "Giant": 3.99
+    },
+    "chicken breast (1 lb)": {
+      "Trader Joe's": 6.99,
+      "Safeway": 3.99,
+      "Giant": 7.99
+    },
+    "ground beef (1 lb)": {
+      "Trader Joe's": 5.99,
+      "Safeway": 5.99,
+      "Giant": 6.99
+    },
+    "rice (2 lb)": {
+      "Trader Joe's": 3.29,
+      "Safeway": 3.99,
+      "Giant": 3.99
+    },
+    "pasta (1 lb)": {
+      "Trader Joe's": 1.49,
+      "Safeway": 1.89,
+      "Giant": 1.99
+    },
+    "butter (1 lb)": {
+      "Trader Joe's": 4.49,
+      "Safeway": 3.99,
+      "Giant": 5.49
+    },
+    "cheddar cheese (8 oz)": {
+      "Trader Joe's": 3.49,
+      "Safeway": 2.99,
+      "Giant": 4.49
+    },
+    "bananas (1 lb)": {
+      "Trader Joe's": 0.19,
+      "Safeway": 0.75,
+      "Giant": 0.69
+    },
+    "apples (1 lb)": {
+      "Trader Joe's": 1.99,
+      "Safeway": 2.49,
+      "Giant": 2.29
+    },
+    "onions (1 lb)": {
+      "Trader Joe's": 1.29,
+      "Safeway": 1.49,
+      "Giant": 1.49
+    },
+    "potatoes (5 lb)": {
+      "Trader Joe's": 3.99,
+      "Safeway": 2.99,
+      "Giant": 4.99
+    },
+    "tomatoes (1 lb)": {
+      "Trader Joe's": 2.49,
+      "Safeway": 2.99,
+      "Giant": 2.99
+    },
+    "olive oil (16 oz)": {
+      "Trader Joe's": 5.99,
+      "Safeway": 8.29,
+      "Giant": 7.99
+    },
+    "garlic (3 pack)": {
+      "Trader Joe's": 1.49,
+      "Safeway": 2.29,
+      "Giant": 1.99
+    },
+    "yogurt (32 oz)": {
+      "Trader Joe's": 3.99,
+      "Safeway": 2.99,
+      "Giant": 4.99
+    },
+    "orange juice (64 oz)": {
+      "Trader Joe's": 4.49,
+      "Safeway": 5.79,
+      "Giant": 5.49
+    },
+    "frozen pizza": {
+      "Trader Joe's": 4.49,
+      "Safeway": 4.00,
+      "Giant": 6.99
+    },
+    "coffee (12 oz)": {
+      "Trader Joe's": 7.99,
+      "Safeway": 7.99,
+      "Giant": 9.99
+    }
+  }
+}

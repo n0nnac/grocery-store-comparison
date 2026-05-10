@@ -1,0 +1,1810 @@
+{
+  "metadata": {
+    "store": "Safeway",
+    "address": "1701 Corcoran St NW, Washington, DC 20009",
+    "store_id": "923",
+    "postal_code": "20009",
+    "pulled_on": "2026-05-07",
+    "valid_from": "2026-05-08",
+    "valid_to": "2026-05-14",
+    "available_from": "2026-05-07",
+    "flyer_id": 7910204,
+    "flyer_run_id": 1124415,
+    "external_display_name": "Weekly Ad",
+    "total_pages": 5,
+    "pdf_url": "https://f.wishabi.net/flyers/16686971/d78a88f8d4518ebc.pdf",
+    "deep_link": "https://coupons.safeway.com/weeklyad/?flyer_run_id=1124415&flyer_type_name=safewayeastern&locale=en&postal_code=20009&store_code=923",
+    "storefront_payload_url": "https://cdn-gateflipp.flippback.com/storefront-payload/1124415/7910204/12ce6df646a77d6e060a7317dd480133e44c85d53797688bc0a45c1ac690ef73?merchant_id=5667",
+    "local_pdf": "ad_downloads/safeway_weekly_ad_2026-05-08_to_2026-05-14.pdf",
+    "notes": [
+      "Preview weekly ad published one day before validity window.",
+      "ad_items is the full structured list of clickable flyer areas from Flipp/Safeway payload.",
+      "normalized_deals contains meal-planning candidates with comparable numeric prices where practical."
+    ]
+  },
+  "normalized_deals": {
+    "pork loin chops": {
+      "sale_price": 1.99,
+      "unit": "lb",
+      "source_label": "Assorted Pork Loin Chop, $1.99 lb",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "chicken drumsticks leg quarters thighs": {
+      "sale_price": 1.29,
+      "unit": "lb",
+      "source_label": "Chicken Drumsticks, Leg Quarters, or Thighs, $1.29 lb",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "beef strip steak": {
+      "sale_price": 7.99,
+      "unit": "lb",
+      "source_label": "Beef Strip Steak, $7.99 lb",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "lobster tail": {
+      "sale_price": 6.99,
+      "unit": "each",
+      "source_label": "Cold Water Lobster Tail, final price after digital coupon savings $6.99 ea",
+      "requires_clip": true,
+      "freezer_friendly": true
+    },
+    "jumbo raw shrimp": {
+      "sale_price": 6.99,
+      "unit": "lb",
+      "source_label": "Jumbo Raw Shrimp, $6.99 lb",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "fresh atlantic salmon fillet": {
+      "sale_price": 9.99,
+      "unit": "lb",
+      "source_label": "Fresh Atlantic Salmon Fillet, $9.99 lb",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "pork back ribs st louis ribs": {
+      "sale_price": 2.99,
+      "unit": "lb or package-priced as advertised",
+      "source_label": "Pork Back Ribs or St. Louis Ribs, $2.99",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "blackberries blueberries strawberries": {
+      "sale_price": 2.5,
+      "unit": "package effective",
+      "source_label": "Blackberries 6 oz / Blueberries dry pint / Strawberries 1 lb, 2 for $5",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "california cherries": {
+      "sale_price": 2.99,
+      "unit": "lb",
+      "source_label": "California Cherries, $2.99 lb",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "green beans brussels sprouts": {
+      "sale_price": 2.5,
+      "unit": "package effective",
+      "source_label": "Signature SELECT Green Beans or Brussels Sprouts, 2 for $5",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "baby cut carrots": {
+      "sale_price": 1.99,
+      "unit": "package",
+      "source_label": "Signature SELECT Baby Cut Carrots, $1.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "snacking tomatoes": {
+      "sale_price": 2.5,
+      "unit": "package effective",
+      "source_label": "Signature SELECT Snacking Tomatoes, 2 for $5",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "bagged salad spinach": {
+      "sale_price": 2.5,
+      "unit": "package effective",
+      "source_label": "Fresh Express / Signature SELECT Spinach, 2 for $5",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "avocados": {
+      "sale_price": 3.99,
+      "unit": "bag",
+      "source_label": "Signature SELECT Avocados, $3.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "sweet corn": {
+      "sale_price": 3.99,
+      "unit": "package/as advertised",
+      "source_label": "Sweet Corn, $3.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "golden pineapple": {
+      "sale_price": 2.99,
+      "unit": "each",
+      "source_label": "Golden Pineapple, $2.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "sweet potatoes": {
+      "sale_price": 2.99,
+      "unit": "as advertised",
+      "source_label": "Sweet Potatoes, $2.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "egglands best eggs": {
+      "sale_price": 2.99,
+      "unit": "dozen",
+      "source_label": "Eggland's Best Large Grade A Eggs, $2.99 ea; combo can get Lucerne shredded cheese free",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "simply orange": {
+      "sale_price": 3.99,
+      "unit": "46 fl oz",
+      "source_label": "Simply Orange or Light Orange Juice, $3.99 ea; combo can get Lucerne shredded cheese free",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "signature select pasta": {
+      "sale_price": 0.99,
+      "unit": "package",
+      "source_label": "Signature SELECT Pasta, $0.99 ea when you buy 5+ participating items",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "tuttorosso tomatoes": {
+      "sale_price": 1.29,
+      "unit": "can/package",
+      "source_label": "Tuttorosso Tomatoes, $1.29 ea when you buy 5+ participating items",
+      "requires_clip": false,
+      "freezer_friendly": false
+    },
+    "mission flour tortillas": {
+      "sale_price": 2.99,
+      "unit": "20 ct package",
+      "source_label": "Mission Flour Tortillas, $2.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": true
+    },
+    "maxwell house or signature select coffee": {
+      "sale_price": 6.99,
+      "unit": "package",
+      "source_label": "Maxwell House / Signature SELECT Coffee, $6.99 ea",
+      "requires_clip": false,
+      "freezer_friendly": false
+    }
+  },
+  "ad_items": [
+    {
+      "page": 1,
+      "item_id": "1010050270",
+      "global_id": "01KQF84BK4HPXY2SAVY0ASS3MA",
+      "label": "Beef Strip Steak, , $7.99 lb",
+      "observed_price_text": "$7.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050268",
+      "global_id": "01KQN0ADVRT447V3FWR6QAS58J",
+      "label": "Cold Water Lobster Tail, , FINAL PRICE After digital coupon savings* $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": true,
+      "deal_mechanics": ", FINAL PRICE After digital coupon savings* $6.99 ea"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039893",
+      "global_id": "01KQF84BK53Y54APE25MDN82MZ",
+      "label": "Overjoyed™ One Dozen Rainbow Roses, , $15 ea",
+      "observed_price_text": "$15",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040069",
+      "global_id": "01KQF84BM6K4WV67DQN6DT0T58",
+      "label": "Chicken Drumsticks, Leg Quarters, or Thighs, , $1.29 lb",
+      "observed_price_text": "$1.29",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040038",
+      "global_id": "01KQF84BM6AAHCJCKG3VX8TFNY",
+      "label": "California Cherries, , $2.99 lb",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040086",
+      "global_id": "01KQF84BM7PKAEMCDFW2BBQ5GW",
+      "label": "Jumbo Raw Shrimp, , $6.99 lb",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040074",
+      "global_id": "01KQF84BM7CPYMT08SAV9BZ80W",
+      "label": "Overjoyed™ Moms Grand Bouquet, , $20 ea",
+      "observed_price_text": "$20",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040058",
+      "global_id": "01KQF84BM8B6Z06J09DJP4W6D5",
+      "label": "Cupcakes, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050284",
+      "global_id": "01KQF84BM8DV1AHFY8MPDV8JYZ",
+      "label": "Mumm Sparkling Brut, Ferrari-Carano Chardonnay, Catena Malbec or Kali Hart Chardonnay, -10% OFF 6, $18.00 ea when you buy 6",
+      "observed_price_text": "$18.00",
+      "requires_clip": false,
+      "deal_mechanics": "Ferrari-Carano Chardonnay, Catena Malbec or Kali Hart Chardonnay, -10% OFF 6, $18.00 ea when you buy 6"
+    },
+    {
+      "page": 1,
+      "item_id": "1010040054",
+      "global_id": "01KQF84BM96NK3FWTXF6JWX4BB",
+      "label": "Blackberries 6 oz. ctn. or Blueberries dry pint or Strawberries 1 lb. ctn., , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040077",
+      "global_id": "01KQF84BM8MEE8SWDNV9D8Y4YB",
+      "label": "Purse Rose Arrangement, , $35 ea",
+      "observed_price_text": "$35",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040065",
+      "global_id": "01KQF84BM9BKZNDMX67FVQN5QN",
+      "label": "Assorted Pork Loin Chop, , $1.99 lb",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050285",
+      "global_id": "01KQF84BM9YR9D0NKDBFRDFA4F",
+      "label": "Nabisco Family Size, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040083",
+      "global_id": "01KQF84BMAZ8EMV9HVYP2XQJ6N",
+      "label": "Rose Garden Deluxe Bouquet, , $45 ea",
+      "observed_price_text": "$45",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010039910",
+      "global_id": "01KQF84BKCZW9JTEPP2KS29D7P",
+      "label": "Post Cereal 10-16.6 oz. pkg. or General Mills Cereal 11.2-18.2 oz. pkg. or Kellogg's Snack Bars 6-8 ct. pkg. Cereal 11.2-18.2 oz. pkg., BUY 2 GET 1 FREE,",
+      "observed_price_text": "BUY 2 GET 1 FREE",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 2 GET 1 FREE,"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039883",
+      "global_id": "01KQF84BKGQ1WWY1PMS789TGXS",
+      "label": "Ice Cream Turkey Hill 46 fl. oz. ctn. or Good Humor Ice Cream Novelties 12-18 fl. oz. pkg., , FINAL PRICE AFTER DIGITAL COUPON SAVINGS** 2 for $6",
+      "observed_price_text": "2 for $6",
+      "requires_clip": true,
+      "deal_mechanics": ", FINAL PRICE AFTER DIGITAL COUPON SAVINGS** 2 for $6"
+    },
+    {
+      "page": 1,
+      "item_id": "1010050272",
+      "global_id": "01KQN0RYK96APGTA3JE9BNCNEG",
+      "label": "Coca-Cola, BUY 2 GET 1 FREE PLUS for u SAVE $4 ON 3,",
+      "observed_price_text": "BUY 2 GET 1 FREE; $4",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 2 GET 1 FREE PLUS for u SAVE $4 ON 3,"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039961",
+      "global_id": "01KQF84BKJ14ACMF4YX21BFS22",
+      "label": "DiGiorno Rising Crust Pizza, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040079",
+      "global_id": "01KQF84BMAJVQ6HKWWQDP5J7D8",
+      "label": "Pepperidge Farm Farmhouse Bread or Buns, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050275",
+      "global_id": "01KQF84BKMB2EG0QAAYNCG1V3W",
+      "label": "Doritos Tortilla Chips 9.25-10.75 oz. bag or Cheetos Cheese Snacks, Lay's Potato Chips or Sunchips 6.5-8.5 oz. bag, , $1.99 ea when you buy 4",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": "Lay's Potato Chips or Sunchips 6.5-8.5 oz. bag, , $1.99 ea when you buy 4"
+    },
+    {
+      "page": 1,
+      "item_id": "1010050274",
+      "global_id": "01KQF84BKN53PC11JGBJSD2P1H",
+      "label": "Lindt LINDOR Chocolate Truffles Stand-Up Bag Candy, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050287",
+      "global_id": "01KQF84BNCCX9KA74BVBZRYBE7",
+      "label": "Lindt, Russell Stover and Ferrero, SAVE $5 OFF FLOWERS When You Buy Any 2 Participating Items from Lindt, Russell Stover and Ferrero.,",
+      "observed_price_text": "$5",
+      "requires_clip": false,
+      "deal_mechanics": "Russell Stover and Ferrero, SAVE $5 OFF FLOWERS When You Buy Any 2 Participating Items from Lindt, Russell Stover and Ferrero.,"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039919",
+      "global_id": "01KQF84BKYXRDH4FCA9H9WGH7Z",
+      "label": "Deer Park Spring Water, , 3 for $12 when you buy 3",
+      "observed_price_text": "3 for $12",
+      "requires_clip": false,
+      "deal_mechanics": ", 3 for $12 when you buy 3"
+    },
+    {
+      "page": 1,
+      "item_id": "1010040118",
+      "global_id": "01KQF84BMA0Z9789GZWNKKVXMV",
+      "label": "Cottonelle, Flushable Wipes 336 ct. pkg. , Bath Tissue 12 ct. mega rolls or Viva Signature Cloth 8 Double Roll Paper Towel 8 roll pkg., , $10.99 ea",
+      "observed_price_text": "$10.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010040082",
+      "global_id": "01KQF84BMB61PNRD9SME7MJNRP",
+      "label": "Gekkeikan, Casal Garcia, Cupcake, Casillero del Diablo or Segura Brut Reserva, -10% OFF 6, $7.20 ea when you buy 6",
+      "observed_price_text": "$7.20",
+      "requires_clip": false,
+      "deal_mechanics": "Casal Garcia, Cupcake, Casillero del Diablo or Segura Brut Reserva, -10% OFF 6, $7.20 ea when you buy 6"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039953",
+      "global_id": "01KQF84BM0AGGE9XKYNZAQYSPS",
+      "label": "Chocolate Covered Strawberries, , $9.99 ea",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010039958",
+      "global_id": "01KQF84BM1R7NZP6X6MVY6P999",
+      "label": "Thomas' Bagels, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010039926",
+      "global_id": "01KQF84BM2YCJ7VX8DRZ8PSE38",
+      "label": "Starbucks Coffee or Cold Brew, , $7.99 ea when you buy 2",
+      "observed_price_text": "$7.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $7.99 ea when you buy 2"
+    },
+    {
+      "page": 1,
+      "item_id": "1010050280",
+      "global_id": "01KQN1095R511RFMPFNN7VNJ7B",
+      "label": "Hatfield Bacon, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 1,
+      "item_id": "1010050286",
+      "global_id": "01KQF84BMBJA2DPGKQT7FN9P78",
+      "label": "Eggland's Best Large Grade A Eggs, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $2.99",
+      "requires_clip": false,
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $2.99 ea"
+    },
+    {
+      "page": 1,
+      "item_id": "1010050281",
+      "global_id": "01KQF84BM5ENER5FNHKAMVFMX0",
+      "label": "Simply Orange or Light Orange Juice, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99; $3.99",
+      "requires_clip": false,
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value), $3.99 ea"
+    },
+    {
+      "page": 1,
+      "item_id": "1010050282",
+      "global_id": "01KQF84BM6B0DRNCZC3Z21G4G5",
+      "label": "Lucerne® Shredded Cheese, Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),",
+      "observed_price_text": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE; $1.99",
+      "requires_clip": false,
+      "deal_mechanics": "Buy 1 of these* Eggland's Best Large Grade A Eggs 12 ct. AND Buy 1 of these* Simply Orange or Light Orange Juice 46 fl. oz. btl. and Get 1 of these Lucerne® Shredded Cheese 6-8 oz. pkg. FREE INSTANTLY (Up to a $1.99 value),"
+    },
+    {
+      "page": 1,
+      "item_id": "1010039974",
+      "global_id": "01KQF84BM4F6TN7T6B1P0B7R71",
+      "label": "Bar Cake, , $9.99 ea",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022421",
+      "global_id": "01KQF84BN3E6MQCHC25ST5KSHW",
+      "label": "Dietz & Watson American Cheese, , $5.99 lb",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022435",
+      "global_id": "01KQF84BN3VA8TN7PP3F1X1ANP",
+      "label": "Dietz & Watson Gourmet Lite Turkey Breast, , $12.99 lb",
+      "observed_price_text": "$12.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022444",
+      "global_id": "01KQF84BN49G32WM2P8E0AJBH5",
+      "label": "Primo Taglio® Ham off the Bone, , $9.99 lb",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $9.99 lb"
+    },
+    {
+      "page": 2,
+      "item_id": "1010022466",
+      "global_id": "01KQF84BN4J2D1EA7BTP5WMMGG",
+      "label": "Primo Taglio® Classic Provolone Cheese, , $6.99 lb",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022445",
+      "global_id": "01KQF84BN49SYB0N2F3P8344TY",
+      "label": "Signature SELECT® Packaged Salads, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022451",
+      "global_id": "01KQF84BN46TR7CTYPYN8SKCYR",
+      "label": "Classic Hoagies, , 2 for $12",
+      "observed_price_text": "2 for $12",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022450",
+      "global_id": "01KQF84BN4N6DT0VSYAAS2YFDW",
+      "label": "Primo Taglio® Mozzarella, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022398",
+      "global_id": "01KQF84BN2QZYA034TSFY37CWW",
+      "label": "Cookie Tray, , $11.99 ea",
+      "observed_price_text": "$11.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022427",
+      "global_id": "01KQF84BN3M2EH6C8AD3EE3JJ1",
+      "label": "Family Meal Deal, , $14.99 ea",
+      "observed_price_text": "$14.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022459",
+      "global_id": "01KQF84BN445RYRT1RTWGP7ET4",
+      "label": "Bakerly Sliced Brioche Sandwich Bread, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022517",
+      "global_id": "01KQF84BN4YK227XRJQZV1W01Q",
+      "label": "Crest Hill Sourdough Boule, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022462",
+      "global_id": "01KQF84BN4WG2WGBN91SBGYFQR",
+      "label": "Bake n'Joy Pound Cake, , $6 ea",
+      "observed_price_text": "$6",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022397",
+      "global_id": "01KQF84BN3ZDS3QGFA2WAE2J68",
+      "label": "Sheet Cakes, EVERYDAY LOW PRICE!, Starting at $27.99 ea",
+      "observed_price_text": "$27.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022465",
+      "global_id": "01KQF84BN4Q0MY517N2TX1FR6P",
+      "label": "Tastykake Pies, , 2 for $3",
+      "observed_price_text": "2 for $3",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022467",
+      "global_id": "01KQF84BN4374C7BHZ9GQ4THWV",
+      "label": "Maier's Italian Bread, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022473",
+      "global_id": "01KQF84BN4QZ9XH22YF5AJ3J29",
+      "label": "Nature's Own Honey Wheat Bread, , $3.49 ea",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022480",
+      "global_id": "01KQF84BN4CG9KVDSTBP2HV9T7",
+      "label": "Mini Muffins, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022387",
+      "global_id": "01KQF84BN35094N9CYF2JM8SD9",
+      "label": "Deli Fried & Roasted Chicken Party Packs, , $49.99 ea",
+      "observed_price_text": "$49.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022401",
+      "global_id": "01KQF84BN3P5X2B0VEZEXQHFFP",
+      "label": "Deli Fried & Roasted Chicken Party Packs, , $99.99 ea",
+      "observed_price_text": "$99.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022407",
+      "global_id": "01KQF84BN3V55TZ91PVFPNZEQX",
+      "label": "Del Fried & Roasted Chicken Party Packs, , $149.99 ea",
+      "observed_price_text": "$149.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022505",
+      "global_id": "01KQF84BN5915VH5J5K4RHJQEA",
+      "label": "Horizon Organic Milk 64 fl. oz. pkg. Real Dairy Creamer 24 fl. oz. ctn., , $5.49 ea",
+      "observed_price_text": "$5.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022430",
+      "global_id": "01KQF84BN329WC19PW37RV3YZT",
+      "label": "Alaskan Surimi Snow Leg Tray, , $16.99 lb",
+      "observed_price_text": "$16.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022483",
+      "global_id": "01KQF84BN5VYD1HFBHBK15SRG1",
+      "label": "Chobani Greek, Less Sugar, Zero Sugar or Creations Yogurt, , 10 for $10",
+      "observed_price_text": "10 for $10",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022489",
+      "global_id": "01KQF84BN5Z0X242YZJB88CXYR",
+      "label": "Stōk Cold Brew 48 fl. oz. btl. or O Organics® Large Brown Pasture-Raised Grade A Eggs 12 ct. ctn., , 2 for $10",
+      "observed_price_text": "2 for $10",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022493",
+      "global_id": "01KQF84BN5XKDBN28ARJ3BCQE6",
+      "label": "Turkey Hill Tea or Lemonade, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022508",
+      "global_id": "01KQF84BN5ZJ8FW4J3BYPQEPH7",
+      "label": "Lucerne® Real Milk & Cream Creamer or Coffee Creamers, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $3.99 ea"
+    },
+    {
+      "page": 2,
+      "item_id": "1010022495",
+      "global_id": "01KQF84BN5ARJAFEC1P5CVX7DJ",
+      "label": "Noosa Yoghurt, , 2 for $4",
+      "observed_price_text": "2 for $4",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022506",
+      "global_id": "01KQF84BN5G8YDEG9JDMPPJWGZ",
+      "label": "Lucerne® Ultra-Pasteurized Half & Half, , $5.49 ea",
+      "observed_price_text": "$5.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022536",
+      "global_id": "01KQF84BN5ACKCR2Y2KWK9Z46R",
+      "label": "Simply Potatoes 20 oz. pkg. or Bays English Muffins 12 oz. pkg., , 2 for $6",
+      "observed_price_text": "2 for $6",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022567",
+      "global_id": "01KQF84BN5A63TPJ0SAC4JYSE4",
+      "label": "Kraft American Singles, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022542",
+      "global_id": "01KQF84BN5APANHG4ZR737C62A",
+      "label": "Land O Lakes Butter Spread 7-8 oz. pkg. or Yoplait Go-Gurt 8-pk., 16 oz. pkg., , $2.49 ea",
+      "observed_price_text": "$2.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022410",
+      "global_id": "01KQF84BN3M0QV7CB14VJB7GEV",
+      "label": "Family Size Fruit Salad Bowl 83 oz. ctn. or Fruit Tray with Dip 60 oz. ctn., , $19.99 ea",
+      "observed_price_text": "$19.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022531",
+      "global_id": "01KQF84BN5QMD95AYQW48431Z1",
+      "label": "Alexia Seasoned Fries, Onion Rings or Puffs, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022521",
+      "global_id": "01KQF84BN6HQ16MT04B1K4JXBJ",
+      "label": "Healthy Choice Power Bowls, , 2 for $8",
+      "observed_price_text": "2 for $8",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022543",
+      "global_id": "01KQF84BN6WJ08ZZGTJN31AQFK",
+      "label": "Birds Eye Pure Premium Vegetables, , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": ", 2 for $5"
+    },
+    {
+      "page": 2,
+      "item_id": "1010022415",
+      "global_id": "01KQF84BN3KHRZD6AZE9J3997G",
+      "label": "Signature SELECT® Designer Plates or Bowls 22-48 ct. pkg. Party Cups 20-25 ct. pkg. Plastic Premium Cutlery 72 ct. pkg., , 2 for $7",
+      "observed_price_text": "2 for $7",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022535",
+      "global_id": "01KQF84BN6NDH23NHGMBMW3QEY",
+      "label": "Michael Angelo's Family Entrées, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022526",
+      "global_id": "01KQF84BN6BM484DZZBX0HPJYQ",
+      "label": "Rao's Entrées, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022541",
+      "global_id": "01KQF84BN6XK7RW438YJT9FYP3",
+      "label": "Marie Callender's Pot Pies, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022534",
+      "global_id": "01KQF84BN6JCJKMK5SFEXQ3T58",
+      "label": "Open Nature® Cauliflower Crust Pizza, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022523",
+      "global_id": "01KQF84BN6CB1ACE0FC0CQ5RRS",
+      "label": "Birds Eye Ultimate Veggies or Skillets, , 2 for $8",
+      "observed_price_text": "2 for $8",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022555",
+      "global_id": "01KQF84BN6W4KNBX1VW8CKGMDE",
+      "label": "Signature SELECT® Waffles, , $1.99 ea",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022557",
+      "global_id": "01KQF84BN6AJPRYZ2D3QGR8JEQ",
+      "label": "Smart Ones Meals, , $1.99 ea",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022406",
+      "global_id": "01KQF84BN32S9DJWEXW1K9BQ50",
+      "label": "Surfside, Athletic or Michelob Ultra, , $17.99 ea",
+      "observed_price_text": "$17.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022565",
+      "global_id": "01KQN1095T0CK8XCP413MWB52M",
+      "label": "Yasso Frozen Greek Yogurt 14-16 fl. oz. ctn. Crunch Bars 4 ct., 10.6 fl. oz. pkg., , $3.99",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022556",
+      "global_id": "01KQF84BN6BBZ2YFS6G6XA4S21",
+      "label": "Bomb Pops, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022577",
+      "global_id": "01KQF84BN7FBD8YQFZVFNH8GZH",
+      "label": "Signature SELECT® Sundae Crunch Bars, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022586",
+      "global_id": "01KQF84BN7GSHTRADNCDSJDFB2",
+      "label": "Trolli Pops, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022563",
+      "global_id": "01KQF84BN7YBBQZZZRK1074PCJ",
+      "label": "Nutella or Kinder Bueno Ice Cream, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022578",
+      "global_id": "01KQF84BN7BC07AMKEXT0B39MJ",
+      "label": "Baskin Robbins Ice Cream Bars, , 2 for $6",
+      "observed_price_text": "2 for $6",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022599",
+      "global_id": "01KQF84BN73SRYM0BDMFQSDRWR",
+      "label": "Baskin Robbins Ice Cream, , 2 for $7",
+      "observed_price_text": "2 for $7",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022570",
+      "global_id": "01KQF84BN7R8HWCSYA1WAS7YJD",
+      "label": "Signature SELECT® Ice Cream Cones, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022593",
+      "global_id": "01KQF84BN7NHV5W5X5C0KYBVWZ",
+      "label": "Signature SELECT® Ice Cream Cups, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 2,
+      "item_id": "1010022585",
+      "global_id": "01KQN17NQB4MA5A35Y22YKEZSX",
+      "label": "Halo Top Ice Cream, , FINAL PRICE After digital coupon savings* $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": true,
+      "deal_mechanics": ", FINAL PRICE After digital coupon savings* $3.99 ea"
+    },
+    {
+      "page": 2,
+      "item_id": "1010022596",
+      "global_id": "01KQF84BN7Z53M747KQC9K569G",
+      "label": "Gift cards, $10 off* your next shopping order when you buy $50+ in participating gift cards.,",
+      "observed_price_text": "$10; $50",
+      "requires_clip": false,
+      "deal_mechanics": "$10 off* your next shopping order when you buy $50+ in participating gift cards.,"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017177",
+      "global_id": "01KQF84BMMJD8AA1NBR8Z5Y365",
+      "label": "Coca-Cola, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017380",
+      "global_id": "01KQF84BMM6SC0K2EWSRQH88QS",
+      "label": "Nature Valley Granola Bars, BUY 5 OR MORE, $2.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017238",
+      "global_id": "01KQF84BMN2Z3KZPJDZAHEZ5QB",
+      "label": "Nabisco Honey Maid Graham Crackers 7.04-14.4 oz. pkg. BelVita Breakfast Biscuits 5-8.8 oz. pkg., BUY 5 OR MORE, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017234",
+      "global_id": "01KQF84BMNPW6344WA45P7B3J7",
+      "label": "Philadelphia Cream Cheese Brick, BUY 5 OR MORE, $5.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$5.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $5.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017163",
+      "global_id": "01KQF84BMM9RYG682VZBEZESV3",
+      "label": "Chicken of the Sea Tuna 2.5 oz. can Chunk Light Low Sodium or Chunk Light Tuna 5 oz. can, BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$0.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017452",
+      "global_id": "01KQF84BMMZ5VGFA57KH0RMMHW",
+      "label": "Martinelli's 100% Sparkling Juice, BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017502",
+      "global_id": "01KQF84BMN35Y57JXXPC033HR1",
+      "label": "Heinz Ketchup, BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017209",
+      "global_id": "01KQF84BMNDEJT400EPMZM5BYP",
+      "label": "Siggi's Yogurt, Fab5! BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$0.99",
+      "requires_clip": false,
+      "deal_mechanics": "Fab5! BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017173",
+      "global_id": "01KQF84BMMBS03HZKYVN94HQXX",
+      "label": "Kraft Deluxe or Velveeta Macaroni & Cheese, BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017495",
+      "global_id": "01KQF84BMMJVQF0V9P4RERNZYS",
+      "label": "V8 100% Vegetable Juice, BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017517",
+      "global_id": "01KQF84BMNXN3XKZGAXREFMEPH",
+      "label": "Duncan Hines Frosting 14-16 oz. ctn. Brownie Mix 18-18.3 oz. pkg. Signature or Classic Cake Mix 15.25 oz. pkg., BUY 5 OR MORE, $1.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $1.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017533",
+      "global_id": "01KQF84BMNWKB0BD5584CZNDAD",
+      "label": "Signature SELECT® 100% Orange Juice, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017269",
+      "global_id": "01KQF84BMMA1MFYHYR28J3DQN8",
+      "label": "Tuttorosso Tomatoes, BUY 5 OR MORE, $1.29 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$1.29",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $1.29 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017523",
+      "global_id": "01KQF84BMMCPCZ0YABZ28CFC59",
+      "label": "Signature SELECT® Oatmeal, Fab5!, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": "Fab5!, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017401",
+      "global_id": "01KQF84BMNDWFV7MEH386Q448R",
+      "label": "Rao's Pasta Sauce, BUY 5 OR MORE, $7.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$7.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $7.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017513",
+      "global_id": "01KQF84BMNNNQY7GXBRHTPRZF7",
+      "label": "Stonyfield Yo Kids Yogurt, BUY 5 OR MORE, $5.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$5.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $5.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017580",
+      "global_id": "01KQF84BMP8GSKM1SMG99SJM9Q",
+      "label": "Signature SELECT® Pasta, BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$0.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $0.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017218",
+      "global_id": "01KQF84BMPD2WZ348ZVSADJQZ5",
+      "label": "Herdez Roasted Salsa or Guacamole Salsa, BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017512",
+      "global_id": "01KQF84BMQFN8GH2FE48SRPGGK",
+      "label": "Tillamook Ice Cream, BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017374",
+      "global_id": "01KQF84BMQY2QMWX6K61VA7B7Y",
+      "label": "Ellio's Pizza, BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017531",
+      "global_id": "01KQF84BMPS48YK41QSDE0PHYT",
+      "label": "Legendary Foods Protein Donuts, BUY 5 OR MORE, $2.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.49",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.49 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017236",
+      "global_id": "01KQF84BMP0CH84HDWA23B41MD",
+      "label": "McCormick Brown Gravy Mix .87 oz. pkg. Taco Mix 1 oz. pkg., Fab5!, $0.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "observed_price_text": "$0.79",
+      "requires_clip": false,
+      "deal_mechanics": "Fab5!, $0.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017536",
+      "global_id": "01KQF84BMQRHWCEQHZWFR6MQ92",
+      "label": "Morning Star Farms Meatless Foods, BUY 5 OR MORE, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017321",
+      "global_id": "01KQF84BMQA1E8QBNXKQP6Y0ZA",
+      "label": "Ben & Jerry's Ice Cream or Non-Dairy Dessert, Fab5!, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": "Fab5!, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017254",
+      "global_id": "01KQF84BMP7GJ66RY4F556PC0S",
+      "label": "Pepsi, BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017323",
+      "global_id": "01KQF84BMPHHFDDD2NFKN1R80M",
+      "label": "Gatorade Gatorlyte, BUY 5 OR MORE, $1.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $1.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017579",
+      "global_id": "01KQF84BMQZ8RAKSVM1R8RY405",
+      "label": "Pepperidge Farm Cookies, Fab5! BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": "Fab5! BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017274",
+      "global_id": "01KQF84BMQP3G71Y2YY15D8MJ0",
+      "label": "Signature SELECT® Veggie Sticks or Chips, BUY 5 OR MORE, $2.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$2.79",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $2.79 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017317",
+      "global_id": "01KQF84BMPCF6EER1J4J3AE4ZK",
+      "label": "Signature SELECT® Designer Coated Paper 44-50 ct., 10\" plates, 64-100 ct., 8.5\" plates or 56 ct., 20 oz. bowls, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": "10\" plates, 64-100 ct., 8.5\" plates or 56 ct., 20 oz. bowls, BUY 5 OR MORE, $4.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017292",
+      "global_id": "01KQF84BMP4P5Q3HGE15TPY2FK",
+      "label": "Signature SELECT® Party Cups, BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017281",
+      "global_id": "01KQF84BMQ7JES3H12XK75P5QW",
+      "label": "Nabisco Single Serve Variety Pack, BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": "BUY 5 OR MORE, $5.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017301",
+      "global_id": "01KQF84BMQZ2HHAHP095STQV0C",
+      "label": "Tate's Cookies 7 oz. bag or Sargento Cheese Bakes 4.5 oz., , $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $3.99 ea WHEN YOU BUY 5 OR MORE PARTICIPATING PICK 4 ITEMS"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017322",
+      "global_id": "01KQF84BMQ3PB6YS3VR7R3GCHC",
+      "label": "Utz Potato Chips, Utz Kettle Chips or Zapp's Kettle Chips, BUY 2 GET 1 FREE,",
+      "observed_price_text": "BUY 2 GET 1 FREE",
+      "requires_clip": false,
+      "deal_mechanics": "Utz Kettle Chips or Zapp's Kettle Chips, BUY 2 GET 1 FREE,"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017342",
+      "global_id": "01KQF84BMRXDSK2KPHM3GYKQ18",
+      "label": "Cheez-It Crackers, BUY one GET one FREE,",
+      "observed_price_text": "BUY one GET one FREE",
+      "requires_clip": false,
+      "deal_mechanics": "BUY one GET one FREE,"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017381",
+      "global_id": "01KQN17NQ8TWPBWDMBE1R4AVNM",
+      "label": "Pearl Milling Syrup 24 fl. oz. btl. Pancake Mix 32 oz. pkg., , $3.49 ea",
+      "observed_price_text": "$3.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017358",
+      "global_id": "01KQF84BMSYVD5DG0TWKF3B5DE",
+      "label": "Coca-Cola 8-pk., 12 fl. oz. btls. or 12-pk., 12 fl. oz. cans or Topo Chico Sabores 8-pk., 12 fl. oz. cans, BUY 2 GET 1 FREE,",
+      "observed_price_text": "BUY 2 GET 1 FREE",
+      "requires_clip": false,
+      "deal_mechanics": "12 fl. oz. btls. or 12-pk., 12 fl. oz. cans or Topo Chico Sabores 8-pk., 12 fl. oz. cans, BUY 2 GET 1 FREE,"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017473",
+      "global_id": "01KQN1EZ73N0G1EQ3VYNDFPTTX",
+      "label": "Blue Diamond Almonds, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017461",
+      "global_id": "01KQF84BMRAT5RFBCY1NPHB9XB",
+      "label": "Frito Lay Variety Snack Mix, , $8.99 ea when you buy 2",
+      "observed_price_text": "$8.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $8.99 ea when you buy 2"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017362",
+      "global_id": "01KQF84BMST0ACWSWVY172XR25",
+      "label": "Maxwell House Ground Coffee 9-11 oz. pkg. or Signature SELECT® Ground or Whole Bean Coffee 10-12 oz. pkg., , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $6.99 ea"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017400",
+      "global_id": "01KQF84BMSW3SE0AHN5R45PVYM",
+      "label": "Canada Dry, 7UP or Sunkist, , 3 for $5 when you buy 3",
+      "observed_price_text": "3 for $5",
+      "requires_clip": false,
+      "deal_mechanics": "7UP or Sunkist, , 3 for $5 when you buy 3"
+    },
+    {
+      "page": 3,
+      "item_id": "1010017549",
+      "global_id": "01KQN1EZ74HMBZH6ZX5Z83E6WY",
+      "label": "Party Size Ruffles, Smartfood or Rold Gold Pretzels, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017554",
+      "global_id": "01KQF84BMR1MZWTBPQS2K34XCQ",
+      "label": "Mission Flour Tortillas Fajita 20 ct., 23 oz. pkg. Burrito 20-22.5 oz. pkg., , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017459",
+      "global_id": "01KQF84BMSRRAMFKX8QJF4X13Q",
+      "label": "Mars Standard Bars, , 2 for $3",
+      "observed_price_text": "2 for $3",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017423",
+      "global_id": "01KQF84BMSNY08P2CTVXB4A3WK",
+      "label": "Bubly Sparkling Water, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017450",
+      "global_id": "01KQN1EZ755YS8XMVAQ21HVFST",
+      "label": "Bounty Select-a-size Paper Towels 6 ct. Triple Rolls Charmin Bath Tissue 9 ct. XXL or 12 ct. Mega XL, , $17.99",
+      "observed_price_text": "$17.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017558",
+      "global_id": "01KQF84BMSFG38BN8XEX9WY9H2",
+      "label": "Gain Fireworks Scent Booster 24 oz. pkg. Flings! 60 ct. pkg. Laundry Detergent 132-144 fl. oz. btl., , $12.99 ea",
+      "observed_price_text": "$12.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017370",
+      "global_id": "01KQF84BMS8NRVC53301ZMZEF5",
+      "label": "Arm & Hammer Laundry Detergent 45.5-50 fl. oz. btl. Fabric Scent Boosters 24 oz. pkg. or Dawn Powerwash Dish Spray 16 fl. oz. btl., , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017431",
+      "global_id": "01KQF84BMTWSSMXADAMX7RG0SA",
+      "label": "Dawn Liquid Dish Soap, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017489",
+      "global_id": "01KQF84BMSX4Q7D0K8PBR5PY97",
+      "label": "Puffs Facial Tissues, , 3 for $5",
+      "observed_price_text": "3 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017563",
+      "global_id": "01KQF84BMTGZQQ72FVBYEQV9HB",
+      "label": "Signature SELECT® Charcoal Briquets, Mesquite, Hickory or Instant Light Briquets, , $8.99 ea",
+      "observed_price_text": "$8.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017561",
+      "global_id": "01KQN1EZ77EJ6ZQASPXX74B286",
+      "label": "Glad Trash Bags, , $9.99 ea",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017478",
+      "global_id": "01KQF84BMSQKX3TWQB73WHR4TW",
+      "label": "Signature SELECT® Aluminum Foil, , $5.49 ea",
+      "observed_price_text": "$5.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017377",
+      "global_id": "01KQF84BMTV33EJHG5NNMAA972",
+      "label": "Febreze Air Mist Spring/Summer Scents, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 3,
+      "item_id": "1010017585",
+      "global_id": "01KQF84BMTH4RT69GHNNAENK7J",
+      "label": "Swiffer Wet or Dry Mopping Pad Refills or Kit, , $9.99 ea",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018394",
+      "global_id": "01KQF84BMCJVE82RMECES2828A",
+      "label": "Fresh Cut Strawberry Bowl, , $5.99 ea",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018398",
+      "global_id": "01KQF84BMDBG39BE0YYDZ10KFS",
+      "label": "Signature SELECT® Green Beans or Brussels Sprouts, , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018395",
+      "global_id": "01KQF84BMB78FDGX8402E1KZ4Z",
+      "label": "Signature SELECT® Baby Cut Carrots, , $1.99 ea",
+      "observed_price_text": "$1.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018393",
+      "global_id": "01KQF84BMB30GG75FMGQWBEA61",
+      "label": "Signature SELECT® Snacking Tomatoes, , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018401",
+      "global_id": "01KQF84BMDTNW87A947XA0MJRC",
+      "label": "Fresh Express 9 oz. pkg., Premium Romaine, Green & Crisp 11 oz. pkg. or Signature SELECT® Spinach 8 oz. pkg., , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018407",
+      "global_id": "01KQF84BMDBSF2VXD2PMGHJ50J",
+      "label": "Signature SELECT® Avocados, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018404",
+      "global_id": "01KQF84BMDK83ZMEFAS8MYB3PN",
+      "label": "Sweet Corn, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017845",
+      "global_id": "01KQF84BMECWVKSWAG5002ZNTE",
+      "label": "Signature SELECT® Sweet Mandarins 3 lb. bag or Halos Clementines 2 lb. bag, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017864",
+      "global_id": "01KQF84BMEDVGYH0NGWM97Y8HJ",
+      "label": "Golden Pineapple, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017862",
+      "global_id": "01KQF84BMEHAD2G81KGP8K083B",
+      "label": "Sweet Potatoes, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017903",
+      "global_id": "01KQF84BME9SNPZV8B9KVWSHQ7",
+      "label": "Signature SELECT® Sweet Mini Peppers, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017923",
+      "global_id": "01KQF84BME4RF1RCVVGC0R4DQM",
+      "label": "Organic Honeycrisp Apples, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017974",
+      "global_id": "01KQF84BMEWSGT1PM7RV06567T",
+      "label": "Pero Farms Organic Vegetables, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": ", $3.99 ea"
+    },
+    {
+      "page": 4,
+      "item_id": "1010017982",
+      "global_id": "01KQF84BMFSXHH7DC881NJWGXE",
+      "label": "So Good So You Wellness Shots, , 2 for $5",
+      "observed_price_text": "2 for $5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017945",
+      "global_id": "01KQF84BMFXMJETQ3XS23BC8TF",
+      "label": "Nature's Garden Trail Mix, , $6 ea",
+      "observed_price_text": "$6",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018434",
+      "global_id": "01KQF84BMFXTNZG3A6BNJJXP64",
+      "label": "Assorted Poms, , $5 ea",
+      "observed_price_text": "$5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018417",
+      "global_id": "01KQF84BMFNX3ZH2V48N7FXFPX",
+      "label": "Mini or Standard Carnations, , $5 ea",
+      "observed_price_text": "$5",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018410",
+      "global_id": "01KQF84BMF3HHNJG880Q6M0Q4Y",
+      "label": "Overjoyed Boutique™ Sunflowers, , $7.99 ea",
+      "observed_price_text": "$7.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018420",
+      "global_id": "01KQF84BMGV7HAHJ0APDDC6Z0E",
+      "label": "Oriental Lillies, , $8.99 ea",
+      "observed_price_text": "$8.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018430",
+      "global_id": "01KQN1PBX4Q1TXGE44B0MPQSCM",
+      "label": "Pork Back Ribs or St. Louis Ribs, , $2.99",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018419",
+      "global_id": "01KQF84BMGKM4QBR3F0SMZRYNY",
+      "label": "Beef London Broil, , $6.99 lb",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018432",
+      "global_id": "01KQF84BMGQM6AW2R2KRGWENN5",
+      "label": "Perdue Boneless Skinless Chicken Thighs, , $3.99 lb",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018431",
+      "global_id": "01KQF84BMGRFY5ADBHDJ0ACPT1",
+      "label": "Bob Evans Side Dishes, , 2 for $8",
+      "observed_price_text": "2 for $8",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018427",
+      "global_id": "01KQF84BMH5R2AY8HPX6Q2EJJJ",
+      "label": "Perdue Chicken Short Cuts Family Size, , $6.99 ea",
+      "observed_price_text": "$6.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017946",
+      "global_id": "01KQF84BMHJ2AFAR1JHQXJTM1A",
+      "label": "Hillshire Farm Lunchmeat, , $3.99 ea",
+      "observed_price_text": "$3.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010017951",
+      "global_id": "01KQF84BMHZ9XPR3NET91DB3JB",
+      "label": "Johnsonville Dinner Sausage or Brats, , $5.99 ea",
+      "observed_price_text": "$5.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018439",
+      "global_id": "01KQF84BMHA78FXZD5P76A2W8M",
+      "label": "Smithfield Anytime Favorites Ham Steaks, , $2.99 ea",
+      "observed_price_text": "$2.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018443",
+      "global_id": "01KQF84BMJJH47YBVBEKX229HH",
+      "label": "Johnsonville Smoked Sausage Links, , $4.99 ea",
+      "observed_price_text": "$4.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018455",
+      "global_id": "01KQF84BMKPAC2BYBYHZD4S6NA",
+      "label": "Jimmy Dean Roll Sausage, , $4.49 ea",
+      "observed_price_text": "$4.49",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018453",
+      "global_id": "01KQF84BMKQJ8H32RCV7DAXXFF",
+      "label": "Lump Crab Meat, , $12.99 ea",
+      "observed_price_text": "$12.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018440",
+      "global_id": "01KQF84BMJKQG9BQ0PBVHYQA1M",
+      "label": "Fresh Atlantic Salmon Fillet, , $9.99 lb",
+      "observed_price_text": "$9.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018464",
+      "global_id": "01KQF84BMZ36802GFPM28TMTC6",
+      "label": "bottles of wine, buy more save more save an additional 10% when you buy 6 bottles of wine,",
+      "observed_price_text": null,
+      "requires_clip": false,
+      "deal_mechanics": "buy more save more save an additional 10% when you buy 6 bottles of wine,"
+    },
+    {
+      "page": 4,
+      "item_id": "1010018458",
+      "global_id": "01KQF84BMKKEXFRFR670F7J9TH",
+      "label": "White Claw, Bell's, Pacifico, Athletic, Sierra Nevada or Guinness, , $17.99 ea",
+      "observed_price_text": "$17.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018446",
+      "global_id": "01KQF84BMKV5WS140Q3PSVMEBA",
+      "label": "Miller Lite, Coors Light or Miller High Life, , $8.99 ea",
+      "observed_price_text": "$8.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018454",
+      "global_id": "01KQF84BMKB505HCQ00GXWM1E6",
+      "label": "Twisted Tea, Samuel Adams, Truly, Sun Cruiser, Sinless or Dogfish Head, , $12.99 ea",
+      "observed_price_text": "$12.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018467",
+      "global_id": "01KQF84BMKA9WPTMR4G1WD5Q83",
+      "label": "Michelob Ultra, Michelob Ultra 0.0, Stella Artois, Stella Artois 0.0, Kona, Goose Island or Devil's Backbone, , $10.99 ea",
+      "observed_price_text": "$10.99",
+      "requires_clip": false,
+      "deal_mechanics": null
+    },
+    {
+      "page": 4,
+      "item_id": "1010018462",
+      "global_id": "01KQF84BMK77R19ZC4J0R2FA52",
+      "label": "Apothic, André, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6",
+      "observed_price_text": "$9.90",
+      "requires_clip": false,
+      "deal_mechanics": "André, Casal Garcia or Wonderland Chateau Crisp, -10% OFF 6, $9.90 ea when you buy 6"
+    },
+    {
+      "page": 5,
+      "item_id": "1010022767",
+      "global_id": null,
+      "label": "Fresh Pass, 5% off,",
+      "observed_price_text": null,
+      "requires_clip": false,
+      "deal_mechanics": "5% off,"
+    }
+  ]
+}

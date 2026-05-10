@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from difflib import get_close_matches
 
-PRICES_FILE = Path(__file__).parent / "prices.json"
+PRICES_FILE = Path(__file__).parent.parent / "prices.json"  # data lives at repo root
 STORES = ["Trader Joe's", "Safeway", "Giant"]
 
 

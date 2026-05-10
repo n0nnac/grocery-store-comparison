@@ -270,7 +270,20 @@
       "freezer_friendly": false,
       "deal_mechanic": "uncertain",
       "verified_on": "2026-05-10",
-      "verified_evidence": []
+      "verified_evidence": [
+        {
+          "pid": "960265492",
+          "name": "Signature SELECT/FARMS Grape Tomatoes - 1 Pint",
+          "price": 2.5,
+          "price_per": 2.5,
+          "unit": "dr.pt",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        }
+      ]
     },
     "bagged salad spinach": {
       "sale_price": 2.5,
@@ -345,18 +358,6 @@
       "verified_on": "2026-05-10",
       "verified_evidence": [
         {
-          "pid": "138350084",
-          "name": "Lucerne Farms Eggs Large - 12 Count (Packaging may vary)",
-          "price": 2.99,
-          "price_per": 2.99,
-          "unit": "dozen",
-          "average_weight": 0.0,
-          "min_weight": 0.0,
-          "max_weight": 0.0,
-          "sell_by_weight": "I",
-          "inventory_available": "1"
-        },
-        {
           "pid": "138350008",
           "name": "Eggland's Best Classic Large White Eggs - 12 Count",
           "price": 2.99,
@@ -393,7 +394,7 @@
         "count_unit": "item",
         "text": "Signature SELECT Pasta, $0.99 ea when you buy 5+ participating items"
       },
-      "deal_mechanic": "uncertain",
+      "deal_mechanic": "promo_gated_at_checkout",
       "verified_on": "2026-05-10",
       "verified_evidence": []
     },
@@ -410,7 +411,7 @@
         "count_unit": "item",
         "text": "Tuttorosso Tomatoes, $1.29 ea when you buy 5+ participating items"
       },
-      "deal_mechanic": "uncertain",
+      "deal_mechanic": "promo_gated_at_checkout",
       "verified_on": "2026-05-10",
       "verified_evidence": []
     },

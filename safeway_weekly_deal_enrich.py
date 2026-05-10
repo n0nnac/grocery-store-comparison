@@ -533,6 +533,19 @@ def verify_pack_mechanic(deal_name, deal, args):
         })
 
     if not matches:
+        # If the deal has a `promotion` (e.g. buy-5+), the deal price
+        # legitimately doesn't appear in any SKU's pricePer until the
+        # promotion threshold is met at checkout. That's not "uncertain"
+        # — it's a known mechanic that should be flagged so consumers
+        # don't treat it as a verification failure.
+        if deal.get("promotion"):
+            return {
+                "deal_mechanic": "promo_gated_at_checkout",
+                "promotion_group_id": (deal["promotion"] or {}).get("group_id"),
+                "verified_on": date.today().isoformat(),
+                "evidence": [],
+                "reason": "no_sku_at_deal_price; deal price applies once the promotion threshold is met at checkout",
+            }
         return {
             "deal_mechanic": "uncertain",
             "reason": "no_matching_skus",

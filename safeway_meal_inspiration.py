@@ -892,6 +892,7 @@ def prompt_payload(args):
                 "Use source Safeway for weekly_deal price_keys.",
                 "Use source Trader Joe's only when known_store_prices includes Trader Joe's for that saved_item.",
                 "Use source pantry for assumed on-hand seasonings, oil, vinegar, spices, and condiments; pantry items are not priced.",
+                "Use source shared when an ingredient is bought once but split across multiple recipes (e.g. one 1 lb onion bag used in two dishes); the FIRST recipe lists it as source: Safeway with the full purchase quantity, and SUBSEQUENT recipes list it as source: shared with the local consumption quantity. Shared lines are documented in the recipe but billed once in the consolidated shopping list. Do not use quantity=0 as a workaround.",
                 "Quantities must be in the planning_unit for the chosen price_key (or a sensible unit when resolving live).",
                 "Use unpriced_items only for optional or truly unpriced items that should not be purchased or locally resolved.",
                 "Treat weekly_deal promotion objects as hard pricing constraints.",
@@ -1184,6 +1185,118 @@ def add_source_args(parser):
     parser.add_argument("--giant-price-tolerance", type=float, default=0.10, help="Price tolerance for matching SKUs to the Giant deal price")
 
 
+def cmd_varieties(args):
+    """Enumerate stocked Safeway SKUs for a deal name (or free-form query).
+
+    Used to answer "which specific Signature SELECT pasta shapes are
+    actually available, and which qualify for the buy-5+ deal price?"
+    without leaving the planning toolset. The deal-match column flags
+    SKUs whose per-unit price matches the deal's sale_price within
+    $0.05.
+    """
+    from safeway_api_search import (  # local import to keep top deps slim
+        DEFAULT_BANNER as SW_BANNER,
+        DEFAULT_CHANNEL as SW_CHANNEL,
+        DEFAULT_STORE_ID as SW_STORE,
+        fetch_search,
+    )
+
+    sale_price = None
+    deal = None
+    query = args.query
+    deal_name_tokens = set()
+    promo_gated = False
+    if args.deal:
+        path, _, normalized = deal_rows(args.deals_file)
+        if args.deal in normalized:
+            deal = normalized[args.deal]
+            sale_price = deal.get("sale_price")
+            promo_gated = bool(deal.get("promotion"))
+            # For promo-gated deals (buy-5+, etc.), the deal price isn't
+            # reflected in the SKU's pricePer (it triggers at checkout when
+            # the threshold is met). Match on name tokens instead.
+            deal_name_tokens = {
+                t for t in re.findall(r"[a-z0-9]+", args.deal.lower())
+                if len(t) > 2
+            }
+        else:
+            print(f"Deal '{args.deal}' not in {path.name}.", file=sys.stderr)
+            close = [k for k in normalized.keys() if args.deal.lower() in k.lower() or k.lower() in args.deal.lower()]
+            if close:
+                print(f"Did you mean: {', '.join(close)}", file=sys.stderr)
+            return 2
+        if not query:
+            query = args.deal
+
+    if not query:
+        print("Provide --deal <name> or --query <text>.", file=sys.stderr)
+        return 2
+
+    try:
+        payload = fetch_search(query, args.store_id or SW_STORE, args.rows, 0,
+                               args.banner or SW_BANNER, args.channel or SW_CHANNEL, args.timeout)
+    except Exception as exc:  # noqa: BLE001
+        print(f"Safeway API error: {exc}", file=sys.stderr)
+        return 2
+
+    docs = payload.get("response", {}).get("docs", []) or []
+    if not docs:
+        print(f"No SKUs returned for {query!r}")
+        return 0
+
+    print(f"Safeway varieties for {query!r} (store {args.store_id or SW_STORE})")
+    if deal:
+        print(f"  Deal: {args.deal}, sale ${sale_price}/{deal.get('unit')}; SKUs flagged DEAL match the deal price within $0.05")
+    print(f"\n{'PID':<14} {'Price':>7} {'Per':>7} {'Unit':<6} {'Pack':<7} {'Inv':<4} {'Match':<6} Name")
+    print("-" * 130)
+    deal_match_count = 0
+    in_stock_count = 0
+    for doc in docs[: args.rows]:
+        pid = str(doc.get("id") or doc.get("upc") or "")
+        price = doc.get("price")
+        per = doc.get("pricePer")
+        unit = (doc.get("unitQuantity") or doc.get("unitOfMeasure") or "")[:6]
+        avg = doc.get("averageWeight")
+        avg_val = ""
+        if isinstance(avg, list) and avg:
+            try:
+                avg_val = f"{float(avg[0]):g}"
+            except (TypeError, ValueError):
+                avg_val = ""
+        inv = "yes" if str(doc.get("inventoryAvailable") or "").lower() == "1" or doc.get("inventoryAvailable") == 1 else "no"
+        if inv == "yes":
+            in_stock_count += 1
+        match = ""
+        # For promo-gated deals, flag SKUs whose name tokens cover the deal
+        # name (these qualify for the deal price at checkout when the
+        # promo threshold is met).
+        if promo_gated and deal_name_tokens:
+            sku_tokens = {
+                t for t in re.findall(r"[a-z0-9]+", (doc.get("name") or "").lower())
+                if len(t) > 2
+            }
+            if deal_name_tokens.issubset(sku_tokens):
+                match = "DEAL"
+                deal_match_count += 1
+        # For weight-priced deals (e.g. pork chops $1.99/lb on a 4 lb
+        # value pack), the deal price is reflected in pricePer.
+        elif sale_price is not None and per is not None:
+            try:
+                if abs(float(per) - float(sale_price)) <= 0.05:
+                    match = "DEAL"
+                    deal_match_count += 1
+            except (TypeError, ValueError):
+                pass
+        name = (doc.get("name") or "")[:60]
+        price_str = f"${price:.2f}" if isinstance(price, (int, float)) else "?"
+        per_str = f"${per:.2f}" if isinstance(per, (int, float)) else "?"
+        print(f"{pid:<14} {price_str:>7} {per_str:>7} {unit:<6} {avg_val:<7} {inv:<4} {match:<6} {name}")
+
+    if deal:
+        print(f"\nDeal-priced SKUs: {deal_match_count} / {len(docs[:args.rows])} candidates ({in_stock_count} in stock)")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Rank Safeway weekly ad deals for meal inspiration."
@@ -1231,6 +1344,20 @@ def main():
     use_up_parser.add_argument("--write", action="store_true", help="Write prompt Markdown to disk")
     use_up_parser.add_argument("--output", help="Output path when using --write")
     use_up_parser.set_defaults(func=write_use_up_prompt)
+
+    varieties_parser = sub.add_parser(
+        "varieties",
+        help="Enumerate stocked Safeway SKUs for a deal (or free-form query); flags SKUs that match the deal price",
+    )
+    varieties_parser.add_argument("--deal", help="Deal key from normalized_deals (e.g. 'signature select pasta'); auto-flags deal-priced SKUs")
+    varieties_parser.add_argument("--query", help="Free-form search query (defaults to --deal name)")
+    varieties_parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")
+    varieties_parser.add_argument("--rows", type=int, default=15)
+    varieties_parser.add_argument("--store-id", default=None)
+    varieties_parser.add_argument("--banner", default=None)
+    varieties_parser.add_argument("--channel", default=None)
+    varieties_parser.add_argument("--timeout", type=float, default=15.0)
+    varieties_parser.set_defaults(func=cmd_varieties)
 
     args = parser.parse_args()
     args.func(args)

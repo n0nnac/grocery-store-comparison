@@ -197,11 +197,16 @@ def normalize_deals(raw):
             "sale_price": deal.get("sale_price"),
             "unit": deal.get("unit"),
             "condition": condition,
+            "source_label": deal.get("source_label"),
             "requires_clip": bool(deal.get("requires_clip")),
             "coupon_type": "Safeway for U digital coupon" if deal.get("requires_clip") else None,
             "limit": deal.get("limit"),
             "confidence": deal.get("confidence") or "normalized_ad_item",
             "promotion": deal.get("promotion") or promotion_from_condition(condition),
+            "deal_mechanic": deal.get("deal_mechanic"),
+            "pack_quantity": deal.get("pack_quantity"),
+            "pack_unit": deal.get("pack_unit"),
+            "verified_on": deal.get("verified_on"),
         }
     return add_deal_promotions({
         "metadata": raw.get("metadata", {}),
@@ -1739,12 +1744,20 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
         qty = 0.0
 
     source_key = str(source).lower().replace("-", "_").replace(" ", "_")
-    if source_key in {"pantry", "owned", "on_hand", "already_have"}:
-        store = "owned" if source_key in {"owned", "on_hand", "already_have"} else "pantry"
-        detail = (
-            ingredient.get("notes")
-            or ("Already owned / use-up ingredient" if store == "owned" else "Assumed pantry/on-hand item")
-        )
+    if source_key in {"pantry", "owned", "on_hand", "already_have", "shared", "shared_with_recipe"}:
+        if source_key in {"owned", "on_hand", "already_have"}:
+            store = "owned"
+        elif source_key in {"shared", "shared_with_recipe"}:
+            store = "shared"
+        else:
+            store = "pantry"
+        if store == "shared":
+            default_detail = "Shared with another recipe; billed once in the shopping list"
+        elif store == "owned":
+            default_detail = "Already owned / use-up ingredient"
+        else:
+            default_detail = "Assumed pantry/on-hand item"
+        detail = ingredient.get("notes") or default_detail
         return {
             "item": key,
             "display_name": ingredient.get("name") or key,
@@ -1753,7 +1766,7 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
             "store": store,
             "unit_price": 0.0,
             "line_total": 0.0,
-            "source": "on hand",
+            "source": "on hand" if store != "shared" else "shared",
             "detail": detail,
             "requires_clip": False,
             "priced": True,
@@ -1788,6 +1801,7 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
                 if resolved_line:
                     resolved_line["price_candidates"] = candidates
                     return resolved_line
+            selected_deal = (selected or {}).get("deal") or {}
             return {
                 "item": key,
                 "display_name": ingredient.get("name") or key,
@@ -1802,6 +1816,9 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
                 "priced": unit_price is not None,
                 "price_candidates": candidates,
                 "promotion": selected.get("promotion") if selected else None,
+                "deal_mechanic": selected_deal.get("deal_mechanic"),
+                "pack_quantity": selected_deal.get("pack_quantity"),
+                "pack_unit": selected_deal.get("pack_unit"),
             }
         if deal:
             unit_price = deal.get("sale_price")
@@ -1818,6 +1835,9 @@ def external_line_price(ingredient, prices, deals, coupons=None, args=None):
                 "requires_clip": bool(deal.get("requires_clip")),
                 "priced": unit_price is not None,
                 "promotion": deal.get("promotion"),
+                "deal_mechanic": deal.get("deal_mechanic"),
+                "pack_quantity": deal.get("pack_quantity"),
+                "pack_unit": deal.get("pack_unit"),
             }
 
         resolved_line = api_resolution_line(ingredient, key, source, qty, args)
@@ -2088,18 +2108,113 @@ def write_resolved_prices(priced, prices):
     return rows
 
 
+def line_is_safeway_store_brand(line):
+    """Best-effort check whether a priced plan line corresponds to a
+    Safeway store-brand SKU. Looks at the rendered display name + detail
+    blob for known markers (Signature SELECT, O Organics, etc.).
+
+    Used by the rewards-points tally to apply the 2x store-brand
+    multiplier on plan-level lines without requiring the plan JSON to
+    pre-tag the brand.
+    """
+    if (line.get("store") or "").lower() not in ("safeway", "safeway for u"):
+        return False
+    blob = " ".join(filter(None, [
+        line.get("display_name"),
+        line.get("detail"),
+        line.get("source"),
+    ])).lower()
+    return any(marker in blob for marker in SAFEWAY_STORE_BRAND_MARKERS)
+
+
+def plan_rewards_summary(priced, config, store_brand_multiplier=2):
+    """Tally Safeway rewards points earned on a priced meal plan.
+
+    - Base: `points_per_dollar` (default 1) on whole-dollar Safeway spend.
+    - Store-brand bonus: extra (`store_brand_multiplier - 1`) points per
+      whole dollar on Safeway store-brand lines (Signature SELECT, O
+      Organics, Lucerne, etc.). Set multiplier to 1 to disable.
+
+    Note: the Safeway 2x-on-store-brand bonus is sometimes a quarterly
+    targeted offer rather than a permanent rule. We treat 2x as the
+    default when the user opts into the bonus; flip to 1 to model the
+    bare-baseline earning rate.
+
+    Returns a dict shaped like rewards_summary().
+    """
+    rate = (
+        (config.get("earning_rules") or {})
+        .get("grocery", {})
+        .get("points_per_dollar", 1)
+    )
+
+    eligible = 0.0
+    store_brand_eligible = 0.0
+    store_brand_lines = []
+
+    for recipe in priced.get("recipes") or []:
+        for line in recipe.get("lines") or []:
+            store = (line.get("store") or "").lower()
+            if store not in ("safeway", "safeway for u"):
+                continue
+            line_total = line.get("line_total") or 0
+            if not line_total:
+                continue
+            eligible += line_total
+            if line_is_safeway_store_brand(line):
+                store_brand_eligible += line_total
+                store_brand_lines.append({
+                    "item": line.get("item"),
+                    "display_name": line.get("display_name"),
+                    "line_total": line_total,
+                })
+
+    eligible_dollars = math.floor(eligible)
+    store_brand_dollars = math.floor(store_brand_eligible)
+    base_points = eligible_dollars * rate
+    bonus_multiplier = max(0, (store_brand_multiplier or 1) - 1)
+    bonus_points = store_brand_dollars * bonus_multiplier
+    total_points = base_points + bonus_points
+
+    value_per_point = default_point_value(config)
+    best_non_gas = best_redemption_option(config, include_gas=False)
+    best_with_gas = best_redemption_option(config, include_gas=True)
+
+    return {
+        "eligible_subtotal": round(eligible, 2),
+        "store_brand_subtotal": round(store_brand_eligible, 2),
+        "rate": rate,
+        "store_brand_multiplier": store_brand_multiplier,
+        "base_points": base_points,
+        "bonus_points": bonus_points,
+        "total_points": total_points,
+        "estimated_future_value": total_points * value_per_point,
+        "value_per_point": value_per_point,
+        "best_non_gas": best_non_gas,
+        "best_with_gas": best_with_gas,
+        "store_brand_lines": store_brand_lines,
+    }
+
+
 def consolidated_shopping_list(priced):
     """Aggregate priced ingredient lines across all recipes into a single
     shopping list. Bucketed by (price_key, unit, store) so a shared
     ingredient (e.g. a 1 lb onion bag used in both recipes) collapses to
     one row. Owned and pantry items are excluded — they aren't purchased.
+
+    For deals verified as ``per_pack_only`` (the SKU at the deal price
+    is only sold as a multi-unit pack — e.g. 4 lb pork loin chop value
+    pack at $1.99/lb), the row's qty is bumped to ``pack_quantity`` if
+    the recipes' summed usage is below it. The bumped row carries a note
+    indicating the over-purchase amount so the planner knows the surplus
+    is for the freezer / future use.
     """
     bucket = {}
     order = []
     for recipe in priced.get("recipes") or []:
         for line in recipe.get("lines") or []:
             store = line.get("store") or ""
-            if store in ("owned", "pantry"):
+            if store in ("owned", "pantry", "shared"):
                 continue
             if not line.get("priced"):
                 continue
@@ -2118,13 +2233,19 @@ def consolidated_shopping_list(priced):
                     "store": store,
                     "unit_price": line.get("unit_price"),
                     "qty": 0,
+                    "qty_used_in_recipes": 0,
                     "line_total": 0.0,
                     "detail": line.get("detail"),
                     "requires_clip": bool(line.get("requires_clip")),
+                    "deal_mechanic": line.get("deal_mechanic"),
+                    "pack_quantity": line.get("pack_quantity"),
+                    "pack_unit": line.get("pack_unit"),
+                    "pack_overage": 0.0,
                 }
                 order.append(key)
             entry = bucket[key]
             entry["qty"] += qty
+            entry["qty_used_in_recipes"] += qty
             entry["line_total"] += line_total
             if line.get("requires_clip"):
                 entry["requires_clip"] = True
@@ -2133,6 +2254,22 @@ def consolidated_shopping_list(priced):
             current_first_qty = entry["qty"] - qty
             if current_first_qty <= 0 and qty > 0:
                 entry["name"] = line.get("display_name") or entry["name"]
+
+    # Bump per_pack_only rows up to pack_quantity when recipes use less
+    # than a full pack.
+    for entry in bucket.values():
+        if entry.get("deal_mechanic") != "per_pack_only":
+            continue
+        pack_qty = entry.get("pack_quantity")
+        if not pack_qty:
+            continue
+        if entry["qty_used_in_recipes"] < pack_qty:
+            overage = pack_qty - entry["qty_used_in_recipes"]
+            entry["qty"] = pack_qty
+            entry["pack_overage"] = round(overage, 2)
+            unit_price = entry.get("unit_price") or 0.0
+            entry["line_total"] = round(pack_qty * unit_price, 2)
+
     return [bucket[key] for key in order]
 
 
@@ -2191,7 +2328,18 @@ def estimate_plan(args):
             tags = []
             if row.get("requires_clip"):
                 tags.append("clip")
-            note = ", ".join(tags)
+            if row.get("deal_mechanic") == "per_pack_only":
+                pack_unit = row.get("pack_unit") or row.get("unit") or ""
+                if row.get("pack_overage", 0) > 0.001:
+                    used = row.get("qty_used_in_recipes") or 0
+                    overage = row.get("pack_overage") or 0
+                    tags.append(
+                        f"value pack ({row['qty']:g} {pack_unit} pack; "
+                        f"{used:g} used, {overage:g} {pack_unit} for freezer/future)"
+                    )
+                else:
+                    tags.append(f"value pack ({row['qty']:g} {pack_unit} pack)")
+            note = "; ".join(tags)
             print(
                 f"{(row['name'] or '')[:48]:<48} {row['qty']:>6g} "
                 f"{(row['unit'] or '')[:18]:<18} {money(row['unit_price']):>8} "
@@ -2200,6 +2348,43 @@ def estimate_plan(args):
         print("-" * 130)
         grand = sum(row["line_total"] for row in shopping_rows)
         print(f"{'Shopping list total':<48} {'':>6} {'':<18} {'':>8} {money(grand):>9}")
+
+    if not getattr(args, "no_rewards", False):
+        rewards_config = load_rewards_config()
+        store_brand_mult = 1 if getattr(args, "no_store_brand_2x", False) else getattr(args, "store_brand_multiplier", 2)
+        rewards = plan_rewards_summary(priced, rewards_config, store_brand_multiplier=store_brand_mult)
+        if rewards["eligible_subtotal"] > 0:
+            print("\nSafeway rewards points (estimate)")
+            print(f"- Eligible Safeway spend: {money(rewards['eligible_subtotal'])}")
+            if rewards["store_brand_subtotal"] > 0:
+                print(
+                    f"- Store-brand spend (eligible for {rewards['store_brand_multiplier']}x): "
+                    f"{money(rewards['store_brand_subtotal'])} across {len(rewards['store_brand_lines'])} line(s)"
+                )
+            print(
+                f"- Base points: {rewards['base_points']}"
+                + (f"; store-brand bonus: +{rewards['bonus_points']}" if rewards['bonus_points'] else "")
+                + f"; total: {rewards['total_points']}"
+            )
+            value_per_point = rewards.get("value_per_point") or 0
+            if value_per_point:
+                print(f"- Future value at default redemption ({money(value_per_point * 100)}/100 pts): {money(rewards['estimated_future_value'])}")
+            def _per_100(opt):
+                cost = opt.get("point_cost") or 0
+                val = opt.get("estimated_value") or 0
+                return (val / cost * 100) if cost else 0
+            best_non_gas = rewards.get("best_non_gas")
+            if best_non_gas:
+                print(
+                    f"- Best known non-fuel option: {best_non_gas['name']} "
+                    f"({money(_per_100(best_non_gas))} per 100 pts)"
+                )
+            best_with_gas = rewards.get("best_with_gas")
+            if best_with_gas and best_non_gas and best_with_gas.get("name") != best_non_gas.get("name"):
+                print(
+                    f"- Best theoretical option including gas: {best_with_gas['name']} "
+                    f"({money(_per_100(best_with_gas))} per 100 pts)"
+                )
 
     if priced.get("shopping_notes"):
         print("\nShopping notes")
@@ -3249,6 +3434,9 @@ def main():
     plan_parser.add_argument("--no-coupons", action="store_true", help="Ignore coupon overlays")
     plan_parser.add_argument("--no-resolve-missing", action="store_true", help="Do not query Safeway API for missing or stale Safeway ingredients")
     plan_parser.add_argument("--no-prefer-store-brand", action="store_true", help="Disable the default store-brand promotion: when set, the resolver picks the top API match regardless of brand. Default behavior promotes a Signature SELECT / O Organics / Lucerne / etc. candidate when its price is within --store-brand-tolerance of the leader (Safeway awards 2x rewards points on store-brand SKUs).")
+    plan_parser.add_argument("--no-rewards", action="store_true", help="Skip the Safeway rewards points block in the priced output.")
+    plan_parser.add_argument("--no-store-brand-2x", action="store_true", help="Compute rewards at the bare 1x baseline rate; otherwise the points block awards 2x on store-brand SKUs (the typical Safeway for U store-brand bonus).")
+    plan_parser.add_argument("--store-brand-multiplier", type=int, default=2, help="Override the rewards multiplier applied on store-brand spend (default 2). Set 1 to disable.")
     plan_parser.add_argument("--store-brand-tolerance", type=float, default=0.10, help="Max price premium ($) over the cheapest API match for which the resolver still promotes a store-brand candidate. Default 0.10. Set 0 for a strict 'cheaper than leader' rule.")
     plan_parser.add_argument("--stale-days", type=int, default=14, help="Refresh saved Safeway prices older than this many days")
     plan_parser.add_argument("--store-id", default=DEFAULT_STORE_ID, help="Safeway store ID for API resolution")

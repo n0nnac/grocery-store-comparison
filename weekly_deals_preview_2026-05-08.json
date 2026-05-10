@@ -28,133 +28,357 @@
       "unit": "lb",
       "source_label": "Assorted Pork Loin Chop, $1.99 lb",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "per_pack_only",
+      "pack_quantity": 4.0,
+      "pack_unit": "lb",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "188250050",
+          "name": "Assorted Pork Loin Chops Value Pack - 4 Lb",
+          "price": 7.96,
+          "price_per": 1.99,
+          "unit": "lb",
+          "average_weight": 4.0,
+          "min_weight": 4.0,
+          "max_weight": 4.0,
+          "sell_by_weight": "P",
+          "inventory_available": "0"
+        },
+        {
+          "pid": "960536115",
+          "name": "Pork Loin Assorted Chops Bone In Value Pack - 4.00 Lbs",
+          "price": 7.96,
+          "price_per": 1.99,
+          "unit": "lb",
+          "average_weight": 4.0,
+          "min_weight": 3.75,
+          "max_weight": 10.0,
+          "sell_by_weight": "P",
+          "inventory_available": "1"
+        }
+      ]
     },
     "chicken drumsticks leg quarters thighs": {
       "sale_price": 1.29,
       "unit": "lb",
       "source_label": "Chicken Drumsticks, Leg Quarters, or Thighs, $1.29 lb",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "per_pack_only",
+      "pack_quantity": 4.5,
+      "pack_unit": "lb",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "188320007",
+          "name": "Signature Select Chicken Thigh Bone In Value Pack - 4.5 Lb",
+          "price": 5.81,
+          "price_per": 1.29,
+          "unit": "lb",
+          "average_weight": 4.5,
+          "min_weight": 4.5,
+          "max_weight": 4.5,
+          "sell_by_weight": "P",
+          "inventory_available": "1"
+        },
+        {
+          "pid": "188320019",
+          "name": "Signature Select Chicken Leg Quarters - 4.5 lb",
+          "price": 5.81,
+          "price_per": 1.29,
+          "unit": "lb",
+          "average_weight": 4.5,
+          "min_weight": 4.5,
+          "max_weight": 4.5,
+          "sell_by_weight": "P",
+          "inventory_available": "1"
+        },
+        {
+          "pid": "188320020",
+          "name": "Signature Select Chicken Drumstick Value Pack - 4.5 lb",
+          "price": 5.81,
+          "price_per": 1.29,
+          "unit": "lb",
+          "average_weight": 4.5,
+          "min_weight": 4.5,
+          "max_weight": 4.5,
+          "sell_by_weight": "P",
+          "inventory_available": "1"
+        }
+      ]
     },
     "beef strip steak": {
       "sale_price": 7.99,
       "unit": "lb",
       "source_label": "Beef Strip Steak, $7.99 lb",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "lobster tail": {
       "sale_price": 6.99,
       "unit": "each",
       "source_label": "Cold Water Lobster Tail, final price after digital coupon savings $6.99 ea",
       "requires_clip": true,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "jumbo raw shrimp": {
       "sale_price": 6.99,
       "unit": "lb",
       "source_label": "Jumbo Raw Shrimp, $6.99 lb",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "960000640",
+          "name": "waterfront BISTRO Raw EZ Peel Shell Tail On Jumbo Shrimp 21-25 Ct - 32 Oz",
+          "price": 13.98,
+          "price_per": 6.99,
+          "unit": "pound",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        }
+      ]
     },
     "fresh atlantic salmon fillet": {
       "sale_price": 9.99,
       "unit": "lb",
       "source_label": "Fresh Atlantic Salmon Fillet, $9.99 lb",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "per_unit_at_any_weight",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "971298159",
+          "name": "Fresh Salmon Fillet - Lb",
+          "price": 22.98,
+          "price_per": 9.99,
+          "unit": "lb",
+          "average_weight": 2.3,
+          "min_weight": 2.1,
+          "max_weight": 13.85,
+          "sell_by_weight": "P",
+          "inventory_available": "0"
+        },
+        {
+          "pid": "960301036",
+          "name": "Fish Salmon Atlantic Fillet - 1 Lb",
+          "price": 9.99,
+          "price_per": 9.99,
+          "unit": "lb",
+          "average_weight": 1.0,
+          "min_weight": 1.0,
+          "max_weight": 1.0,
+          "sell_by_weight": "P",
+          "inventory_available": "0"
+        },
+        {
+          "pid": "186190041",
+          "name": "Fresh Farmed Atlantic Salmon Fillet Color Added  - 1.5 lb",
+          "price": 14.99,
+          "price_per": 9.99,
+          "unit": "lb",
+          "average_weight": 1.5,
+          "min_weight": 1.5,
+          "max_weight": 1.5,
+          "sell_by_weight": "P",
+          "inventory_available": "0"
+        }
+      ]
     },
     "pork back ribs st louis ribs": {
       "sale_price": 2.99,
       "unit": "lb or package-priced as advertised",
       "source_label": "Pork Back Ribs or St. Louis Ribs, $2.99",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "blackberries blueberries strawberries": {
       "sale_price": 2.5,
       "unit": "package effective",
       "source_label": "Blackberries 6 oz / Blueberries dry pint / Strawberries 1 lb, 2 for $5",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "184070124",
+          "name": "Strawberries Prepacked - 1 Lb",
+          "price": 2.5,
+          "price_per": 2.5,
+          "unit": "lb",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        }
+      ]
     },
     "california cherries": {
       "sale_price": 2.99,
       "unit": "lb",
       "source_label": "California Cherries, $2.99 lb",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "green beans brussels sprouts": {
       "sale_price": 2.5,
       "unit": "package effective",
       "source_label": "Signature SELECT Green Beans or Brussels Sprouts, 2 for $5",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "baby cut carrots": {
       "sale_price": 1.99,
       "unit": "package",
       "source_label": "Signature SELECT Baby Cut Carrots, $1.99 ea",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "snacking tomatoes": {
       "sale_price": 2.5,
       "unit": "package effective",
       "source_label": "Signature SELECT Snacking Tomatoes, 2 for $5",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "bagged salad spinach": {
       "sale_price": 2.5,
       "unit": "package effective",
       "source_label": "Fresh Express / Signature SELECT Spinach, 2 for $5",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "avocados": {
       "sale_price": 3.99,
       "unit": "bag",
       "source_label": "Signature SELECT Avocados, $3.99 ea",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "960497390",
+          "name": "Signature FARMS Hass Avocados Bagged - Each",
+          "price": 3.99,
+          "price_per": 3.99,
+          "unit": "each",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        }
+      ]
     },
     "sweet corn": {
       "sale_price": 3.99,
       "unit": "package/as advertised",
       "source_label": "Sweet Corn, $3.99 ea",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "golden pineapple": {
       "sale_price": 2.99,
       "unit": "each",
       "source_label": "Golden Pineapple, $2.99 ea",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "sweet potatoes": {
       "sale_price": 2.99,
       "unit": "as advertised",
       "source_label": "Sweet Potatoes, $2.99 ea",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "egglands best eggs": {
       "sale_price": 2.99,
       "unit": "dozen",
       "source_label": "Eggland's Best Large Grade A Eggs, $2.99 ea; combo can get Lucerne shredded cheese free",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": [
+        {
+          "pid": "138350084",
+          "name": "Lucerne Farms Eggs Large - 12 Count (Packaging may vary)",
+          "price": 2.99,
+          "price_per": 2.99,
+          "unit": "dozen",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        },
+        {
+          "pid": "138350008",
+          "name": "Eggland's Best Classic Large White Eggs - 12 Count",
+          "price": 2.99,
+          "price_per": 2.99,
+          "unit": "dozen",
+          "average_weight": 0.0,
+          "min_weight": 0.0,
+          "max_weight": 0.0,
+          "sell_by_weight": "I",
+          "inventory_available": "1"
+        }
+      ]
     },
     "simply orange": {
       "sale_price": 3.99,
       "unit": "46 fl oz",
       "source_label": "Simply Orange or Light Orange Juice, $3.99 ea; combo can get Lucerne shredded cheese free",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "signature select pasta": {
       "sale_price": 0.99,
@@ -168,7 +392,10 @@
         "threshold_count": 5,
         "count_unit": "item",
         "text": "Signature SELECT Pasta, $0.99 ea when you buy 5+ participating items"
-      }
+      },
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "tuttorosso tomatoes": {
       "sale_price": 1.29,
@@ -182,21 +409,30 @@
         "threshold_count": 5,
         "count_unit": "item",
         "text": "Tuttorosso Tomatoes, $1.29 ea when you buy 5+ participating items"
-      }
+      },
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "mission flour tortillas": {
       "sale_price": 2.99,
       "unit": "20 ct package",
       "source_label": "Mission Flour Tortillas, $2.99 ea",
       "requires_clip": false,
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     },
     "maxwell house or signature select coffee": {
       "sale_price": 6.99,
       "unit": "package",
       "source_label": "Maxwell House / Signature SELECT Coffee, $6.99 ea",
       "requires_clip": false,
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "deal_mechanic": "uncertain",
+      "verified_on": "2026-05-10",
+      "verified_evidence": []
     }
   },
   "ad_items": [

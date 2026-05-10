@@ -21,10 +21,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from safeway_coupon_account_state import (
+    ACCOUNT_STATE_FILE,
     CdpClient,
     apply_account_state,
     cdp_page,
     fetch_account_payloads,
+    local_account_state_payload,
     offers_from_payload,
     parse_response,
 )
@@ -398,6 +400,18 @@ def validate_data(data):
     }
 
 
+def sanitize_account_state(data):
+    for offer in data.get("offers", []):
+        offer["account_state"] = default_account_state("public_sanitized_gallery")
+    metadata = data.setdefault("metadata", {})
+    for key in list(metadata):
+        if key.startswith("account_state_"):
+            del metadata[key]
+    metadata["account_state_storage"] = (
+        f"Account-specific clipped state belongs in ignored {ACCOUNT_STATE_FILE.name}."
+    )
+
+
 def print_summary(public_counts, enrichment_counts, account_counts, validation, write):
     mode = "Wrote" if write else "Dry run"
     print(f"{mode}: Safeway coupon pipeline")
@@ -452,6 +466,7 @@ def parse_args():
     parser.add_argument("--sleep", type=float, default=0.05, help="Delay between enrichment requests")
 
     parser.add_argument("--account-state", action="store_true", help="Refresh logged-in clipped/unclipped account state")
+    parser.add_argument("--write-account-state-public", action="store_true", help="Store logged-in account state in tracked coupon JSON instead of the ignored local overlay")
     parser.add_argument("--cdp-url", help="Existing Chrome DevTools Protocol URL")
     parser.add_argument("--launch-profile-copy", action="store_true", help="Launch a temporary copied Chrome profile for account-state reads")
     parser.add_argument("--add-account-only", action=argparse.BooleanOptionalAction, default=True, help="Add account-only offers from logged-in gallery")
@@ -485,6 +500,9 @@ def main():
     data["metadata"]["pipeline_validation"] = validation
 
     if args.write:
+        if account_counts and not args.write_account_state_public:
+            write_json(ACCOUNT_STATE_FILE, local_account_state_payload(data, account_counts, observed_on()))
+            sanitize_account_state(data)
         write_json(COUPONS_FILE, data)
     print_summary(public_counts, enrichment_counts, account_counts, validation, args.write)
 

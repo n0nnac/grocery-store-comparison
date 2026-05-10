@@ -77,7 +77,10 @@ PORTION_PREFIXES = {"microwav", "instant", "ready", "pouch", "single-serve", "bo
 # Preservation/preparation styles that don't fit fresh produce. "Roasted",
 # "pickled", "dried", and "jarred" peppers/onions/spinach are different
 # products from the fresh equivalent, even when token overlap is perfect.
-PRODUCE_PREP_REJECT_TOKENS = {"roasted", "pickled", "dried", "canned", "jarred", "marinated", "fermented"}
+PRODUCE_PREP_REJECT_TOKENS = {
+    "roasted", "pickled", "dried", "canned", "jarred", "marinated",
+    "fermented", "can", "jar",
+}
 
 # Dietary/specialty variant tokens. When the meal item is generic (does not
 # include any of these tokens), we penalize products that carry them, since a
@@ -123,6 +126,14 @@ def token_set(text):
     return {t for t in tokens if len(t) > 2 and t not in STOPWORDS and not t.isdigit()}
 
 
+def product_token_set(product):
+    return (
+        token_set(product.get("name") or "")
+        | token_set(product.get("brand") or "")
+        | token_set(product.get("size") or "")
+    )
+
+
 def is_bulk_meal_unit(meal_unit):
     text = (meal_unit or "").lower()
     return any(keyword in text for keyword in BULK_UNIT_KEYWORDS)
@@ -158,8 +169,8 @@ def parse_size_oz(text):
     if oz_match:
         return (float(oz_match.group(1)), "weight")
 
-    if re.search(r"\bdoz", t):
-        qty_match = re.search(r"(\d+(?:\.\d+)?)\s*doz", t)
+    if re.search(r"\b(doz|dozen)", t):
+        qty_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:doz|dozen)", t)
         qty = float(qty_match.group(1)) if qty_match else 1.0
         return (qty * 12, "count")
 
@@ -169,7 +180,7 @@ def parse_size_oz(text):
 
     if re.search(r"\b(lbs?|pound|sell\s*by\s*weight)\b", t):
         return (None, "weight")
-    if re.search(r"\beach\b|\bea\b", t):
+    if re.search(r"\b(each|ea)\b", t):
         return (1.0, "count")
 
     return (None, None)
@@ -201,18 +212,41 @@ def size_compatibility(meal_unit, product):
         return 0.20
     if 0.5 <= ratio <= 2.0:
         return 0.05
-    if 0.20 <= ratio <= 5.0:
-        return 0.0
-    return -0.30
+    return -0.60
+
+
+def lean_ratios(text):
+    """Return lean/fat ratio pairs like (80, 20) from product text."""
+    text = (text or "").lower()
+    ratios = set()
+    for lean, fat in re.findall(r"\b(\d{2})\s*/\s*(\d{1,2})\b", text):
+        ratios.add((int(lean), int(fat)))
+    for lean in re.findall(r"\b(\d{2})\s*%\s*lean\b", text):
+        lean_i = int(lean)
+        ratios.add((lean_i, 100 - lean_i))
+    return ratios
+
+
+def lean_ratio_conflict(meal_key, product):
+    expected = lean_ratios(meal_key)
+    if not expected:
+        return False
+    product_text = " ".join(
+        str(product.get(key) or "") for key in ("name", "brand", "size")
+    )
+    observed = lean_ratios(product_text)
+    return bool(observed and expected.isdisjoint(observed))
 
 
 def candidate_score(meal_key, meal_record, product):
     meal_tokens = token_set(meal_key)
-    product_tokens = token_set(product.get("name") or "") | token_set(product.get("brand") or "")
+    product_tokens = product_token_set(product)
     if not meal_tokens:
         return 0.0
 
     if GENERIC_REJECT_TOKENS & product_tokens and not (GENERIC_REJECT_TOKENS & meal_tokens):
+        return 0.0
+    if lean_ratio_conflict(meal_key, product):
         return 0.0
 
     overlap = meal_tokens & product_tokens
@@ -241,7 +275,7 @@ def candidate_score(meal_key, meal_record, product):
         if PRODUCE_PREP_REJECT_TOKENS & product_tokens and not any(
             token in meal_lower for token in PRODUCE_PREP_REJECT_TOKENS
         ):
-            score -= 0.50
+            return 0.0
 
     score += size_compatibility(meal_record.get("unit"), product)
 
@@ -275,39 +309,85 @@ def confidence_label(score, exact_id_match=False):
     return "low"
 
 
-def planning_pound_price(item, product):
+def package_price(product, price_kind):
+    if price_kind == "base":
+        regular = parse_float(product.get("regularPrice"))
+        if regular is not None:
+            return regular
+    return parse_float(product.get("price"))
+
+
+def planning_pound_price(item, product, price_kind):
     """Convert API price to per-pound price when ingredient unit is in pounds.
 
     The browser API exposes per-unit pricing via `unitPrice`/`unitMeasure`,
-    and a `price` for the package. When the ingredient unit is `lb`, prefer
-    the per-lb unitPrice; otherwise infer from package price + size text.
+    and a package `price`. For fixed-weight bags sold with /oz unit pricing,
+    prefer package price divided by parsed package weight so rounded /oz display
+    prices do not leak into the planning math.
     """
     unit = (item.get("unit") or "").strip().lower()
     if unit not in {"lb", "pound", "pounds"}:
         return None
     unit_price = parse_float(product.get("unitPrice"))
     unit_measure = (product.get("unitMeasure") or "").strip().upper()
+    product_qty, product_kind = parse_size_oz(product.get("size") or "")
+    pkg_price = package_price(product, price_kind)
+    if product_kind == "weight" and product_qty and unit_measure in {"OZ", "OUNCE", "OUNCES"} and pkg_price is not None:
+        pounds = product_qty / 16
+        if pounds > 0:
+            return round(pkg_price / pounds, 2)
     if unit_price is not None and unit_measure in {"LB", "LBS", "POUND", "POUNDS"}:
         return unit_price
+    if unit_price is not None and unit_measure in {"OZ", "OUNCE", "OUNCES"}:
+        return round(unit_price * 16, 2)
+    if product_kind == "weight" and product_qty and pkg_price is not None:
+        pounds = product_qty / 16
+        if pounds > 0:
+            return round(pkg_price / pounds, 2)
     return None
 
 
 def planning_base_price(item, product):
     """Best estimate of the regular Giant price matching the planning unit."""
-    pound_price = planning_pound_price(item, product)
+    pound_price = planning_pound_price(item, product, "base")
     if pound_price is not None:
         return pound_price
-    regular = parse_float(product.get("regularPrice"))
-    if regular is not None:
-        return regular
-    return parse_float(product.get("price"))
+    equivalent = planning_equivalent_package_price(item, product, "base")
+    if equivalent is not None:
+        return equivalent
+    return package_price(product, "base")
 
 
 def planning_current_price(item, product):
-    pound_price = planning_pound_price(item, product)
+    pound_price = planning_pound_price(item, product, "current")
     if pound_price is not None:
         return pound_price
-    return parse_float(product.get("price"))
+    equivalent = planning_equivalent_package_price(item, product, "current")
+    if equivalent is not None:
+        return equivalent
+    return package_price(product, "current")
+
+
+def planning_equivalent_package_price(item, product, price_kind):
+    """Scale package price when the saved planning unit has a known size.
+
+    Example: a saved 32 oz shredded-cheese planning unit matched to an 8 oz
+    Giant bag should cost four bags, not one bag.
+    """
+    meal_qty, meal_kind = parse_size_oz(item.get("unit") or "")
+    product_qty, product_kind = parse_size_oz(product.get("size") or "")
+    pkg_price = package_price(product, price_kind)
+    if (
+        meal_kind is None
+        or product_kind is None
+        or meal_kind != product_kind
+        or meal_qty is None
+        or product_qty is None
+        or product_qty <= 0
+        or pkg_price is None
+    ):
+        return None
+    return round(pkg_price * (meal_qty / product_qty), 2)
 
 
 def make_product_url(product_id):

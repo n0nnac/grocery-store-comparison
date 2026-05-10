@@ -55,7 +55,7 @@ python3 giant_flipp_deals.py search "ground beef"
 python3 giant_flipp_deals.py match --min-score 0.4
 ```
 
-Flipp data is the cleanest shell-friendly source for Giant's dated deal prices. It complements the browser-session V5 API, which remains the preferred path for live regular prices. See `GIANT_FLIPP_METHODOLOGY.md` for details.
+Flipp data is the cleanest shell-friendly source for Giant's dated deal prices. It complements the browser-session V5 API, which remains the preferred path for live regular prices. Matched circular prices are normalized into the saved planning unit before estimate/cart math uses them, and multi-buy deals are only used when the selected lines meet the advertised threshold. See `GIANT_FLIPP_METHODOLOGY.md` for details.
 
 Refresh saved Safeway product IDs without writing files:
 
@@ -81,6 +81,8 @@ Run the reusable coupon refresh pipeline:
 ```bash
 python3 safeway_coupon_pipeline.py --account-state --write
 ```
+
+With `--account-state`, the logged-in clipped/unclipped state is written to ignored `safeway_coupon_account_state.local.json`; the tracked coupon gallery stays sanitized.
 
 Lower-level coupon commands are still available for probing:
 
@@ -141,7 +143,21 @@ Compare meal-cost estimates across Safeway and Giant in one shot:
 python3 meal_price_tool.py estimate --compare-stores
 python3 meal_price_tool.py estimate ground_beef_lunch_bowls --compare-stores
 python3 meal_price_tool.py cart ground_beef_lunch_bowls --compare-stores
+python3 meal_price_tool.py cart ground_beef_lunch_bowls --compare-stores --verbose
 ```
+
+Aggregate Giant Food coupons relevant to saved meal items (requires browser session):
+
+```bash
+python3 giant_coupon_search.py fetch --write
+python3 giant_coupon_search.py search --query "meal bundle"
+python3 giant_coupon_search.py search --category "Breakfast" --limit 10
+python3 giant_coupon_search.py match --min-score 0.4 --keep 2
+```
+
+`fetch` paginates the v7 storewide coupon search (the savings page's body shape, with `start`/`size` nested under `query`) and combines it with per-product `availableDisplayCoupons` harvested via saved Giant product IDs. Default fetch returns the full ~3,000-coupon catalog; the savings page's narrower personalized view can be reproduced with `--targeting-only --loadable-only --unloaded-only`. Results are deduplicated and back-reference each coupon to the meal items that surfaced it. Per-user clipped/loaded state is split into ignored `giant_coupon_account_state.local.json`. See `GIANT_COUPON_METHODOLOGY.md` for the hybrid-source design.
+
+`cart --compare-stores --verbose` now lists applicable Giant coupons per cart line, with clipping requirement, account state, and end date. Aggregate discounts are reported informationally; bundle-condition modelling is left for a future pass.
 
 The `estimate --compare-stores` and `cart --compare-stores` modes show per-line Safeway and Giant prices side by side, mark which store wins each line, and report the cherry-picked best-of-both subtotal against each single-store total. The cart variant also shows Safeway's coupon-adjusted final, since cart-level Safeway coupons are not modeled on the Giant side.
 
@@ -230,9 +246,11 @@ python3 grocery_compare.py milk eggs bread
 - `safeway_price_observations.json`: source observations by Safeway product ID.
 - `weekly_deals.json`: current weekly ad sale overlays.
 - `weekly_deals_preview_2026-05-08.json`: preview ad sale overlays when Safeway publishes the next ad early.
-- `safeway_coupons.json`: current read-only coupon/deal gallery overlay.
-- `safeway_coupon_overrides.json`: temporary manual/account-specific coupon overlay until logged-in coupon-state reads are automated.
-- `safeway_rewards.json`: Safeway points earning rules, redemption valuation options, and future product reward captures.
+- `safeway_coupons.json`: current read-only coupon/deal gallery overlay, sanitized of account-specific clipped state.
+- `safeway_coupon_account_state.local.json`: ignored local clipped/unclipped coupon-state overlay.
+- `safeway_coupon_overrides.json`: temporary manual coupon overlay for facts that are not yet represented in the gallery pipeline.
+- `safeway_rewards.json`: Safeway points earning rules, redemption valuation options, and future product reward captures, sanitized of account-specific balances.
+- `safeway_rewards_account_state.local.json`: ignored local Rewards account-state overlay.
 - `safeway_rewards_dashboard_capture_2026-05-07.json`: account dashboard text capture for current point redemption tiles.
 - `safeway_rewards_adjacent_capture_2026-05-07.json`: account dashboard text capture for adjacent Rewards tabs.
 - `safeway_cart_observed_template.json`: fill-in template for observed Safeway cart/checkout totals.
@@ -275,21 +293,22 @@ python3 grocery_compare.py milk eggs bread
 3. Refreshes write detailed evidence to `safeway_price_observations.json`.
 4. Base prices in `meal_prices.json` use regular prices where available.
 5. Weekly ads and future coupons are separate dated overlays, not base-price replacements.
-6. Coupon gallery data lives in `safeway_coupons.json`.
-7. Account-specific/manual coupon observations live in `safeway_coupon_overrides.json`.
-8. `safeway_coupon_pipeline.py` refreshes the public gallery, preserves enrichment/account fields, enriches targeted slices, and optionally refreshes logged-in account state.
-9. Saved coupon offers can be enriched with detail records, eligible UPCs, and product matches.
-10. Logged-in coupon state can mark account-specific clipped/unclipped state without mutating coupons.
-11. Coupon account state is tracked separately from offer existence.
-12. Safeway rewards rules and redemption values live in `safeway_rewards.json`.
-13. Meal-planning estimates combine base prices with eligible weekly deal overlays.
-14. Cart estimates apply cart-level coupons after line-item pricing and report clipping state.
-15. Cart estimates report rewards points as future-value credits, not as same-transaction discounts.
-16. Cart reconciliation compares the local estimate against an observed Safeway cart/checkout breakdown.
-17. Weekly deal enrichment can query Safeway product search for API-backed base-price distance.
-18. Meal inspiration exports grounded prompts for external recipe generation without mutating base prices.
-19. Use-up inspiration exports grounded prompts that treat owned ingredients as zero incremental cost.
-20. `meal_price_tool.py estimate-plan` prices returned recipe JSON from the external prompt contract.
+6. Coupon gallery data lives in sanitized `safeway_coupons.json`.
+7. Account-specific coupon clipped state lives in ignored `safeway_coupon_account_state.local.json`.
+8. Manual coupon facts live in `safeway_coupon_overrides.json`.
+9. `safeway_coupon_pipeline.py` refreshes the public gallery, preserves enrichment fields, enriches targeted slices, and optionally refreshes logged-in account state into the ignored local overlay.
+10. Saved coupon offers can be enriched with detail records, eligible UPCs, and product matches.
+11. Logged-in coupon state can mark account-specific clipped/unclipped state without mutating public coupon facts.
+12. Coupon account state is tracked separately from offer existence.
+13. Safeway rewards rules and redemption values live in `safeway_rewards.json`; account balances live in ignored `safeway_rewards_account_state.local.json`.
+14. Meal-planning estimates combine base prices with eligible weekly deal overlays.
+15. Cart estimates apply cart-level coupons after line-item pricing and report clipping state.
+16. Cart estimates report rewards points as future-value credits, not as same-transaction discounts.
+17. Cart reconciliation compares the local estimate against an observed Safeway cart/checkout breakdown.
+18. Weekly deal enrichment can query Safeway product search for API-backed base-price distance.
+19. Meal inspiration exports grounded prompts for external recipe generation without mutating base prices.
+20. Use-up inspiration exports grounded prompts that treat owned ingredients as zero incremental cost.
+21. `meal_price_tool.py estimate-plan` prices returned recipe JSON from the external prompt contract.
 21. Giant live pricing should prefer `giant_browser_api_probe.py` for store `#0378` / service location `50000732`.
 22. Returned-plan estimates can auto-resolve missing or stale Safeway ingredients through the product API.
 23. `--write-resolved` promotes high/medium-confidence resolved Safeway API prices into `meal_prices.json` and `safeway_price_observations.json`.

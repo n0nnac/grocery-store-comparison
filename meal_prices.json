@@ -571,7 +571,7 @@
       "unit": "24 oz jar",
       "base_prices": {
         "Safeway": 8.99,
-        "Giant": 2.19
+        "Giant": 2.29
       },
       "meal_tags": [
         "pasta",
@@ -599,8 +599,8 @@
           "size": "23 OZ JAR",
           "brand": "Our Brand",
           "upc": "68826756515",
-          "planning_base_price": 2.19,
-          "planning_current_price": 2.19
+          "planning_base_price": 2.29,
+          "planning_current_price": 2.29
         }
       }
     },
@@ -1021,7 +1021,7 @@
       "unit": "12 oz bag",
       "base_prices": {
         "Safeway": 2.99,
-        "Giant": 1.89
+        "Giant": 2.1
       },
       "price_sources": {
         "Safeway": {
@@ -1067,8 +1067,8 @@
           "size": "10.8 OZ BAG",
           "brand": "Our Brand",
           "upc": "68826759605",
-          "planning_base_price": 1.89,
-          "planning_current_price": 1.89
+          "planning_base_price": 2.1,
+          "planning_current_price": 2.1
         }
       },
       "meal_tags": [
@@ -1083,7 +1083,7 @@
       "unit": "14 oz bag",
       "base_prices": {
         "Safeway": 5.99,
-        "Giant": 5.99
+        "Giant": 4.66
       },
       "price_sources": {
         "Safeway": {
@@ -1129,8 +1129,8 @@
           "size": "18 OZ BOX",
           "brand": "InnovAsian",
           "upc": "69511912014",
-          "planning_base_price": 5.99,
-          "planning_current_price": 5.29
+          "planning_base_price": 4.66,
+          "planning_current_price": 4.11
         }
       },
       "meal_tags": [
@@ -1144,8 +1144,7 @@
       "category": "produce",
       "unit": "8 oz package",
       "base_prices": {
-        "Safeway": 1.99,
-        "Giant": 2.69
+        "Safeway": 1.99
       },
       "meal_tags": [
         "sheet pan",
@@ -1189,7 +1188,7 @@
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
-          "match_confidence": "high",
+          "match_confidence": "rejected",
           "current_price": 2.69,
           "regular_price": 2.69,
           "unit_price": 0.34,
@@ -1197,8 +1196,9 @@
           "size": "8 OZ CAN",
           "brand": "Our Brand",
           "upc": "68826707837",
-          "planning_base_price": 2.69,
-          "planning_current_price": 2.69
+          "planning_base_price": null,
+          "planning_current_price": null,
+          "rejected_reason": "Stored Giant product is not comparable to the meal-planning item after stricter form checks."
         }
       }
     },
@@ -1208,7 +1208,7 @@
       "base_prices": {
         "Safeway": 1.49,
         "Trader Joe's": 1.29,
-        "Giant": 2.99
+        "Giant": 1.0
       },
       "meal_tags": [
         "base aromatic",
@@ -1238,8 +1238,8 @@
           "size": "3 LB BAG",
           "brand": "Our Brand",
           "upc": "68826708353",
-          "planning_base_price": 2.99,
-          "planning_current_price": 2.99
+          "planning_base_price": 1.0,
+          "planning_current_price": 1.0
         }
       }
     },
@@ -1248,7 +1248,7 @@
       "unit": "5 ct bag",
       "base_prices": {
         "Safeway": 4.99,
-        "Giant": 5.99
+        "Giant": 4.99
       },
       "price_sources": {
         "Safeway": {
@@ -1294,8 +1294,8 @@
           "size": "6 CT BAG",
           "brand": "USDA Produce",
           "upc": "852761000850",
-          "planning_base_price": 5.99,
-          "planning_current_price": 5.99
+          "planning_base_price": 4.99,
+          "planning_current_price": 4.99
         }
       },
       "meal_tags": [
@@ -1350,7 +1350,7 @@
       "unit": "32 oz bag",
       "base_prices": {
         "Safeway": 9.99,
-        "Giant": 2.29
+        "Giant": 9.16
       },
       "meal_tags": [
         "tacos",
@@ -1394,7 +1394,7 @@
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
-          "match_confidence": "high",
+          "match_confidence": "medium",
           "current_price": 2.29,
           "regular_price": 2.29,
           "unit_price": 4.58,
@@ -1402,8 +1402,9 @@
           "size": "8 OZ BAG",
           "brand": "Our Brand",
           "upc": "68826707413",
-          "planning_base_price": 2.29,
-          "planning_current_price": 2.29
+          "planning_base_price": 9.16,
+          "planning_current_price": 9.16,
+          "confidence_note": "Product is retained because the saved product_id is specific, but package size is normalized to the planning unit."
         }
       }
     },
@@ -1638,7 +1639,7 @@
       "unit": "16 oz bag",
       "base_prices": {
         "Safeway": 4.99,
-        "Giant": 5.49
+        "Giant": 6.27
       },
       "price_sources": {
         "Safeway": {
@@ -1684,8 +1685,8 @@
           "size": "14 OZ BAG",
           "brand": "NatureSweet",
           "upc": "75166659095",
-          "planning_base_price": 5.49,
-          "planning_current_price": 5.49
+          "planning_base_price": 6.27,
+          "planning_current_price": 6.27
         }
       },
       "meal_tags": [
@@ -1701,7 +1702,7 @@
       "unit": "12 fl oz bottle",
       "base_prices": {
         "Safeway": 1.99,
-        "Giant": 4.99
+        "Giant": 4.28
       },
       "price_sources": {
         "Safeway": {
@@ -1747,8 +1748,8 @@
           "size": "14 OZ BTL",
           "brand": "P.F. Chang's",
           "upc": "3100067044",
-          "planning_base_price": 4.99,
-          "planning_current_price": 4.99
+          "planning_base_price": 4.28,
+          "planning_current_price": 4.28
         }
       },
       "meal_tags": [

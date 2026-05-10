@@ -168,10 +168,32 @@ Use Flipp circular observations only when:
 - the flyer's `merchant_id` is `2520` (Giant Food); other Giant brands such as Giant Food Stores (PA) carry different merchant IDs and should not be substituted
 - prices are parsed correctly across the observed Flipp formats: single price, multi-buy (`"2/"`, `"3/"`), per-pound (`"/lb."`), or per-each (`"/ea."`)
 - the observation stores the Flipp flyer ID, item ID, valid-from and valid-to dates, raw `current_price`, `pre_price_text`, `post_price_text`, and source type
+- matched deal prices are converted into the saved `meal_prices.json` planning unit before cart or estimate math uses them
+- multi-buy deal prices are only applied when the selected cart lines meet the advertised `multi_buy_qty` threshold
 
 Flipp deal prices are dated overlays. They should live in `giant_weekly_deals*.json` files alongside Safeway weekly ad data, not in `base_prices`. They cover sale/promotional items only, not the full Giant catalog. They are not store-specific within the Giant DC market — the flyer applies to the regional flyer footprint, not solely to store `#0378`.
 
 Do not attempt to use Flipp circular prices as base prices. Do not overwrite a fresher live Giant browser API observation with a Flipp circular price.
+
+### Giant Coupon Resolution
+
+Giant exposes coupons through two paths:
+
+- A storewide v7 coupon-search endpoint that paginates correctly when the body wraps `start`/`size` inside a `query` object (the page's actual shape). Total catalog is ~3,051 coupons retrievable in pages of up to 90 each.
+- A per-product `availableDisplayCoupons` array on the v5 product detail endpoint, harvested by walking saved Giant product IDs in `meal_prices.json`. Adds `matched_meal_keys` back-references onto each coupon.
+
+`giant_coupon_search.py fetch` aggregates both into `giant_coupons.json`, deduping by coupon id and annotating each entry with `matched_meal_keys` and `matched_product_ids` back-references. Per-user clipped/loaded state lives in the gitignored `giant_coupon_account_state.local.json`.
+
+Use Giant coupon observations only when:
+
+- the source endpoint is documented (`giant_coupon_v7_api`)
+- the coupon's `start_date`/`end_date` window is current
+- the catalog file metadata's `service_location_id` matches the planned shopping store
+- account-state fields (clipped/loaded) are read from the local file, never inferred from the public catalog
+
+Do not subtract Giant coupon discounts from the cart subtotal automatically. Most observed Giant coupons are bundle conditions (e.g. "Save $3 when you buy steak + eggs + sausage"); modelling each bundle's product set is required before savings can be claimed. The cart cross-store summary surfaces matched coupons informationally with `--verbose`.
+
+See `GIANT_COUPON_METHODOLOGY.md` for full details on the hybrid source.
 
 ### Giant Browser V5 API Resolution
 
@@ -192,9 +214,10 @@ Do not export, log, or persist browser cookies. Browser-session API calls should
 - Hard reject of child-targeted SKUs (`baby`, `infant`, `toddler`, `tot`, `kids`, `kid`).
 - Category-aware negative tokens (e.g. wines/spirits in pantry searches, frozen in produce searches).
 - Portion-prep penalty for bulk pantry staples — `microwav*`, `instant`, `ready`, `single-serve`, `boil-in-bag` SKUs lose ground when the meal item is "5 lb bag" rice or similar. Restricted to pantry only because produce items legitimately carry "Ready to Eat" or "Microwavable" markers without changing product class.
-- Fresh produce penalty for `roasted`, `pickled`, `dried`, `canned`, `jarred`, `marinated`, `fermented` variants when the meal item does not ask for them.
+- Fresh produce hard reject for `roasted`, `pickled`, `dried`, `canned`, `jarred`, `marinated`, `fermented`, `can`, or `jar` variants when the meal item does not ask for them.
 - Dietary variant penalty for `fat free`, `lactose`, `gluten`, `lowfat`, `nonfat`, `skim` SKUs when the meal item is generic.
 - Size compatibility scoring — parses meal `unit` and product `size` into ounces or counts, boosts close matches and penalizes cross-family mismatches (weight vs count) or large size ratio differences.
+- Planning-unit normalization — package prices are scaled when the selected Giant product size differs from the saved planning unit, and per-ounce unit prices are converted to per-pound when the planning unit is `lb`.
 - Giant store-brand bonus — including the special case where the API tags Giant SKUs with brand `Our Brand` and the product name begins with `Giant`.
 
 High and medium-confidence matches may write `base_prices.Giant`. The `--fill-missing-only` flag preserves curated base prices and only fills gaps. Full match metadata always lands in `price_sources.Giant` and `giant_price_observations.json` for audit. The `--force-search` flag ignores saved product IDs and re-runs the search/scoring path, useful after matcher changes.
@@ -237,6 +260,7 @@ Use these source types consistently:
 - `giant_static_seo_catalog`: Giant `/groceries/...` static catalog JSON-LD product/offer source.
 - `giant_browser_v5_api`: Giant live `/api/v5.0` product observation made from a validated browser session.
 - `giant_flipp_circular_api`: Giant Food weekly circular item from the Flipp public flyer API.
+- `giant_coupon_v7_api`: Giant coupon catalog from the `/api/v7.0/.../coupons/search` endpoint plus per-product `availableDisplayCoupons`.
 - `safeway_cart_manual`: manually filled Safeway cart/checkout observation.
 - `safeway_cart_browser_capture`: read-only browser capture of visible Safeway cart/checkout text.
 - `local_cart_model`: local expected cart model built from saved pricing layers.
@@ -305,11 +329,12 @@ If a Giant source cannot verify store `#0378`, mark it lower confidence and do n
 
 - Preserve raw observation detail in `safeway_price_observations.json`.
 - Keep `meal_prices.json` normalized for meal-planning use.
-- Use `safeway_coupon_pipeline.py` for normal coupon refreshes so existing detail and account-state fields are merged, not overwritten.
-- Keep account-specific or manually observed coupons in `safeway_coupon_overrides.json` until authenticated coupon-state reads are automated.
+- Use `safeway_coupon_pipeline.py` for normal coupon refreshes so existing detail fields are merged, not overwritten.
+- Keep account-specific clipped/unclipped coupon state in ignored `safeway_coupon_account_state.local.json`, not in tracked public offer JSON.
+- Keep manual coupon facts in `safeway_coupon_overrides.json`.
 - Store coupon `account_state` separately from the public offer fields.
 - Mark manual coupon overrides inactive when a logged-in account coupon supersedes them.
-- Keep rewards earning and redemption valuation in `safeway_rewards.json`.
+- Keep rewards earning and redemption valuation in `safeway_rewards.json`; keep account-specific point balances in ignored `safeway_rewards_account_state.local.json`.
 - Keep point multiplier offers in `safeway_coupons.json`; they are clippable offer overlays.
 - Keep product rewards separate from product base prices and compare them against current product prices at redemption time.
 - Treat dashboard product reward price resolutions as planning estimates unless exact product IDs/UPCs are confirmed.

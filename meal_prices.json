@@ -24,7 +24,7 @@
       "base_prices": {
         "Safeway": 5.99,
         "Trader Joe's": 5.99,
-        "Giant": 6.99
+        "Giant": 7.29
       },
       "price_sources": {
         "Safeway": {
@@ -215,7 +215,7 @@
       "base_prices": {
         "Safeway": 3.99,
         "Trader Joe's": 6.99,
-        "Giant": 7.99
+        "Giant": 5.24
       },
       "meal_tags": [
         "rice bowls",
@@ -387,7 +387,7 @@
       "base_prices": {
         "Safeway": 2.99,
         "Trader Joe's": 3.99,
-        "Giant": 5.29
+        "Giant": 2.99
       },
       "meal_tags": [
         "breakfast",
@@ -428,7 +428,7 @@
       "base_prices": {
         "Safeway": 3.99,
         "Trader Joe's": 3.29,
-        "Giant": 3.99
+        "Giant": 9.99
       },
       "price_sources": {
         "Safeway": {
@@ -463,22 +463,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 199079,
-          "product_name": "Minute 60 Second Microwave Jasmine Rice Cups - 2 ct",
-          "url": "https://giantfood.com/product/199079",
+          "product_id": 153489,
+          "product_name": "Asian Best Jasmine Rice",
+          "url": "https://giantfood.com/product/153489",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 2.0,
-          "regular_price": 2.59,
-          "unit_price": 0.23,
+          "current_price": 9.99,
+          "regular_price": 9.99,
+          "unit_price": 0.12,
           "unit_measure": "OZ",
-          "size": "8.8 OZ PKG",
-          "brand": "Minute",
-          "upc": "1740014031",
-          "planning_base_price": 2.59,
-          "planning_current_price": 2.0
+          "size": "5 LB BAG",
+          "brand": "Asian Best",
+          "upc": "8373714365",
+          "planning_base_price": 9.99,
+          "planning_current_price": 9.99
         }
       },
       "meal_tags": [
@@ -494,7 +494,7 @@
       "base_prices": {
         "Safeway": 1.89,
         "Trader Joe's": 1.49,
-        "Giant": 1.99
+        "Giant": 1.09
       },
       "meal_tags": [
         "pasta",
@@ -532,7 +532,7 @@
       "unit": "28 oz can",
       "base_prices": {
         "Safeway": 2.49,
-        "Giant": 2.89
+        "Giant": 1.79
       },
       "meal_tags": [
         "pasta",
@@ -547,22 +547,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 176241,
-          "product_name": "Furmano's Crushed Tomatoes",
-          "url": "https://giantfood.com/product/176241",
+          "product_id": 137231,
+          "product_name": "Giant No Salt Added Crushed Tomatoes",
+          "url": "https://giantfood.com/product/137231",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 2.89,
-          "regular_price": 2.89,
-          "unit_price": 0.1,
+          "current_price": 1.79,
+          "regular_price": 1.79,
+          "unit_price": 0.06,
           "unit_measure": "OZ",
           "size": "28 OZ CAN",
-          "brand": "Furmano's",
-          "upc": "4118804070",
-          "planning_base_price": 2.89,
-          "planning_current_price": 2.89
+          "brand": "Our Brand",
+          "upc": "68826702022",
+          "planning_base_price": 1.79,
+          "planning_current_price": 1.79
         }
       }
     },
@@ -571,7 +571,7 @@
       "unit": "24 oz jar",
       "base_prices": {
         "Safeway": 8.99,
-        "Giant": 9.49
+        "Giant": 2.19
       },
       "meal_tags": [
         "pasta",
@@ -585,22 +585,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 117427,
-          "product_name": "Rao's Homemade All Natural Marinara Pasta Sauce",
-          "url": "https://giantfood.com/product/117427",
+          "product_id": 306686,
+          "product_name": "Giant Marinara Pasta Sauce",
+          "url": "https://giantfood.com/product/306686",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 9.49,
-          "regular_price": 9.49,
-          "unit_price": 0.4,
+          "current_price": 2.19,
+          "regular_price": 2.19,
+          "unit_price": 0.1,
           "unit_measure": "OZ",
-          "size": "24 OZ JAR",
-          "brand": "Rao's",
-          "upc": "74747900007",
-          "planning_base_price": 9.49,
-          "planning_current_price": 9.49
+          "size": "23 OZ JAR",
+          "brand": "Our Brand",
+          "upc": "68826756515",
+          "planning_base_price": 2.19,
+          "planning_current_price": 2.19
         }
       }
     },
@@ -609,7 +609,7 @@
       "unit": "package",
       "base_prices": {
         "Safeway": 4.29,
-        "Giant": 3.69
+        "Giant": 1.99
       },
       "price_sources": {
         "Safeway": {
@@ -641,22 +641,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 270218,
-          "product_name": "Goya Flour Tortillas Soft Taco Size 6 Inch - 8 ct",
-          "url": "https://giantfood.com/product/270218",
+          "product_id": 392185,
+          "product_name": "Giant Soft Medium Taco Flour Tortillas - 10 ct",
+          "url": "https://giantfood.com/product/392185",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.69,
-          "regular_price": 3.69,
-          "unit_price": 0.29,
+          "current_price": 1.99,
+          "regular_price": 1.99,
+          "unit_price": 0.11,
           "unit_measure": "OZ",
-          "size": "12.6 OZ PKG",
-          "brand": "Goya",
-          "upc": "4133109045",
-          "planning_base_price": 3.69,
-          "planning_current_price": 3.69
+          "size": "17.5 OZ PKG",
+          "brand": "Our Brand",
+          "upc": "68826759499",
+          "planning_base_price": 1.99,
+          "planning_current_price": 1.99
         }
       },
       "meal_tags": [
@@ -671,7 +671,7 @@
       "unit": "16 oz jar",
       "base_prices": {
         "Safeway": 3.99,
-        "Giant": 4.09
+        "Giant": 2.39
       },
       "price_sources": {
         "Safeway": {
@@ -703,22 +703,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 39254,
-          "product_name": "Tostitos Mild Chunky Salsa",
-          "url": "https://giantfood.com/product/39254",
+          "product_id": 296134,
+          "product_name": "Giant Mild Thick & Chunky Salsa",
+          "url": "https://giantfood.com/product/296134",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 4.09,
-          "regular_price": 4.09,
-          "unit_price": 0.26,
+          "current_price": 2.39,
+          "regular_price": 2.39,
+          "unit_price": 0.15,
           "unit_measure": "OZ",
-          "size": "15.5 OZ JAR",
-          "brand": "Tostitos",
-          "upc": "2840005597",
-          "planning_base_price": 4.09,
-          "planning_current_price": 4.09
+          "size": "16 OZ JAR",
+          "brand": "Our Brand",
+          "upc": "68826756197",
+          "planning_base_price": 2.39,
+          "planning_current_price": 2.39
         }
       },
       "meal_tags": [
@@ -734,7 +734,7 @@
       "base_prices": {
         "Safeway": 2.99,
         "Trader Joe's": 3.99,
-        "Giant": 4.99
+        "Giant": 5.79
       },
       "meal_tags": [
         "sheet pan",
@@ -749,22 +749,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 287760,
-          "product_name": "The Little Potato Co. Savory Herb Fresh Potatoes with Seasoning",
-          "url": "https://giantfood.com/product/287760",
+          "product_id": 356512,
+          "product_name": "Giant Yellow Potatoes Bag",
+          "url": "https://giantfood.com/product/356512",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.99,
-          "regular_price": 3.99,
-          "unit_price": 0.25,
+          "current_price": 5.79,
+          "regular_price": 5.79,
+          "unit_price": 0.07,
           "unit_measure": "OZ",
-          "size": "1 LB PKG",
-          "brand": "The Little Potato Co.",
-          "upc": "62930701504",
-          "planning_base_price": 3.99,
-          "planning_current_price": 3.99
+          "size": "5 LB BAG",
+          "brand": "Our Brand",
+          "upc": "68826703191",
+          "planning_base_price": 5.79,
+          "planning_current_price": 5.79
         }
       }
     },
@@ -773,7 +773,7 @@
       "unit": "12 oz bag",
       "base_prices": {
         "Safeway": 2.99,
-        "Giant": 2.23
+        "Giant": 2.99
       },
       "meal_tags": [
         "sheet pan",
@@ -811,22 +811,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 118645,
-          "product_name": "Broccoli Crowns",
-          "url": "https://giantfood.com/product/118645",
+          "product_id": 298155,
+          "product_name": "Giant Washed & Ready To Eat Broccoli Florets",
+          "url": "https://giantfood.com/product/298155",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 1.59,
-          "regular_price": 2.23,
-          "unit_price": 1.59,
-          "unit_measure": "EA",
-          "size": "1 CROWN",
-          "brand": "USDA Produce",
-          "upc": "3082",
-          "planning_base_price": 2.23,
-          "planning_current_price": 1.59
+          "current_price": 2.99,
+          "regular_price": 2.99,
+          "unit_price": 0.25,
+          "unit_measure": "OZ",
+          "size": "12 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826756208",
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99
         }
       }
     },
@@ -867,20 +867,20 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 1604,
-          "product_name": "Green Giant Simply Steam Lightly Sauced Sweet Peas & Butter Frozen",
-          "url": "https://giantfood.com/product/1604",
+          "product_id": 390396,
+          "product_name": "Giant Green Peas Frozen",
+          "url": "https://giantfood.com/product/390396",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
           "current_price": 1.89,
           "regular_price": 1.89,
-          "unit_price": 0.24,
+          "unit_price": 0.16,
           "unit_measure": "OZ",
-          "size": "8 OZ BOX",
-          "brand": "Green Giant",
-          "upc": "19056952228",
+          "size": "12 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826759618",
           "planning_base_price": 1.89,
           "planning_current_price": 1.89
         }
@@ -959,7 +959,7 @@
       "unit": "12 oz bag",
       "base_prices": {
         "Safeway": 2.99,
-        "Giant": 1.89
+        "Giant": 1.59
       },
       "price_sources": {
         "Safeway": {
@@ -991,22 +991,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 43283,
-          "product_name": "Green Giant Simply Steam No Sauce Green Beans & Almonds Frozen",
-          "url": "https://giantfood.com/product/43283",
+          "product_id": 390395,
+          "product_name": "Giant Cut Green Beans Frozen",
+          "url": "https://giantfood.com/product/390395",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 1.89,
-          "regular_price": 1.89,
-          "unit_price": 0.25,
+          "current_price": 1.59,
+          "regular_price": 1.59,
+          "unit_price": 0.13,
           "unit_measure": "OZ",
-          "size": "7.5 OZ BOX",
-          "brand": "Green Giant",
-          "upc": "19056953781",
-          "planning_base_price": 1.89,
-          "planning_current_price": 1.89
+          "size": "12 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826759615",
+          "planning_base_price": 1.59,
+          "planning_current_price": 1.59
         }
       },
       "meal_tags": [
@@ -1053,20 +1053,20 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 146126,
-          "product_name": "Green Giant Simply Steam Lightly Sauced Antioxidant Blend Frozen",
-          "url": "https://giantfood.com/product/146126",
+          "product_id": 390409,
+          "product_name": "Giant Steam in Bag California Blend Veggies Frozen",
+          "url": "https://giantfood.com/product/390409",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
-          "match_confidence": "medium",
+          "match_confidence": "high",
           "current_price": 1.89,
           "regular_price": 1.89,
-          "unit_price": 0.27,
+          "unit_price": 0.18,
           "unit_measure": "OZ",
-          "size": "7 OZ BOX",
-          "brand": "Green Giant",
-          "upc": "19056953779",
+          "size": "10.8 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826759605",
           "planning_base_price": 1.89,
           "planning_current_price": 1.89
         }
@@ -1145,7 +1145,7 @@
       "unit": "8 oz package",
       "base_prices": {
         "Safeway": 1.99,
-        "Giant": 1.79
+        "Giant": 2.69
       },
       "meal_tags": [
         "sheet pan",
@@ -1183,22 +1183,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 382499,
-          "product_name": "To-Jo Sliced White Mushrooms",
-          "url": "https://giantfood.com/product/382499",
+          "product_id": 56630,
+          "product_name": "Giant Stems & Pieces Mushrooms",
+          "url": "https://giantfood.com/product/56630",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 1.5,
-          "regular_price": 1.79,
-          "unit_price": 0.25,
+          "current_price": 2.69,
+          "regular_price": 2.69,
+          "unit_price": 0.34,
           "unit_measure": "OZ",
-          "size": "6 OZ PKG",
-          "brand": "To-Jo",
-          "upc": "4015967006",
-          "planning_base_price": 1.79,
-          "planning_current_price": 1.5
+          "size": "8 OZ CAN",
+          "brand": "Our Brand",
+          "upc": "68826707837",
+          "planning_base_price": 2.69,
+          "planning_current_price": 2.69
         }
       }
     },
@@ -1208,7 +1208,7 @@
       "base_prices": {
         "Safeway": 1.49,
         "Trader Joe's": 1.29,
-        "Giant": 1.49
+        "Giant": 2.99
       },
       "meal_tags": [
         "base aromatic",
@@ -1224,22 +1224,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 118651,
-          "product_name": "Yellow Onions",
-          "url": "https://giantfood.com/product/118651",
+          "product_id": 118794,
+          "product_name": "Giant Yellow Onions Bag",
+          "url": "https://giantfood.com/product/118794",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 0.54,
-          "regular_price": 0.54,
-          "unit_price": 0.54,
-          "unit_measure": "EA",
-          "size": "1 EA",
-          "brand": "USDA Produce",
-          "upc": "20409300000",
-          "planning_base_price": 0.54,
-          "planning_current_price": 0.54
+          "current_price": 2.99,
+          "regular_price": 2.99,
+          "unit_price": 0.06,
+          "unit_measure": "OZ",
+          "size": "3 LB BAG",
+          "brand": "Our Brand",
+          "upc": "68826708353",
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99
         }
       }
     },
@@ -1248,7 +1248,7 @@
       "unit": "5 ct bag",
       "base_prices": {
         "Safeway": 4.99,
-        "Giant": 1.88
+        "Giant": 5.99
       },
       "price_sources": {
         "Safeway": {
@@ -1280,22 +1280,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 123670,
-          "product_name": "Ripe Hass Avocados",
-          "url": "https://giantfood.com/product/123670",
+          "product_id": 227542,
+          "product_name": "Mini Avocados Bag",
+          "url": "https://giantfood.com/product/227542",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 1.88,
-          "regular_price": 1.88,
-          "unit_price": 1.88,
+          "current_price": 5.99,
+          "regular_price": 5.99,
+          "unit_price": 1.0,
           "unit_measure": "EA",
-          "size": "1 EA",
+          "size": "6 CT BAG",
           "brand": "USDA Produce",
-          "upc": "4225",
-          "planning_base_price": 1.88,
-          "planning_current_price": 1.88
+          "upc": "852761000850",
+          "planning_base_price": 5.99,
+          "planning_current_price": 5.99
         }
       },
       "meal_tags": [
@@ -1311,7 +1311,7 @@
       "base_prices": {
         "Safeway": 3.99,
         "Trader Joe's": 4.49,
-        "Giant": 5.49
+        "Giant": 3.99
       },
       "meal_tags": [
         "baking",
@@ -1350,7 +1350,7 @@
       "unit": "32 oz bag",
       "base_prices": {
         "Safeway": 9.99,
-        "Giant": 3.79
+        "Giant": 2.29
       },
       "meal_tags": [
         "tacos",
@@ -1388,22 +1388,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 395764,
-          "product_name": "Kraft Fat Free Mozzarella Shredded Cheese",
-          "url": "https://giantfood.com/product/395764",
+          "product_id": 89638,
+          "product_name": "Giant Finely Shredded Mexican Style 4 Cheese Blend",
+          "url": "https://giantfood.com/product/89638",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.39,
-          "regular_price": 3.79,
-          "unit_price": 7.88,
+          "current_price": 2.29,
+          "regular_price": 2.29,
+          "unit_price": 4.58,
           "unit_measure": "LB",
-          "size": "7 OZ BAG",
-          "brand": "Kraft",
-          "upc": "84037090126",
-          "planning_base_price": 3.79,
-          "planning_current_price": 3.39
+          "size": "8 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826707413",
+          "planning_base_price": 2.29,
+          "planning_current_price": 2.29
         }
       }
     },
@@ -1463,7 +1463,7 @@
       "unit": "24 oz bag",
       "base_prices": {
         "Safeway": 2.49,
-        "Giant": 1.21
+        "Giant": 2.99
       },
       "price_sources": {
         "Safeway": {
@@ -1495,22 +1495,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 118798,
-          "product_name": "Sweet Potatoes",
-          "url": "https://giantfood.com/product/118798",
+          "product_id": 307441,
+          "product_name": "Giant Steam Easy Petite Sweet Potatoes Microwavable Bag",
+          "url": "https://giantfood.com/product/307441",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 1.21,
-          "regular_price": 1.21,
-          "unit_price": 1.21,
-          "unit_measure": "EA",
-          "size": "1 EA",
-          "brand": "USDA Produce",
-          "upc": "4091",
-          "planning_base_price": 1.21,
-          "planning_current_price": 1.21
+          "current_price": 2.99,
+          "regular_price": 2.99,
+          "unit_price": 0.12,
+          "unit_measure": "OZ",
+          "size": "1.5 LB BAG",
+          "brand": "Our Brand",
+          "upc": "68826756286",
+          "planning_base_price": 2.99,
+          "planning_current_price": 2.99
         }
       },
       "meal_tags": [
@@ -1564,7 +1564,7 @@
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
-          "match_confidence": "medium",
+          "match_confidence": "high",
           "current_price": 1.49,
           "regular_price": 1.49,
           "unit_price": 1.49,
@@ -1589,7 +1589,7 @@
       "unit": "each",
       "base_prices": {
         "Safeway": 1.99,
-        "Giant": 3.19
+        "Giant": 1.79
       },
       "price_sources": {
         "Safeway": {
@@ -1607,22 +1607,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 331132,
-          "product_name": "Mezzetta Mild Roasted Red Bell Pepper Strips",
-          "url": "https://giantfood.com/product/331132",
+          "product_id": 118616,
+          "product_name": "Red Bell Peppers",
+          "url": "https://giantfood.com/product/118616",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.19,
-          "regular_price": 3.19,
-          "unit_price": 0.32,
-          "unit_measure": "OZ",
-          "size": "10 OZ JAR",
-          "brand": "Mezzetta",
-          "upc": "7321400529",
-          "planning_base_price": 3.19,
-          "planning_current_price": 3.19
+          "current_price": 1.79,
+          "regular_price": 1.79,
+          "unit_price": 1.79,
+          "unit_measure": "EA",
+          "size": "1 EA",
+          "brand": "USDA Produce",
+          "upc": "26468800000",
+          "planning_base_price": 1.79,
+          "planning_current_price": 1.79
         }
       },
       "meal_tags": [
@@ -1638,7 +1638,7 @@
       "unit": "16 oz bag",
       "base_prices": {
         "Safeway": 4.99,
-        "Giant": 3.99
+        "Giant": 5.49
       },
       "price_sources": {
         "Safeway": {
@@ -1670,22 +1670,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 386384,
-          "product_name": "Nature Fresh Farms Sweet Thrills Mini Peppers",
-          "url": "https://giantfood.com/product/386384",
+          "product_id": 356859,
+          "product_name": "NatureSweet Constellation Sweet & Seedless Mini Peppers",
+          "url": "https://giantfood.com/product/356859",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.99,
-          "regular_price": 3.99,
-          "unit_price": 0.17,
+          "current_price": 5.49,
+          "regular_price": 5.49,
+          "unit_price": 0.39,
           "unit_measure": "OZ",
-          "size": "1.5 LB PKG",
-          "brand": "Nature Fresh Farms",
-          "upc": "68925900634",
-          "planning_base_price": 3.99,
-          "planning_current_price": 3.99
+          "size": "14 OZ BAG",
+          "brand": "NatureSweet",
+          "upc": "75166659095",
+          "planning_base_price": 5.49,
+          "planning_current_price": 5.49
         }
       },
       "meal_tags": [
@@ -1701,7 +1701,7 @@
       "unit": "12 fl oz bottle",
       "base_prices": {
         "Safeway": 1.99,
-        "Giant": 4.69
+        "Giant": 4.99
       },
       "price_sources": {
         "Safeway": {
@@ -1733,22 +1733,22 @@
           "service_location_id": "50000732",
           "store_number": "0378",
           "store_address": "1345 Park Road N.W., Washington, DC 20010",
-          "product_id": 358526,
-          "product_name": "Kinder's Teriyaki Sauce & Glaze",
-          "url": "https://giantfood.com/product/358526",
+          "product_id": 230454,
+          "product_name": "P.F. Chang's Home Menu Teriyaki Sauce",
+          "url": "https://giantfood.com/product/230454",
           "endpoint": "/api/v5.0",
           "confidence": "giant_browser_live",
           "match_source": "search",
           "match_confidence": "high",
-          "current_price": 3.49,
-          "regular_price": 4.69,
-          "unit_price": 0.23,
+          "current_price": 4.99,
+          "regular_price": 4.99,
+          "unit_price": 0.36,
           "unit_measure": "OZ",
-          "size": "15.5 OZ BTL",
-          "brand": "Kinder's",
-          "upc": "75579570100",
-          "planning_base_price": 4.69,
-          "planning_current_price": 3.49
+          "size": "14 OZ BTL",
+          "brand": "P.F. Chang's",
+          "upc": "3100067044",
+          "planning_base_price": 4.99,
+          "planning_current_price": 4.99
         }
       },
       "meal_tags": [

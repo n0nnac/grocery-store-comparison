@@ -187,9 +187,19 @@ Use Giant browser API observations when:
 
 Do not export, log, or persist browser cookies. Browser-session API calls should run inside the browser context via Chrome DevTools Protocol.
 
-`giant_refresh_prices.py` is the canonical refresher. It reuses saved Giant product IDs when available, otherwise searches by ingredient name and applies a token-overlap matcher with category-aware negative tokens and a hard reject for child-targeted SKUs (`baby`, `infant`, `toddler`, `tot`, `kids`, `kid`). High and medium-confidence matches may write `base_prices.Giant`. The `--fill-missing-only` flag preserves curated base prices and only fills gaps. Full match metadata always lands in `price_sources.Giant` and `giant_price_observations.json` for audit.
+`giant_refresh_prices.py` is the canonical refresher. It reuses saved Giant product IDs when available, otherwise searches by ingredient name and applies a token-overlap matcher with the following signals:
 
-Search-based matches can be wrong even at score 1.0 (the matcher cannot reliably distinguish a 5 lb dry rice bag from a 2-cup microwave rice cup, for example). Manually setting `price_sources.Giant.product_id` for an item bypasses the search step on subsequent refreshes and pins the canonical product.
+- Hard reject of child-targeted SKUs (`baby`, `infant`, `toddler`, `tot`, `kids`, `kid`).
+- Category-aware negative tokens (e.g. wines/spirits in pantry searches, frozen in produce searches).
+- Portion-prep penalty for bulk pantry staples — `microwav*`, `instant`, `ready`, `single-serve`, `boil-in-bag` SKUs lose ground when the meal item is "5 lb bag" rice or similar. Restricted to pantry only because produce items legitimately carry "Ready to Eat" or "Microwavable" markers without changing product class.
+- Fresh produce penalty for `roasted`, `pickled`, `dried`, `canned`, `jarred`, `marinated`, `fermented` variants when the meal item does not ask for them.
+- Dietary variant penalty for `fat free`, `lactose`, `gluten`, `lowfat`, `nonfat`, `skim` SKUs when the meal item is generic.
+- Size compatibility scoring — parses meal `unit` and product `size` into ounces or counts, boosts close matches and penalizes cross-family mismatches (weight vs count) or large size ratio differences.
+- Giant store-brand bonus — including the special case where the API tags Giant SKUs with brand `Our Brand` and the product name begins with `Giant`.
+
+High and medium-confidence matches may write `base_prices.Giant`. The `--fill-missing-only` flag preserves curated base prices and only fills gaps. Full match metadata always lands in `price_sources.Giant` and `giant_price_observations.json` for audit. The `--force-search` flag ignores saved product IDs and re-runs the search/scoring path, useful after matcher changes.
+
+Search-based matches can still be wrong even at score 1.0+ for reasons the matcher does not detect (e.g. canned vs fresh mushrooms, organic vs conventional). Manually setting `price_sources.Giant.product_id` for an item bypasses the search step on subsequent refreshes and pins the canonical product.
 
 ### Cart Reconciliation
 

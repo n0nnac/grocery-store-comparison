@@ -187,6 +187,10 @@ Use Giant browser API observations when:
 
 Do not export, log, or persist browser cookies. Browser-session API calls should run inside the browser context via Chrome DevTools Protocol.
 
+`giant_refresh_prices.py` is the canonical refresher. It reuses saved Giant product IDs when available, otherwise searches by ingredient name and applies a token-overlap matcher with category-aware negative tokens and a hard reject for child-targeted SKUs (`baby`, `infant`, `toddler`, `tot`, `kids`, `kid`). High and medium-confidence matches may write `base_prices.Giant`. The `--fill-missing-only` flag preserves curated base prices and only fills gaps. Full match metadata always lands in `price_sources.Giant` and `giant_price_observations.json` for audit.
+
+Search-based matches can be wrong even at score 1.0 (the matcher cannot reliably distinguish a 5 lb dry rice bag from a 2-cup microwave rice cup, for example). Manually setting `price_sources.Giant.product_id` for an item bypasses the search step on subsequent refreshes and pins the canonical product.
+
 ### Cart Reconciliation
 
 Observed Safeway cart or checkout data is an audit layer.

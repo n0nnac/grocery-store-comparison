@@ -49,6 +49,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0020169200000"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 59367,
+          "product_name": "Giant All Natural 80% Lean 20% Fat Ground Beef Fresh",
+          "url": "https://giantfood.com/product/59367",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 8.75,
+          "regular_price": 8.75,
+          "unit_price": 7.29,
+          "unit_measure": "LB",
+          "size": "APX 1.2 LB",
+          "brand": "Our Brand",
+          "upc": "20434580000",
+          "planning_base_price": 7.29,
+          "planning_current_price": 7.29
         }
       },
       "meal_tags": [
@@ -64,7 +87,8 @@
       "category": "protein",
       "unit": "lb",
       "base_prices": {
-        "Safeway": 4.33
+        "Safeway": 4.33,
+        "Giant": 4.99
       },
       "price_sources": {
         "Safeway": {
@@ -89,6 +113,29 @@
           "promo_end_date": "2026-05-07T23:59:00",
           "inventory_available": "1",
           "upc": "0002113017301"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 144676,
+          "product_name": "Shady Brook Farms Ground Turkey 93% Lean 7% Fat Fresh",
+          "url": "https://giantfood.com/product/144676",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 6.49,
+          "regular_price": 6.49,
+          "unit_price": 4.99,
+          "unit_measure": "LB",
+          "size": "1.3 LB PKG",
+          "brand": "Shady Brook Farms",
+          "upc": "7232254604",
+          "planning_base_price": 4.99,
+          "planning_current_price": 4.99
         }
       },
       "meal_tags": [
@@ -103,7 +150,8 @@
       "category": "protein",
       "unit": "lb",
       "base_prices": {
-        "Safeway": 3.99
+        "Safeway": 3.99,
+        "Giant": 4.49
       },
       "price_sources": {
         "Safeway": {
@@ -128,6 +176,29 @@
           "promo_end_date": "2026-05-07T23:59:00",
           "inventory_available": "1",
           "upc": "0020786700000"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 301917,
+          "product_name": "Giant Natural Boneless Skinless Chicken Thighs Fresh",
+          "url": "https://giantfood.com/product/301917",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 14.59,
+          "regular_price": 14.59,
+          "unit_price": 4.49,
+          "unit_measure": "LB",
+          "size": "APX 3.25 LB",
+          "brand": "Our Brand",
+          "upc": "28276800000",
+          "planning_base_price": 4.49,
+          "planning_current_price": 4.49
         }
       },
       "meal_tags": [
@@ -152,39 +223,117 @@
         "sandwiches",
         "pasta"
       ],
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 21732,
+          "product_name": "Perdue Boneless Skinless Chicken Breast Tenderloins Fresh",
+          "url": "https://giantfood.com/product/21732",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 6.55,
+          "regular_price": 9.36,
+          "unit_price": 5.24,
+          "unit_measure": "LB",
+          "size": "APX 1.25 LB",
+          "brand": "Perdue",
+          "upc": "20709360000",
+          "planning_base_price": 5.24,
+          "planning_current_price": 5.24
+        }
+      }
     },
     "pork loin chops": {
       "category": "protein",
       "unit": "lb",
       "base_prices": {
-        "Safeway": 4.99
+        "Safeway": 4.99,
+        "Giant": 7.99
       },
       "meal_tags": [
         "sheet pan",
         "rice bowls",
         "stir fry"
       ],
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 279129,
+          "product_name": "Giant Boneless Thin Cut Center Cut Pork Loin Chops - 5-7 ct Fresh",
+          "url": "https://giantfood.com/product/279129",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 9.59,
+          "regular_price": 9.59,
+          "unit_price": 7.99,
+          "unit_measure": "LB",
+          "size": "APX 1.2 LB",
+          "brand": "Our Brand",
+          "upc": "20474030000",
+          "planning_base_price": 7.99,
+          "planning_current_price": 7.99
+        }
+      }
     },
     "salmon portion": {
       "category": "protein",
       "unit": "5 oz portion",
       "base_prices": {
-        "Safeway": 6.99
+        "Safeway": 6.99,
+        "Giant": 6.99
       },
       "meal_tags": [
         "sheet pan",
         "rice bowls",
         "quick dinner"
       ],
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 212536,
+          "product_name": "Nature's Promise Farm Raised Atlantic Salmon Portion Fresh",
+          "url": "https://giantfood.com/product/212536",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 6.99,
+          "regular_price": 6.99,
+          "unit_price": 22.55,
+          "unit_measure": "LB",
+          "size": "5 OZ PKG",
+          "brand": "Nature's Promise",
+          "upc": "1516",
+          "planning_base_price": 6.99,
+          "planning_current_price": 6.99
+        }
+      }
     },
     "raw shrimp 26-30 ct": {
       "category": "protein",
       "unit": "lb",
       "base_prices": {
-        "Safeway": 9.99
+        "Safeway": 9.99,
+        "Giant": 10.49
       },
       "meal_tags": [
         "stir fry",
@@ -192,7 +341,32 @@
         "pasta",
         "quick dinner"
       ],
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 220762,
+          "product_name": "Giant Farm Raised Raw EZ-Peel Extra Large Shrimp 26-30 ct Frozen",
+          "url": "https://giantfood.com/product/220762",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 20.98,
+          "regular_price": 20.98,
+          "unit_price": 10.49,
+          "unit_measure": "LB",
+          "size": "2 LB BAG",
+          "brand": "Our Brand",
+          "upc": "68826712336",
+          "planning_base_price": 10.49,
+          "planning_current_price": 10.49
+        }
+      }
     },
     "italian roll sausage": {
       "category": "protein",
@@ -221,7 +395,32 @@
         "salad",
         "bowls"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 57872,
+          "product_name": "Giant Large White Eggs",
+          "url": "https://giantfood.com/product/57872",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.5,
+          "regular_price": 2.99,
+          "unit_price": 1.5,
+          "unit_measure": "DOZ",
+          "size": "1 DOZ",
+          "brand": "Our Brand",
+          "upc": "68826703356",
+          "planning_base_price": 2.99,
+          "planning_current_price": 1.5
+        }
+      }
     },
     "rice": {
       "category": "pantry",
@@ -257,6 +456,29 @@
           "upc": "0002113050205",
           "department_name": "Grains, Pasta & Sides",
           "aisle_name": "Rice|1_6_9"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 199079,
+          "product_name": "Minute 60 Second Microwave Jasmine Rice Cups - 2 ct",
+          "url": "https://giantfood.com/product/199079",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 2.0,
+          "regular_price": 2.59,
+          "unit_price": 0.23,
+          "unit_measure": "OZ",
+          "size": "8.8 OZ PKG",
+          "brand": "Minute",
+          "upc": "1740014031",
+          "planning_base_price": 2.59,
+          "planning_current_price": 2.0
         }
       },
       "meal_tags": [
@@ -278,38 +500,116 @@
         "pasta",
         "meal prep"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 56514,
+          "product_name": "Giant Spaghetti Pasta",
+          "url": "https://giantfood.com/product/56514",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.09,
+          "regular_price": 1.09,
+          "unit_price": 0.07,
+          "unit_measure": "OZ",
+          "size": "16 OZ BOX",
+          "brand": "Our Brand",
+          "upc": "68826707008",
+          "planning_base_price": 1.09,
+          "planning_current_price": 1.09
+        }
+      }
     },
     "crushed tomatoes": {
       "category": "pantry",
       "unit": "28 oz can",
       "base_prices": {
-        "Safeway": 2.49
+        "Safeway": 2.49,
+        "Giant": 2.89
       },
       "meal_tags": [
         "pasta",
         "chili",
         "soup"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 176241,
+          "product_name": "Furmano's Crushed Tomatoes",
+          "url": "https://giantfood.com/product/176241",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 2.89,
+          "regular_price": 2.89,
+          "unit_price": 0.1,
+          "unit_measure": "OZ",
+          "size": "28 OZ CAN",
+          "brand": "Furmano's",
+          "upc": "4118804070",
+          "planning_base_price": 2.89,
+          "planning_current_price": 2.89
+        }
+      }
     },
     "marinara sauce": {
       "category": "pantry",
       "unit": "24 oz jar",
       "base_prices": {
-        "Safeway": 8.99
+        "Safeway": 8.99,
+        "Giant": 9.49
       },
       "meal_tags": [
         "pasta",
         "meatballs"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 117427,
+          "product_name": "Rao's Homemade All Natural Marinara Pasta Sauce",
+          "url": "https://giantfood.com/product/117427",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 9.49,
+          "regular_price": 9.49,
+          "unit_price": 0.4,
+          "unit_measure": "OZ",
+          "size": "24 OZ JAR",
+          "brand": "Rao's",
+          "upc": "74747900007",
+          "planning_base_price": 9.49,
+          "planning_current_price": 9.49
+        }
+      }
     },
     "flour tortillas": {
       "category": "pantry",
       "unit": "package",
       "base_prices": {
-        "Safeway": 4.29
+        "Safeway": 4.29,
+        "Giant": 3.69
       },
       "price_sources": {
         "Safeway": {
@@ -334,6 +634,29 @@
           "promo_end_date": "2026-05-07T23:59:00",
           "inventory_available": "1",
           "upc": "0007373100419"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 270218,
+          "product_name": "Goya Flour Tortillas Soft Taco Size 6 Inch - 8 ct",
+          "url": "https://giantfood.com/product/270218",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.69,
+          "regular_price": 3.69,
+          "unit_price": 0.29,
+          "unit_measure": "OZ",
+          "size": "12.6 OZ PKG",
+          "brand": "Goya",
+          "upc": "4133109045",
+          "planning_base_price": 3.69,
+          "planning_current_price": 3.69
         }
       },
       "meal_tags": [
@@ -347,7 +670,8 @@
       "category": "pantry",
       "unit": "16 oz jar",
       "base_prices": {
-        "Safeway": 3.99
+        "Safeway": 3.99,
+        "Giant": 4.09
       },
       "price_sources": {
         "Safeway": {
@@ -372,6 +696,29 @@
           "planning_current_price": 3.0,
           "inventory_available": "1",
           "upc": "0004156514016"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 39254,
+          "product_name": "Tostitos Mild Chunky Salsa",
+          "url": "https://giantfood.com/product/39254",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 4.09,
+          "regular_price": 4.09,
+          "unit_price": 0.26,
+          "unit_measure": "OZ",
+          "size": "15.5 OZ JAR",
+          "brand": "Tostitos",
+          "upc": "2840005597",
+          "planning_base_price": 4.09,
+          "planning_current_price": 4.09
         }
       },
       "meal_tags": [
@@ -394,13 +741,39 @@
         "breakfast hash",
         "side"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 287760,
+          "product_name": "The Little Potato Co. Savory Herb Fresh Potatoes with Seasoning",
+          "url": "https://giantfood.com/product/287760",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.99,
+          "regular_price": 3.99,
+          "unit_price": 0.25,
+          "unit_measure": "OZ",
+          "size": "1 LB PKG",
+          "brand": "The Little Potato Co.",
+          "upc": "62930701504",
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.99
+        }
+      }
     },
     "broccoli": {
       "category": "produce",
       "unit": "12 oz bag",
       "base_prices": {
-        "Safeway": 2.99
+        "Safeway": 2.99,
+        "Giant": 2.23
       },
       "meal_tags": [
         "sheet pan",
@@ -431,6 +804,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0002113098340"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118645,
+          "product_name": "Broccoli Crowns",
+          "url": "https://giantfood.com/product/118645",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.59,
+          "regular_price": 2.23,
+          "unit_price": 1.59,
+          "unit_measure": "EA",
+          "size": "1 CROWN",
+          "brand": "USDA Produce",
+          "upc": "3082",
+          "planning_base_price": 2.23,
+          "planning_current_price": 1.59
         }
       }
     },
@@ -438,7 +834,8 @@
       "category": "frozen",
       "unit": "12 oz bag",
       "base_prices": {
-        "Safeway": 1.99
+        "Safeway": 1.99,
+        "Giant": 1.89
       },
       "price_sources": {
         "Safeway": {
@@ -463,6 +860,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0002113034065"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 1604,
+          "product_name": "Green Giant Simply Steam Lightly Sauced Sweet Peas & Butter Frozen",
+          "url": "https://giantfood.com/product/1604",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.89,
+          "regular_price": 1.89,
+          "unit_price": 0.24,
+          "unit_measure": "OZ",
+          "size": "8 OZ BOX",
+          "brand": "Green Giant",
+          "upc": "19056952228",
+          "planning_base_price": 1.89,
+          "planning_current_price": 1.89
         }
       },
       "meal_tags": [
@@ -476,7 +896,8 @@
       "category": "frozen",
       "unit": "12 oz bag",
       "base_prices": {
-        "Safeway": 2.99
+        "Safeway": 2.99,
+        "Giant": 1.89
       },
       "price_sources": {
         "Safeway": {
@@ -501,6 +922,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0007989316419"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 396304,
+          "product_name": "Giant Chopped Spinach Frozen",
+          "url": "https://giantfood.com/product/396304",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.89,
+          "regular_price": 1.89,
+          "unit_price": 0.16,
+          "unit_measure": "OZ",
+          "size": "12 OZ PKG",
+          "brand": "Our Brand",
+          "upc": "68826759629",
+          "planning_base_price": 1.89,
+          "planning_current_price": 1.89
         }
       },
       "meal_tags": [
@@ -514,7 +958,8 @@
       "category": "frozen",
       "unit": "12 oz bag",
       "base_prices": {
-        "Safeway": 2.99
+        "Safeway": 2.99,
+        "Giant": 1.89
       },
       "price_sources": {
         "Safeway": {
@@ -539,6 +984,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0007989316428"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 43283,
+          "product_name": "Green Giant Simply Steam No Sauce Green Beans & Almonds Frozen",
+          "url": "https://giantfood.com/product/43283",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.89,
+          "regular_price": 1.89,
+          "unit_price": 0.25,
+          "unit_measure": "OZ",
+          "size": "7.5 OZ BOX",
+          "brand": "Green Giant",
+          "upc": "19056953781",
+          "planning_base_price": 1.89,
+          "planning_current_price": 1.89
         }
       },
       "meal_tags": [
@@ -552,7 +1020,8 @@
       "category": "frozen",
       "unit": "12 oz bag",
       "base_prices": {
-        "Safeway": 2.99
+        "Safeway": 2.99,
+        "Giant": 1.89
       },
       "price_sources": {
         "Safeway": {
@@ -577,6 +1046,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0007989316422"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 146126,
+          "product_name": "Green Giant Simply Steam Lightly Sauced Antioxidant Blend Frozen",
+          "url": "https://giantfood.com/product/146126",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "medium",
+          "current_price": 1.89,
+          "regular_price": 1.89,
+          "unit_price": 0.27,
+          "unit_measure": "OZ",
+          "size": "7 OZ BOX",
+          "brand": "Green Giant",
+          "upc": "19056953779",
+          "planning_base_price": 1.89,
+          "planning_current_price": 1.89
         }
       },
       "meal_tags": [
@@ -590,7 +1082,8 @@
       "category": "frozen",
       "unit": "14 oz bag",
       "base_prices": {
-        "Safeway": 5.99
+        "Safeway": 5.99,
+        "Giant": 5.99
       },
       "price_sources": {
         "Safeway": {
@@ -615,6 +1108,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0007056095646"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 282603,
+          "product_name": "InnovAsian Vegetable Fried Rice Side Dish Frozen",
+          "url": "https://giantfood.com/product/282603",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 5.29,
+          "regular_price": 5.99,
+          "unit_price": 0.29,
+          "unit_measure": "OZ",
+          "size": "18 OZ BOX",
+          "brand": "InnovAsian",
+          "upc": "69511912014",
+          "planning_base_price": 5.99,
+          "planning_current_price": 5.29
         }
       },
       "meal_tags": [
@@ -628,7 +1144,8 @@
       "category": "produce",
       "unit": "8 oz package",
       "base_prices": {
-        "Safeway": 1.99
+        "Safeway": 1.99,
+        "Giant": 1.79
       },
       "meal_tags": [
         "sheet pan",
@@ -659,6 +1176,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0002113028443"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 382499,
+          "product_name": "To-Jo Sliced White Mushrooms",
+          "url": "https://giantfood.com/product/382499",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.5,
+          "regular_price": 1.79,
+          "unit_price": 0.25,
+          "unit_measure": "OZ",
+          "size": "6 OZ PKG",
+          "brand": "To-Jo",
+          "upc": "4015967006",
+          "planning_base_price": 1.79,
+          "planning_current_price": 1.5
         }
       }
     },
@@ -676,13 +1216,39 @@
         "pasta",
         "stir fry"
       ],
-      "freezer_friendly": false
+      "freezer_friendly": false,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118651,
+          "product_name": "Yellow Onions",
+          "url": "https://giantfood.com/product/118651",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 0.54,
+          "regular_price": 0.54,
+          "unit_price": 0.54,
+          "unit_measure": "EA",
+          "size": "1 EA",
+          "brand": "USDA Produce",
+          "upc": "20409300000",
+          "planning_base_price": 0.54,
+          "planning_current_price": 0.54
+        }
+      }
     },
     "avocados": {
       "category": "produce",
       "unit": "5 ct bag",
       "base_prices": {
-        "Safeway": 4.99
+        "Safeway": 4.99,
+        "Giant": 1.88
       },
       "price_sources": {
         "Safeway": {
@@ -707,6 +1273,29 @@
           "promo_end_date": "2026-05-07T23:59:00",
           "inventory_available": "1",
           "upc": "0002113034396"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 123670,
+          "product_name": "Ripe Hass Avocados",
+          "url": "https://giantfood.com/product/123670",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.88,
+          "regular_price": 1.88,
+          "unit_price": 1.88,
+          "unit_measure": "EA",
+          "size": "1 EA",
+          "brand": "USDA Produce",
+          "upc": "4225",
+          "planning_base_price": 1.88,
+          "planning_current_price": 1.88
         }
       },
       "meal_tags": [
@@ -729,13 +1318,39 @@
         "pan sauce",
         "breakfast"
       ],
-      "freezer_friendly": true
+      "freezer_friendly": true,
+      "price_sources": {
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 383083,
+          "product_name": "Giant Salted Sweet Cream Butter Sticks - 4 ct",
+          "url": "https://giantfood.com/product/383083",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.99,
+          "regular_price": 3.99,
+          "unit_price": 3.99,
+          "unit_measure": "LB",
+          "size": "16 OZ BOX",
+          "brand": "Our Brand",
+          "upc": "68826755419",
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.99
+        }
+      }
     },
     "shredded cheese": {
       "category": "dairy",
       "unit": "32 oz bag",
       "base_prices": {
-        "Safeway": 9.99
+        "Safeway": 9.99,
+        "Giant": 3.79
       },
       "meal_tags": [
         "tacos",
@@ -766,6 +1381,29 @@
           "promo_end_date": "2026-05-07T23:59:00",
           "inventory_available": "1",
           "upc": "0002113004946"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 395764,
+          "product_name": "Kraft Fat Free Mozzarella Shredded Cheese",
+          "url": "https://giantfood.com/product/395764",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.39,
+          "regular_price": 3.79,
+          "unit_price": 7.88,
+          "unit_measure": "LB",
+          "size": "7 OZ BAG",
+          "brand": "Kraft",
+          "upc": "84037090126",
+          "planning_base_price": 3.79,
+          "planning_current_price": 3.39
         }
       }
     },
@@ -773,7 +1411,8 @@
       "category": "protein",
       "unit": "lb",
       "base_prices": {
-        "Safeway": 6.99
+        "Safeway": 6.99,
+        "Giant": 6.99
       },
       "price_sources": {
         "Safeway": {
@@ -786,6 +1425,29 @@
           "current_price": 7.34,
           "current_unit_price": 6.99,
           "confidence": "official_safeway_recipe_page"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 121147,
+          "product_name": "Boneless Pork Tenderloin Roast Vacuum Sealed Fresh",
+          "url": "https://giantfood.com/product/121147",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 17.48,
+          "regular_price": 17.48,
+          "unit_price": 6.99,
+          "unit_measure": "LB",
+          "size": "APX 2.5 LB",
+          "brand": "USDA Meat",
+          "upc": "20874580000",
+          "planning_base_price": 6.99,
+          "planning_current_price": 6.99
         }
       },
       "meal_tags": [
@@ -800,7 +1462,8 @@
       "category": "produce",
       "unit": "24 oz bag",
       "base_prices": {
-        "Safeway": 2.49
+        "Safeway": 2.49,
+        "Giant": 1.21
       },
       "price_sources": {
         "Safeway": {
@@ -825,6 +1488,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0065690564065"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118798,
+          "product_name": "Sweet Potatoes",
+          "url": "https://giantfood.com/product/118798",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.21,
+          "regular_price": 1.21,
+          "unit_price": 1.21,
+          "unit_measure": "EA",
+          "size": "1 EA",
+          "brand": "USDA Produce",
+          "upc": "4091",
+          "planning_base_price": 1.21,
+          "planning_current_price": 1.21
         }
       },
       "meal_tags": [
@@ -839,7 +1525,8 @@
       "category": "produce",
       "unit": "each",
       "base_prices": {
-        "Safeway": 1.69
+        "Safeway": 1.69,
+        "Giant": 1.49
       },
       "price_sources": {
         "Safeway": {
@@ -864,6 +1551,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0048448000501"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118615,
+          "product_name": "Green Bell Peppers",
+          "url": "https://giantfood.com/product/118615",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "medium",
+          "current_price": 1.49,
+          "regular_price": 1.49,
+          "unit_price": 1.49,
+          "unit_measure": "EA",
+          "size": "1 EA",
+          "brand": "USDA Produce",
+          "upc": "4065",
+          "planning_base_price": 1.49,
+          "planning_current_price": 1.49
         }
       },
       "meal_tags": [
@@ -878,7 +1588,8 @@
       "category": "produce",
       "unit": "each",
       "base_prices": {
-        "Safeway": 1.99
+        "Safeway": 1.99,
+        "Giant": 3.19
       },
       "price_sources": {
         "Safeway": {
@@ -889,6 +1600,29 @@
           "product_name": "Red Bell Pepper",
           "url": "https://www.safeway.com/bundles/teriyaki-stir-fry",
           "confidence": "official_safeway_bundle_page"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 331132,
+          "product_name": "Mezzetta Mild Roasted Red Bell Pepper Strips",
+          "url": "https://giantfood.com/product/331132",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.19,
+          "regular_price": 3.19,
+          "unit_price": 0.32,
+          "unit_measure": "OZ",
+          "size": "10 OZ JAR",
+          "brand": "Mezzetta",
+          "upc": "7321400529",
+          "planning_base_price": 3.19,
+          "planning_current_price": 3.19
         }
       },
       "meal_tags": [
@@ -903,7 +1637,8 @@
       "category": "produce",
       "unit": "16 oz bag",
       "base_prices": {
-        "Safeway": 4.99
+        "Safeway": 4.99,
+        "Giant": 3.99
       },
       "price_sources": {
         "Safeway": {
@@ -928,6 +1663,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0005783600043"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 386384,
+          "product_name": "Nature Fresh Farms Sweet Thrills Mini Peppers",
+          "url": "https://giantfood.com/product/386384",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.99,
+          "regular_price": 3.99,
+          "unit_price": 0.17,
+          "unit_measure": "OZ",
+          "size": "1.5 LB PKG",
+          "brand": "Nature Fresh Farms",
+          "upc": "68925900634",
+          "planning_base_price": 3.99,
+          "planning_current_price": 3.99
         }
       },
       "meal_tags": [
@@ -942,7 +1700,8 @@
       "category": "pantry",
       "unit": "12 fl oz bottle",
       "base_prices": {
-        "Safeway": 1.99
+        "Safeway": 1.99,
+        "Giant": 4.69
       },
       "price_sources": {
         "Safeway": {
@@ -967,6 +1726,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0002113048012"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 358526,
+          "product_name": "Kinder's Teriyaki Sauce & Glaze",
+          "url": "https://giantfood.com/product/358526",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 3.49,
+          "regular_price": 4.69,
+          "unit_price": 0.23,
+          "unit_measure": "OZ",
+          "size": "15.5 OZ BTL",
+          "brand": "Kinder's",
+          "upc": "75579570100",
+          "planning_base_price": 4.69,
+          "planning_current_price": 3.49
         }
       },
       "meal_tags": [
@@ -981,7 +1763,8 @@
       "category": "produce",
       "unit": "8 oz bag",
       "base_prices": {
-        "Safeway": 2.99
+        "Safeway": 2.99,
+        "Giant": 1.99
       },
       "price_sources": {
         "Safeway": {
@@ -1006,6 +1789,29 @@
           "promo_end_date": null,
           "inventory_available": "1",
           "upc": "0002113098134"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118780,
+          "product_name": "Giant Triple Washed Curly Leaf Spinach",
+          "url": "https://giantfood.com/product/118780",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.99,
+          "regular_price": 1.99,
+          "unit_price": 0.25,
+          "unit_measure": "OZ",
+          "size": "8 OZ BAG",
+          "brand": "Our Brand",
+          "upc": "68826709813",
+          "planning_base_price": 1.99,
+          "planning_current_price": 1.99
         }
       },
       "meal_tags": [
@@ -1020,7 +1826,8 @@
       "category": "produce",
       "unit": "bunch",
       "base_prices": {
-        "Safeway": 1.49
+        "Safeway": 1.49,
+        "Giant": 1.49
       },
       "price_sources": {
         "Safeway": {
@@ -1048,6 +1855,29 @@
           "upc": "0048441006901",
           "department_name": "Fruits & Vegetables",
           "aisle_name": "Fresh Vegetables & Herbs|1_23_2"
+        },
+        "Giant": {
+          "source_type": "giant_browser_v5_api",
+          "observed_on": "2026-05-09",
+          "service_location_id": "50000732",
+          "store_number": "0378",
+          "store_address": "1345 Park Road N.W., Washington, DC 20010",
+          "product_id": 118600,
+          "product_name": "Cilantro Fresh",
+          "url": "https://giantfood.com/product/118600",
+          "endpoint": "/api/v5.0",
+          "confidence": "giant_browser_live",
+          "match_source": "search",
+          "match_confidence": "high",
+          "current_price": 1.49,
+          "regular_price": 1.49,
+          "unit_price": 1.49,
+          "unit_measure": "EA",
+          "size": "1 BUNCH",
+          "brand": "USDA Produce",
+          "upc": "4889",
+          "planning_base_price": 1.49,
+          "planning_current_price": 1.49
         }
       },
       "meal_tags": [],

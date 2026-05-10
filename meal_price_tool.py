@@ -2097,15 +2097,192 @@ def estimate_recipe(recipe_key, prices, deals):
     return recipe, rows, total
 
 
+def best_giant_price(item_name, item, flipp_matches):
+    """Return (price, source_label) for the best available Giant price.
+
+    Considers Giant base price (from price_sources.Giant) and the matched
+    Flipp circular deal, picking the lower of the two when both exist.
+    """
+    base = item.get("base_prices", {}).get("Giant")
+    deal_price = None
+    deal_label = None
+    match = (flipp_matches or {}).get(item_name)
+    if match and match.get("item"):
+        deal_price = match["item"].get("current_price")
+        if deal_price is not None:
+            deal_label = match["item"].get("price_display") or money(deal_price)
+
+    candidates = []
+    if base is not None:
+        candidates.append((base, "base"))
+    if deal_price is not None:
+        candidates.append((deal_price, "flipp"))
+
+    if not candidates:
+        return None, None
+    candidates.sort(key=lambda pair: pair[0])
+    price, kind = candidates[0]
+    label = "base" if kind == "base" else f"flipp ({deal_label})"
+    return price, label
+
+
+def estimate_recipe_cross_store(recipe_key, prices, deals, flipp_matches):
+    """Compute Safeway and Giant per-line totals side by side."""
+    recipe = RECIPES[recipe_key]
+    rows = []
+    safeway_total = 0.0
+    giant_total = 0.0
+    safeway_total_known = True
+    giant_total_known = True
+    best_total = 0.0
+    best_total_known = True
+
+    for name, qty in recipe["ingredients"].items():
+        sw_price, sw_type, _deal = effective_price(name, prices, deals)
+        item = prices["items"].get(name, {})
+        gnt_price, gnt_label = best_giant_price(name, item, flipp_matches)
+
+        sw_line = None if sw_price is None else qty * sw_price
+        gnt_line = None if gnt_price is None else qty * gnt_price
+
+        if sw_line is None:
+            safeway_total_known = False
+        else:
+            safeway_total += sw_line
+
+        if gnt_line is None:
+            giant_total_known = False
+        else:
+            giant_total += gnt_line
+
+        if sw_line is None and gnt_line is None:
+            best_line = None
+        elif sw_line is None:
+            best_line = gnt_line
+        elif gnt_line is None:
+            best_line = sw_line
+        else:
+            best_line = min(sw_line, gnt_line)
+        if best_line is None:
+            best_total_known = False
+        else:
+            best_total += best_line
+
+        cheaper = "tie"
+        if sw_price is not None and gnt_price is not None:
+            if abs(sw_price - gnt_price) < 0.005:
+                cheaper = "tie"
+            elif sw_price < gnt_price:
+                cheaper = "Safeway"
+            else:
+                cheaper = "Giant"
+        elif sw_price is not None:
+            cheaper = "Safeway only"
+        elif gnt_price is not None:
+            cheaper = "Giant only"
+        else:
+            cheaper = "n/a"
+
+        rows.append({
+            "name": name,
+            "qty": qty,
+            "safeway_price": sw_price,
+            "safeway_type": sw_type,
+            "safeway_line": sw_line,
+            "giant_price": gnt_price,
+            "giant_label": gnt_label,
+            "giant_line": gnt_line,
+            "cheaper": cheaper,
+        })
+
+    return {
+        "recipe": recipe,
+        "rows": rows,
+        "safeway_total": safeway_total if safeway_total_known else None,
+        "giant_total": giant_total if giant_total_known else None,
+        "best_total": best_total if best_total_known else None,
+    }
+
+
 def estimate(args):
     prices = load_json(MEAL_PRICES_FILE)
     _deals_path, deals = load_weekly_deals(args.deals_file)
 
+    flipp_matches = {}
+    if getattr(args, "compare_stores", False):
+        _flipp_path, flipp_data = load_giant_flipp_deals(getattr(args, "giant_deals_file", None))
+        if flipp_data is not None:
+            flipp_matches = match_giant_flipp_to_meal_items(prices.get("items", {}), flipp_data, min_score=getattr(args, "min_flipp_score", 0.5))
+
     keys = args.recipes or list(RECIPES)
     grand_total = 0.0
+    grand_safeway = 0.0
+    grand_giant = 0.0
+    grand_best = 0.0
+    grand_safeway_known = True
+    grand_giant_known = True
+    grand_best_known = True
+
     for key in keys:
         if key not in RECIPES:
             raise SystemExit(f"Unknown recipe: {key}. Available: {', '.join(RECIPES)}")
+
+        if getattr(args, "compare_stores", False):
+            estimate_data = estimate_recipe_cross_store(key, prices, deals, flipp_matches)
+            recipe = estimate_data["recipe"]
+            rows = estimate_data["rows"]
+            safeway_total = estimate_data["safeway_total"]
+            giant_total = estimate_data["giant_total"]
+            best_total = estimate_data["best_total"]
+
+            print(f"\n{recipe['display']} ({recipe['servings']} serving{'s' if recipe['servings'] != 1 else ''})")
+            print(recipe["notes"])
+            print(f"{'Ingredient':<34} {'Qty':>5} {'SW':>8} {'SW Line':>8} {'Giant':>8} {'Gnt Line':>9} {'Cheaper':<14} Giant detail")
+            print("-" * 120)
+            for row in rows:
+                sw_text = "n/a" if row["safeway_price"] is None else money(row["safeway_price"])
+                sw_line = "n/a" if row["safeway_line"] is None else money(row["safeway_line"])
+                gnt_text = "n/a" if row["giant_price"] is None else money(row["giant_price"])
+                gnt_line_text = "n/a" if row["giant_line"] is None else money(row["giant_line"])
+                gnt_detail = row["giant_label"] or ""
+                print(
+                    f"{row['name']:<34} {row['qty']:>5g} {sw_text:>8} {sw_line:>8} "
+                    f"{gnt_text:>8} {gnt_line_text:>9} {row['cheaper']:<14} {gnt_detail}"
+                )
+
+            sw_total_text = "n/a" if safeway_total is None else money(safeway_total)
+            gnt_total_text = "n/a" if giant_total is None else money(giant_total)
+            best_total_text = "n/a" if best_total is None else money(best_total)
+            print(f"\nSafeway total: {sw_total_text}   Giant total: {gnt_total_text}   Best-of-both: {best_total_text}")
+            if safeway_total is not None and giant_total is not None:
+                delta = giant_total - safeway_total
+                if abs(delta) < 0.005:
+                    print("Both stores tie on this recipe.")
+                elif delta > 0:
+                    print(f"Safeway is cheaper by {money(delta)}.")
+                else:
+                    print(f"Giant is cheaper by {money(-delta)}.")
+
+            if safeway_total is None:
+                grand_safeway_known = False
+            else:
+                grand_safeway += safeway_total
+            if giant_total is None:
+                grand_giant_known = False
+            else:
+                grand_giant += giant_total
+            if best_total is None:
+                grand_best_known = False
+            else:
+                grand_best += best_total
+            total = safeway_total if safeway_total is not None else 0
+            grand_total += total
+
+            if safeway_total is not None:
+                per_serving = safeway_total / recipe["servings"]
+                print(f"Safeway per serving: {money(per_serving)}")
+            continue
+
         recipe, rows, total = estimate_recipe(key, prices, deals)
         grand_total += total
         print(f"\n{recipe['display']} ({recipe['servings']} serving{'s' if recipe['servings'] != 1 else ''})")
@@ -2120,7 +2297,15 @@ def estimate(args):
         print(f"Total: {money(total)}  |  Per serving: {money(per_serving)}")
 
     if len(keys) > 1:
-        print(f"\nCombined estimate: {money(grand_total)}")
+        if getattr(args, "compare_stores", False):
+            sw_text = money(grand_safeway) if grand_safeway_known else "n/a"
+            gnt_text = money(grand_giant) if grand_giant_known else "n/a"
+            best_text = money(grand_best) if grand_best_known else "n/a"
+            print(f"\nCombined Safeway: {sw_text}   Combined Giant: {gnt_text}   Combined best-of-both: {best_text}")
+            if grand_safeway_known and grand_best_known and grand_safeway > grand_best + 0.005:
+                print(f"Cherry-picking across stores would save {money(grand_safeway - grand_best)} vs Safeway-only.")
+        else:
+            print(f"\nCombined estimate: {money(grand_total)}")
 
 
 def main():
@@ -2160,6 +2345,9 @@ def main():
     estimate_parser = sub.add_parser("estimate", help="Estimate recipe costs")
     estimate_parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")
     estimate_parser.add_argument("recipes", nargs="*", help=f"Recipe keys: {', '.join(RECIPES)}")
+    estimate_parser.add_argument("--compare-stores", action="store_true", help="Show Safeway and Giant price columns side by side")
+    estimate_parser.add_argument("--giant-deals-file", help="Giant Flipp deals JSON file; defaults to active dated giant_weekly_deals_*.json")
+    estimate_parser.add_argument("--min-flipp-score", type=float, default=0.5, help="Minimum Flipp match score to include a Giant deal")
     estimate_parser.set_defaults(func=estimate)
 
     plan_parser = sub.add_parser("estimate-plan", help="Estimate a recipe JSON returned from meal inspiration prompt")

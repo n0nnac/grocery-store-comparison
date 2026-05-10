@@ -105,6 +105,25 @@ python3 meal_price_tool.py giant-deals --min-score 0.4
 
 The match column shows the flyer item name, package description, and the deal expiration day. Items without a Giant base price fall back to comparing against the Safeway base, which surfaces cross-store switching opportunities.
 
+Refresh saved Giant base/regular prices through the live browser session (requires `giant_browser_api_probe.py launch` to be running):
+
+```bash
+python3 giant_refresh_prices.py
+python3 giant_refresh_prices.py --write --fill-missing-only
+python3 giant_refresh_prices.py --only "salmon portion" "raw shrimp 26-30 ct" --write
+```
+
+`--fill-missing-only` is the safer write mode — it only adds Giant base prices to items that don't have one yet, leaving curated values alone. The full price metadata (product ID, URL, current/regular price, unit price) lands in `price_sources.Giant` regardless.
+
+Compare meal-cost estimates across Safeway and Giant in one shot:
+
+```bash
+python3 meal_price_tool.py estimate --compare-stores
+python3 meal_price_tool.py estimate ground_beef_lunch_bowls --compare-stores
+```
+
+The output shows per-line Safeway and Giant prices side by side, picks the cheaper store per item, and reports the cherry-picked best-of-both total against each single-store total.
+
 Rank weekly ad ingredients for meal inspiration rather than pure cheapest-cart optimization:
 
 ```bash

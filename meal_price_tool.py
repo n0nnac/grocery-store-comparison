@@ -1497,6 +1497,77 @@ def confidence_from_resolution_score(score):
     return "low"
 
 
+# Safeway store-brand markers. Matched against doc name + brand fields. The
+# resolver promotes a store-brand candidate over a national-brand leader when
+# its price is <= the leader's price and its confidence is at least medium.
+# Rationale: store-brand is usually equivalent quality, often cheaper, and
+# Safeway awards 2x rewards points on store-brand SKUs.
+SAFEWAY_STORE_BRAND_MARKERS = (
+    "signature select",
+    "signature farms",
+    "signature cafe",
+    "o organics",
+    "lucerne",
+    "open nature",
+    "primo taglio",
+    "waterfront bistro",
+    "refreshe",
+    "soleil",
+    "eating right",
+)
+
+
+def is_safeway_store_brand(doc):
+    if not doc:
+        return False
+    blob = f"{doc.get('brand') or ''} {doc.get('name') or ''}".lower()
+    return any(marker in blob for marker in SAFEWAY_STORE_BRAND_MARKERS)
+
+
+def maybe_prefer_store_brand(scored, args):
+    """If the top API match isn't store-brand but a viable store-brand
+    candidate exists in the top-5 scored results AND its price is within
+    ``store_brand_price_tolerance`` of the leader's price AND its
+    confidence is at least medium, promote it to the top.
+
+    Default tolerance is $0.10: covers the 2x rewards-points value that
+    Safeway awards on store-brand items (~1% redemption × 2 = ~$0.02-$0.04
+    per dollar, plus product-quality parity headroom). Set to 0 for a
+    strict "cheaper than leader" rule.
+
+    Disabled when ``args.no_prefer_store_brand`` is set.
+    """
+    if not scored or not args or getattr(args, "no_prefer_store_brand", False):
+        return scored
+    leader = scored[0]
+    if is_safeway_store_brand(leader["doc"]):
+        return scored
+    leader_price = leader["doc"].get("price") if leader.get("doc") else None
+    if leader_price is None:
+        return scored
+    tolerance = getattr(args, "store_brand_price_tolerance", 0.10)
+    if tolerance is None:
+        tolerance = 0.10
+    threshold = leader_price + max(0.0, float(tolerance))
+    for i, candidate in enumerate(scored[1:6], start=1):
+        if candidate.get("confidence") not in ("high", "medium"):
+            continue
+        if not is_safeway_store_brand(candidate.get("doc")):
+            continue
+        candidate_price = candidate["doc"].get("price")
+        if candidate_price is None:
+            continue
+        if candidate_price <= threshold:
+            scored.insert(0, scored.pop(i))
+            scored[0]["store_brand_promoted_from_index"] = i
+            scored[0]["store_brand_promoted_over"] = leader["doc"].get("name")
+            scored[0]["store_brand_promoted_price_delta"] = round(
+                candidate_price - leader_price, 2
+            )
+            return scored
+    return scored
+
+
 def resolve_safeway_doc(query, args, product_id=None):
     if not query and not product_id:
         return None
@@ -1542,6 +1613,7 @@ def resolve_safeway_doc(query, args, product_id=None):
         for doc in docs
     ]
     scored.sort(key=lambda row: (-row["score"], row["doc"].get("price") is None, row["doc"].get("price") or 999999, row["doc"].get("name") or ""))
+    scored = maybe_prefer_store_brand(scored, args)
     return scored[0]
 
 
@@ -1596,6 +1668,20 @@ def api_resolution_line(ingredient, key, source, qty, args, item=None):
         "detail": (
             f"auto-resolved {result['confidence']} confidence via Safeway API: "
             f"{doc.get('name')} (pid {doc.get('pid')})"
+            + (
+                (
+                    f" [store-brand promoted over '{result.get('store_brand_promoted_over') or ''}'"
+                    + (
+                        f" at +${result.get('store_brand_promoted_price_delta'):.2f}"
+                        if isinstance(result.get("store_brand_promoted_price_delta"), (int, float))
+                        and result.get("store_brand_promoted_price_delta") > 0
+                        else ""
+                    )
+                    + "]"
+                )
+                if result.get("store_brand_promoted_from_index")
+                else ""
+            )
         ),
         "requires_clip": False,
         "priced": True,
@@ -3080,6 +3166,8 @@ def main():
     plan_parser.add_argument("--deals-file", help="Weekly deals JSON file; defaults to active dated weekly_deals*.json")
     plan_parser.add_argument("--no-coupons", action="store_true", help="Ignore coupon overlays")
     plan_parser.add_argument("--no-resolve-missing", action="store_true", help="Do not query Safeway API for missing or stale Safeway ingredients")
+    plan_parser.add_argument("--no-prefer-store-brand", action="store_true", help="Disable the default store-brand promotion: when set, the resolver picks the top API match regardless of brand. Default behavior promotes a Signature SELECT / O Organics / Lucerne / etc. candidate when its price is within --store-brand-tolerance of the leader (Safeway awards 2x rewards points on store-brand SKUs).")
+    plan_parser.add_argument("--store-brand-tolerance", type=float, default=0.10, help="Max price premium ($) over the cheapest API match for which the resolver still promotes a store-brand candidate. Default 0.10. Set 0 for a strict 'cheaper than leader' rule.")
     plan_parser.add_argument("--stale-days", type=int, default=14, help="Refresh saved Safeway prices older than this many days")
     plan_parser.add_argument("--store-id", default=DEFAULT_STORE_ID, help="Safeway store ID for API resolution")
     plan_parser.add_argument("--banner", default=DEFAULT_BANNER, help="Safeway banner for API resolution")
